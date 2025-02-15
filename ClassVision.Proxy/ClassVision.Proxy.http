@@ -1,0 +1,6 @@
+@ClassVision.Proxy_HostAddress = http://localhost:5031
+
+GET {{ClassVision.Proxy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

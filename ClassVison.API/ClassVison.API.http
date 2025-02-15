@@ -1,0 +1,6 @@
+@ClassVison.API_HostAddress = http://localhost:5255
+
+GET {{ClassVison.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
