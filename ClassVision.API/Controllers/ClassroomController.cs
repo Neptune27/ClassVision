@@ -50,8 +50,8 @@ public class ClassroomController(AppDBContext dBContext) : Controller
         {
             RoomId = dto.RoomId,
             Capacity = dto.Capacity,
-            CreatedAt = DateTime.UtcNow,
-            LastUpdated = DateTime.UtcNow,
+            CreatedAt = DateTimeOffset.UtcNow,
+            LastUpdated = DateTimeOffset.UtcNow,
             IsActive = true,
         };
 

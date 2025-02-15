@@ -8,9 +8,9 @@ namespace ClassVision.Data.Entities;
 
 public class BaseEntity
 {
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
     
-    public DateTime LastUpdated { get; set; }
+    public DateTimeOffset LastUpdated { get; set; }
     
     public bool IsActive { get; set; }
 }
