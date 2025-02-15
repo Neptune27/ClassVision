@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ClassVision.Data.Migrations
 {
     /// <inheritdoc />
@@ -70,7 +72,7 @@ namespace ClassVision.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseInfos",
+                name: "CourseInfoes",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -81,7 +83,7 @@ namespace ClassVision.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseInfos", x => x.Id);
+                    table.PrimaryKey("PK_CourseInfoes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -235,9 +237,9 @@ namespace ClassVision.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Courses_CourseInfos_CourseInfoId",
+                        name: "FK_Courses_CourseInfoes_CourseInfoId",
                         column: x => x.CourseInfoId,
-                        principalTable: "CourseInfos",
+                        principalTable: "CourseInfoes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -328,7 +330,7 @@ namespace ClassVision.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Enrollment",
+                name: "Enrollments",
                 columns: table => new
                 {
                     StudentId = table.Column<string>(type: "text", nullable: false),
@@ -340,22 +342,32 @@ namespace ClassVision.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Enrollment", x => new { x.CourseId, x.StudentId });
+                    table.PrimaryKey("PK_Enrollments", x => new { x.CourseId, x.StudentId });
                     table.ForeignKey(
-                        name: "FK_Enrollment_Courses_CourseId",
+                        name: "FK_Enrollments_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Enrollment_Schedules_ScheduleId",
+                        name: "FK_Enrollments_Schedules_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "Schedules",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Enrollment_Students_StudentId",
+                        name: "FK_Enrollments_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "1", null, "Admin", "ADMIN" },
+                    { "2", null, "Teacher", "TEACHER" },
+                    { "3", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -416,13 +428,13 @@ namespace ClassVision.Data.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_ScheduleId",
-                table: "Enrollment",
+                name: "IX_Enrollments_ScheduleId",
+                table: "Enrollments",
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_StudentId",
-                table: "Enrollment",
+                name: "IX_Enrollments_StudentId",
+                table: "Enrollments",
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
@@ -466,7 +478,7 @@ namespace ClassVision.Data.Migrations
                 name: "Classrooms");
 
             migrationBuilder.DropTable(
-                name: "Enrollment");
+                name: "Enrollments");
 
             migrationBuilder.DropTable(
                 name: "Teachers");
@@ -487,7 +499,7 @@ namespace ClassVision.Data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "CourseInfos");
+                name: "CourseInfoes");
         }
     }
 }

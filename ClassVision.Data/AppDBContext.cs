@@ -15,10 +15,11 @@ public class AppDBContext: IdentityDbContext<AppUser>
     public DbSet<Attendant> Attendants { get; set; }
     public DbSet<Classroom> Classrooms { get; set; }
     public DbSet<Course> Courses { get; set; }
-    public DbSet<CourseInfo> CourseInfos { get; set; }
+    public DbSet<CourseInfo> CourseInfoes { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<Student> Students { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
+    public DbSet<Enrollment> Enrollments { get; set; }
 
 
     public AppDBContext(DbContextOptions options) : base(options)
@@ -27,6 +28,7 @@ public class AppDBContext: IdentityDbContext<AppUser>
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        base.OnModelCreating(builder);
 
         builder.Entity<Attendant>(e =>
         {
@@ -68,29 +70,30 @@ public class AppDBContext: IdentityDbContext<AppUser>
         });
         builder.HasPostgresExtension("vector");
 
-        base.OnModelCreating(builder);
+        List<IdentityRole> identityRoles = [
+            new IdentityRole
+            {
+                Id = "1",
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            },
+            new IdentityRole
+            {
+                Id = "2",
+                Name = "Teacher",
+                NormalizedName = "TEACHER"
+            },
+            new IdentityRole
+            {
+                Id = "3",
+                Name = "User",
+                NormalizedName = "USER"
+            }
+            ];
+
+        builder.Entity<IdentityRole>().HasData(identityRoles);
 
 
-
-        //List<IdentityRole> identityRoles = [
-        //    new IdentityRole
-        //    {
-        //        Name = "Admin",
-        //        NormalizedName = "ADMIN"
-        //    },
-        //    new IdentityRole
-        //    {
-        //        Name = "Teacher",
-        //        NormalizedName = "TEACHER"
-        //    },
-        //    new IdentityRole
-        //    {
-        //        Name = "User",
-        //        NormalizedName = "USER"
-        //    }
-        //    ];
-
-        //builder.Entity<IdentityRole>().HasData(identityRoles);
 
     }
 }

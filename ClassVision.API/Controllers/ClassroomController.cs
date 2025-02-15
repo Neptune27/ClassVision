@@ -24,39 +24,8 @@ public class ClassroomController(AppDBContext dBContext) : Controller
         return Ok(classrooms);
     }
 
-    [HttpGet("Details/{id}")]
-    public async Task<IActionResult> DetailsAsync(string id)
-    {
-        var classroom = await dBContext.Classrooms.FirstOrDefaultAsync(c => c.RoomId == id);
-
-        return Ok(classroom);
-    }
-
-
-    [HttpPost("[action]")]
-    public async Task<IActionResult> CreateAsync([FromBody] ClassroomCreateDto dto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        Classroom classroom = new()
-        {
-            RoomId = dto.RoomId,
-            Capacity = dto.Capacity,
-            CreatedAt = DateTime.Now,
-            LastUpdated = DateTime.Now,
-            IsActive = true,
-        };
-
-        var result = await dBContext.Classrooms.AddAsync(classroom);
-
-        return Ok(result);
-    }
-
-    [HttpGet("[action]")]
-    public async Task<IActionResult> EditAsync(string id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> IndexAsync(string id)
     {
         var result = await dBContext.Classrooms.FirstOrDefaultAsync(c => c.RoomId == id);
 
@@ -68,8 +37,33 @@ public class ClassroomController(AppDBContext dBContext) : Controller
         return Ok(result);
     }
 
-    [HttpPost("Edit/{id}")]
-    public async Task<IActionResult> EditPostAsync(string id, [FromBody] ClassroomCreateDto dto)
+
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync([FromBody] ClassroomCreateDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        Classroom classroom = new()
+        {
+            RoomId = dto.RoomId,
+            Capacity = dto.Capacity,
+            CreatedAt = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
+            IsActive = true,
+        };
+
+        var result = await dBContext.Classrooms.AddAsync(classroom);
+        await dBContext.SaveChangesAsync();
+
+        return Ok(result.Entity);
+    }
+
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditAsync(string id, [FromBody] ClassroomCreateDto dto)
     {
         var result = await dBContext.Classrooms.FirstOrDefaultAsync(c => c.RoomId == id);
 
@@ -84,7 +78,7 @@ public class ClassroomController(AppDBContext dBContext) : Controller
         return Ok(result);
     }
 
-    [HttpDelete("[action]")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(string id)
     {
         var result = await dBContext.Classrooms.FirstOrDefaultAsync(c => c.RoomId == id);
