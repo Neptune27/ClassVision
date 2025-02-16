@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "../ui/breadcrumb";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -15,9 +16,9 @@ export default function DbHeader({ items }: {
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 <Breadcrumb>
                     <BreadcrumbList>
-                        {items.map((item, index) => (<>
+                        {items.map((item, index) => (<Fragment key={item.name + "fm" }>
                             <BreadcrumbItem key={item.name + "br"} className={"hidden md:block"}>
-                                <BreadcrumbLink href={item.url}>
+                                <BreadcrumbLink href={item.url} key={item.name + ""}>
                                     {index < items.length - 1 ? item.name :
                                         <BreadcrumbPage>{item.name}</BreadcrumbPage>    
                                     }
@@ -26,7 +27,7 @@ export default function DbHeader({ items }: {
                             {index < items.length - 1 &&
                                 <BreadcrumbSeparator key={item.name + "sp"} className="hidden md:block" />
                             }
-                        </>))}
+                        </Fragment>))}
                     </BreadcrumbList>
                 </Breadcrumb>
             </div>
