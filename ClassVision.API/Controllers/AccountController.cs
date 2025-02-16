@@ -29,22 +29,26 @@ public class AccountController(ILogger<AccountController> logger,
             return BadRequest(ModelState);
         }
 
-        var user = await mediator.Send(new GetAccountRequest(loginDto.Username));
 
-        var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
-        if (!result.Succeeded)
+        try
         {
-            throw new ValidationException("Wrong Password");
+            var user = await mediator.Send(new GetAccountRequest(loginDto.Username));
+            var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            if (!result.Succeeded)
+            {
+                throw new ValidationException("Wrong Password");
+            }
+
+            var dto = await mediator.Send(new CreateTokenRequest(user, Request.Host));
+
+            return Ok(dto);
+
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Message);
         }
 
-
-        var dto = await mediator.Send(new CreateTokenRequest(user, Request.Host));
-
-        //var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto));
-
-
-        return Ok(dto);
     }
 
     [HttpPost("[action]")]

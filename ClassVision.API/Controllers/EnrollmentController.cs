@@ -12,14 +12,9 @@ namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EnrollmentController : ControllerBase
+    public class EnrollmentController(AppDBContext context) : ControllerBase
     {
-        private readonly AppDBContext _context;
-
-        public EnrollmentController(AppDBContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDBContext _context = context;
 
         // GET: api/Enrollment
         [HttpGet]
