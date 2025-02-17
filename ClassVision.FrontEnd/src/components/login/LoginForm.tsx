@@ -18,7 +18,9 @@ export function LoginForm({
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        // @ts-ignore
         const usernameElement = e.target[0] as HTMLInputElement
+        // @ts-ignore
         const passwordElement = e.target[1] as HTMLInputElement
 
         const username = usernameElement.value
@@ -53,14 +55,20 @@ export function LoginForm({
 
         //if (login.rememberMe) {
         localStorage.setItem("token", resultJson["token"]);
+
+        const params = new URLSearchParams(window.location.search);
+        const returnUrl = params.get('returnUrl');
+        if (returnUrl) {
+            location.href = returnUrl
+        }
         //}
         //else {
-            //sessionStorage.setItem("token", resultJson["token"])
+        //sessionStorage.setItem("token", resultJson["token"])
         //}
     }
 
     return (
-        <form className="p-6 md:p-8" onSubmit={handleSubmit }>
+        <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6" >
                 <div className="flex flex-col items-center text-center" >
                     <h1 className="text-2xl font-bold" > Welcome back </h1>

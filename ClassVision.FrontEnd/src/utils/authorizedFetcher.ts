@@ -1,7 +1,12 @@
 import useToken from "../hooks/useToken"
 
 const authorizedFetch = async (input: string | URL | globalThis.Request,
-    init?: RequestInit, redirectOnUnathorized = () => { window.location.href = "/login" }): Promise<Response> => {
+    init?: RequestInit, redirectOnUnathorized = () => {
+        const searchParams = new URLSearchParams({
+            returnUrl: location.href
+        })
+        window.location.href = "/login?" + searchParams.toString()
+    }): Promise<Response> => {
 
     if (init === undefined) {
         init = {

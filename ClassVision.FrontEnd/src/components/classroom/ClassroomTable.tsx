@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { ClassroomType } from "../../../interfaces/ClassroomType";
 
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/table"
 import { DataTable } from "../ui/data-table";
 import { classroomColumns } from "./classroomColumns";
+import { use, useEffect, useState } from "react";
+import { authorizedFetch } from "../../utils/authorizedFetcher";
 
 const tempData: ClassroomType[] = [
     {
@@ -37,10 +39,23 @@ const tempData: ClassroomType[] = [
     }
 ]
 
+
 export default function ClassroomTable() {
+    const [data, setData] = useState<ClassroomType[]>([])
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const resp = await authorizedFetch("/api/classroom")
+            setData(await resp.json())
+        }
+
+        fetchData()
+    }, [])
+
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={classroomColumns} data={tempData} filter filterId={"roomId"} visible />
+            <DataTable columns={classroomColumns} data={data} filter filterId={"roomId"} visible />
         </div>
     )
 }
