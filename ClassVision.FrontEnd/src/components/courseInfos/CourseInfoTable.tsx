@@ -19,37 +19,26 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { DataTable } from "../ui/data-table";
-import { classroomColumns } from "./classroomColumns";
 import { use, useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-
-const tempData: ClassroomType[] = [
-    {
-        "roomId": "TEST",
-        "capacity": 1,
-        "createdAt": "2025-02-15T09:04:40.396837+00:00",
-        "lastUpdated": "2025-02-15T09:04:40.396865+00:00",
-        "isActive": true
-    },
-    {
-        "roomId": "TEST2",
-        "capacity": 10,
-        "createdAt": "2025-02-15T09:04:40.396837+00:00",
-        "lastUpdated": "2025-02-17T09:04:40.396865+00:00",
-        "isActive": true
-    }
-]
+import { CourseInfoType } from "../../interfaces/CourseInfoType";
+import { courseInfoColumns } from "./courseInfoColumns";
 
 
-export default function ClassroomTable({ children, setSelectedRows }: { children?: React.ReactNode, setSelectedRows?: (rows: Row<ClassroomType>[]) => void }) {
-    const [data, setData] = useState<ClassroomType[]>([])
+
+export function CourseInfoTable({ children, setSelectedRows }: {
+    children?: React.ReactNode,
+    setSelectedRows?:
+        (rows: Row<CourseInfoType>[]) => void
+}) {
+    const [data, setData] = useState<CourseInfoType[]>([])
 
 
     useEffect(() => {
         const fetchData = async () => {
-            const resp = await authorizedFetch("/api/classroom")
+            const resp = await authorizedFetch("/api/CourseInfo")
             setData(await resp.json())
         }
 
@@ -59,7 +48,7 @@ export default function ClassroomTable({ children, setSelectedRows }: { children
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={classroomColumns} data={data} filter filterId={"roomId"} visible setSelectedRow={setSelectedRows} >
+            <DataTable columns={courseInfoColumns} data={data} filter filterId={"id"} visible setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>
         </div>

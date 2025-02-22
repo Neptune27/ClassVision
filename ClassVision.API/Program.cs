@@ -60,7 +60,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference("api", options =>
     {
         options.Servers = [new("")];
-        options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+        options.WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.Fetch);
         options.WithOpenApiRoutePattern("/api/openapi/v1.json");
     });
 }

@@ -8,6 +8,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    Row,
     SortingState,
     useReactTable,
     VisibilityState,
@@ -22,7 +23,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "./button"
-import React from "react"
+import React, { useEffect } from "react"
 import { Input } from "./input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu"
 
@@ -31,7 +32,9 @@ interface DataTableProps<TData, TValue> {
     data: TData[],
     filter?: boolean,
     filterId?: string,
-    visible?: boolean
+    visible?: boolean,
+    setSelectedRow?: (rows: Row<TData>[]) => void,
+    children?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
@@ -39,7 +42,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         columns,
         data,
         filterId,
-
+        setSelectedRow
     } = props
 
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -68,7 +71,12 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             rowSelection
         },
     })
-
+    useEffect(() => {
+        console.log(rowSelection)
+        if (setSelectedRow) {
+            setSelectedRow(table.getFilteredSelectedRowModel().rows)
+        }
+    }, [rowSelection])
 
 
     return (
@@ -85,6 +93,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                             className="max-w-sm"
                         />
                     }
+                    {props.children}
                     {props.visible &&
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

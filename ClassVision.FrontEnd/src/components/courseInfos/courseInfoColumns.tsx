@@ -6,15 +6,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { classroomDeleteStore, classroomModifyStore } from "../../stores/classroomStores";
+import { courseInfoModifyStore, courseInfoDeleteStore } from "../../stores/courseInfoStore";
+import { CourseInfoType } from "../../interfaces/CourseInfoType";
 
-const store = classroomModifyStore
-const deleteStore = classroomDeleteStore
+const store = courseInfoModifyStore
+const deleteStore = courseInfoDeleteStore
 const handleDeleteClick = (id: string) => {
     deleteStore.id = id
     deleteStore.opened = true
 }
-export const classroomColumns: ColumnDef<ClassroomType>[] = [
+export const courseInfoColumns: ColumnDef<CourseInfoType>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -38,12 +39,12 @@ export const classroomColumns: ColumnDef<ClassroomType>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "roomId",
+        accessorKey: "id",
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "capacity",
-        header: ({ column }) => columnSortable(column, "Capacity"),
+        accessorKey: "name",
+        header: ({ column }) => columnSortable(column, "Name")
 
     }, {
         accessorKey: "lastUpdated",
@@ -54,13 +55,11 @@ export const classroomColumns: ColumnDef<ClassroomType>[] = [
     }, {
         accessorKey: "createdAt",
         header: ({ column }) => columnSortable(column, "Created At"),
-
         cell: ({ row }) => rowToRelativeTime(row, "createdAt")
     },
     {
         accessorKey: "isActive",
-        header: ({ column }) => columnSortable(column, "Active?"),
-
+        header: "Active"
     },
     {
         id: "action",
@@ -78,20 +77,25 @@ export const classroomColumns: ColumnDef<ClassroomType>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.roomId)}
+                            onClick={() => navigator.clipboard.writeText(data.id)}
                         >
-                            Copy room ID
+                            Copy ID
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => navigator.clipboard.writeText(data.name)}
+                        >
+                            Copy name
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             store.opened = true
                             store.isEdit = true
                             store.data = {
-                                roomId: data.roomId,
-                                capacity: data.capacity
+                                id: data.id,
+                                name: data.name
                             }
                         }}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteClick(data.roomId)}>Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

@@ -195,6 +195,7 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                     <SidebarGroupLabel>Platform</SidebarGroupLabel>
                     <SidebarMenu>
                         <DbSidebarMenuItem name={"Classroom"} url={"/dashboard/classroom"} icon={Command} />
+                        <DbSidebarMenuItem name={"Course Info"} url={"/dashboard/course-info"} icon={Command} />
                         <DbCollapsableItem title={"Collapsed"} isActive={false} >
                         <DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>
                         </DbCollapsableItem>
