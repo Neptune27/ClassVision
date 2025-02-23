@@ -16,7 +16,7 @@ public class Course : BaseEntity
 
     public CourseInfo CourseInfo { get; set; } = null!;
 
-    public AppUser Teacher { get; set; } = null!;
+    public Teacher Teacher { get; set; } = null!;
 
     public List<Student> Students { get; set; } = [];
 
