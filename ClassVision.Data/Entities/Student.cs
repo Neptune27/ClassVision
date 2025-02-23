@@ -32,4 +32,6 @@ public class Student : BaseEntity
     public List<Attendant> Attendants { get; set; } = [];
 
     public List<Enrollment> Enrollments { get; set; } = [];
+
+    public string Media { get; set; } = string.Empty;
 }
