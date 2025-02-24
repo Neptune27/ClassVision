@@ -194,7 +194,7 @@ export function TeacherDialog({ isEdit }: {
                     <Label htmlFor="id" className="text-right">
                         Id
                     </Label>
-                    <Input id="id" value={snap.data.id} onChange={(e) => {
+                    <Input id="id" value={snap.data.id} disabled={snap.isEdit} onChange={(e) => {
 
                         store.data.id = e.target.value
                     }

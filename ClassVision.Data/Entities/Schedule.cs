@@ -24,6 +24,4 @@ public class Schedule : BaseEntity
 
     public List<Attendant> Attendants { get; set; } = [];
 
-    public List<Enrollment> Enrollments { get; set; } = [];
-
 }
