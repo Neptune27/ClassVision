@@ -33,6 +33,9 @@ interface DataTableProps<TData, TValue> {
     filter?: boolean,
     filterId?: string,
     visible?: boolean,
+    initialVisibility?: {
+        [K in keyof TData]?: boolean
+    },
     setSelectedRow?: (rows: Row<TData>[]) => void,
     children?: React.ReactNode
 }
@@ -42,7 +45,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         columns,
         data,
         filterId,
-        setSelectedRow
+        setSelectedRow,
     } = props
 
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -50,7 +53,11 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         []
     )
 
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+    const initialVisibility = props.initialVisibility ?? {}
+
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialVisibility)
+
+
     const [rowSelection, setRowSelection] = React.useState({})
 
     const table = useReactTable({

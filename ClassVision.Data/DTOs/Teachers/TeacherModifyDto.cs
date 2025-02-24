@@ -1,4 +1,6 @@
-﻿using ClassVision.Data.Enums;
+﻿using ClassVision.Data.Entities;
+using ClassVision.Data.Enums;
+using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,14 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassVision.Data.Entities;
+namespace ClassVision.Data.DTOs.Teachers;
 
-public class Teacher : BaseEntity
+
+[Mapper]
+public partial class TeacherMapper
 {
-    [Key]
+    [MapProperty("User.Id", "UserId")]
+    public partial TeacherModifyDto ToModifyDto(Teacher teacher);
+
+    public partial Teacher ToEntity(TeacherModifyDto dto);
+}
+
+public class TeacherModifyDto
+{
     public string Id { get; set; } = null!;
 
-    public AppUser User { get; set; } = null!;
+    public string UserId { get; set; }
 
     public string FirstName { get; set; } = null!;
 
@@ -28,5 +39,4 @@ public class Teacher : BaseEntity
     public string PhoneNumber { get; set; } = null!;
 
     public string Address { get; set; } = null!;
-
 }

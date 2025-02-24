@@ -2,8 +2,10 @@
 using ClassVision.Data.DTOs.Accounts;
 using ClassVision.Data.Entities;
 using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,11 +16,13 @@ namespace ClassVision.API.Controllers;
 [ApiController]
 public class AccountController(ILogger<AccountController> logger,
     SignInManager<AppUser> signInManager,
+    UserManager<AppUser> userManager,
     IMediator mediator
     ) : ControllerBase
 {
     private readonly ILogger<AccountController> logger = logger;
     private readonly SignInManager<AppUser> signInManager = signInManager;
+    private readonly UserManager<AppUser> userManager = userManager;
     private readonly IMediator mediator = mediator;
 
     [HttpPost("[action]")]
@@ -90,5 +94,20 @@ public class AccountController(ILogger<AccountController> logger,
             logger.LogError("Register Error: {e}", e.Message);
             return StatusCode(500, e);
         }
+    }
+
+    [HttpGet("")]
+    [Authorize]
+    public async Task<IActionResult> Index([FromQuery] string? name)
+    {
+        if (name is null)
+        {
+            return Ok(await userManager.Users.ToListAsync());
+        }
+        var data = await userManager.Users
+            .Where(u => u.UserName.ToUpper().Contains(name.ToUpper()))
+            .ToListAsync();
+
+        return Ok(data);
     }
 }

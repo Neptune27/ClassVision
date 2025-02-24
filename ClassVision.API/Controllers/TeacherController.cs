@@ -7,19 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using ClassVision.Data.DTOs.Teachers;
+using Microsoft.AspNetCore.Identity;
 
 namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeacherController : ControllerBase
+    public class TeacherController(AppDBContext context, UserManager<AppUser> userManager) : ControllerBase
     {
-        private readonly AppDBContext _context;
-
-        public TeacherController(AppDBContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDBContext _context = context;
+        private readonly UserManager<AppUser> userManager = userManager;
+        private readonly TeacherMapper mapper = new();
 
         // GET: api/Teacher
         [HttpGet]
@@ -45,12 +44,25 @@ namespace ClassVision.API.Controllers
         // PUT: api/Teacher/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeacher(string id, Teacher teacher)
+        public async Task<IActionResult> PutTeacher(string id, TeacherModifyDto dto)
         {
+            var teacher = mapper.ToEntity(dto);
+
             if (id != teacher.Id)
             {
                 return BadRequest();
             }
+
+
+            teacher.LastUpdated = DateTimeOffset.UtcNow;
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.UserId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            teacher.User = user;
 
             _context.Entry(teacher).State = EntityState.Modified;
 
@@ -76,8 +88,21 @@ namespace ClassVision.API.Controllers
         // POST: api/Teacher
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Teacher>> PostTeacher(Teacher teacher)
+        public async Task<ActionResult<TeacherModifyDto>> PostTeacher(TeacherModifyDto dto)
         {
+            var teacher = mapper.ToEntity(dto);
+
+            teacher.LastUpdated = DateTimeOffset.UtcNow;
+            teacher.CreatedAt = DateTimeOffset.UtcNow;
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.UserId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            teacher.User = user;
+
             _context.Teachers.Add(teacher);
             try
             {
