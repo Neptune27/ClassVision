@@ -9,6 +9,8 @@ import { CourseDialog, CourseDeleteDialog, CourseBatchDeleteDialog } from "../..
 import { CourseTable } from "../../../components/courses/CourseTable"
 import { CourseType } from "../../../interfaces/CourseTypes"
 import { courseModifyStore, courseBatchDeleteStore, courseDefault } from "../../../stores/courseStores"
+import { SimpleTimePicker } from "../../../components/ui/simple-time-picker"
+import { DateTimePicker } from "../../../components/ui/datetime-picker"
 
 
 export default function Page() {
@@ -51,6 +53,7 @@ export default function Page() {
                 </DropdownMenu>
 
             </CourseTable>
+
             <CourseDialog isEdit={modifySnap.isEdit} />
             <CourseDeleteDialog />
             <CourseBatchDeleteDialog />

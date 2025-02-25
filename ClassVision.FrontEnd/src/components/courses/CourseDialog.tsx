@@ -9,20 +9,27 @@ import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { CourseModifyType } from "../../interfaces/CourseTypes"
 import { courseDeleteStore, courseBatchDeleteStore, courseModifyStore } from "../../stores/courseStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { DatePicker } from "../ui/date-picker"
+import { DatePicker, DateTimePicker24h, TimeOnly, TimePicker24h } from "../ui/date-picker"
 import { format } from "date-fns"
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { TeacherType } from "../../interfaces/TeacherTypes"
 import { StudentType } from "../../interfaces/StudentTypes"
 import { CourseInfoType } from "../../interfaces/CourseInfoType"
 import { ClassroomType } from "../../interfaces/ClassroomType"
+import { CourseStudentPopover, getDisplayId } from "./CourseStudentPopover"
+import { SimpleTimePicker } from "../ui/simple-time-picker"
+import { DateTimePicker } from "../ui/datetime-picker"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Button } from "../ui/button"
+import { DateTime } from "luxon"
 
 
 const baseUrl = "/api/Course"
 const teacherUrl = "/api/Teacher"
 const classroomUrl = "/api/Classroom"
 const courseInfoUrl = "/api/CourseInfo"
-const studentUrl = "/api/Teacher"
+const studentUrl = "/api/Student"
+const scheduleUrl = "/api/Schedule"
 
 export function CourseDeleteDialog() {
     const store = courseDeleteStore;
@@ -50,7 +57,7 @@ export function CourseDeleteDialog() {
         <DeleteDialog open={snap.opened} title={"Are you sure you want to delete this"}
             handleOnOpenChanged={handleOpen}
             handleSubmit={handleSubmit}
-            
+
         />
 
     )
@@ -69,7 +76,7 @@ export function CourseBatchDeleteDialog() {
     const handleSubmit = async () => {
         console.log(store)
         const promisedResps = snap.ids.map(id => {
-            const url = `${baseUrl}/${ id }`
+            const url = `${baseUrl}/${id}`
             return authorizedFetch(url, {
                 method: 'DELETE',
                 headers: {
@@ -288,17 +295,47 @@ export function CourseDialog({ isEdit }: {
         //isEdit ? handleEdit(data) : handleCreate(data);
     }
 
+    const handleDateChange = (date: Date | undefined, index: number) => {
+        if (!date) {
+            return
+        }
+
+        const dateString = DateTime.fromJSDate(date).toRFC2822();
+        if (!dateString) {
+            return
+        }
+        store.data.scheldules[index].date = dateString
+        console.log(store.data.scheldules)
+    }
+
+    const handleTimeChange = (date: Date | undefined, index: number, type: "startTime" | "endTime") => {
+        if (!date) {
+            return
+        }
+
+        const dateString = DateTime.fromJSDate(date).toISOTime();
+        if (!dateString) {
+            return
+        }
+        store.data.scheldules[index][type] = dateString
+        console.log(store.data.scheldules)
+    }
+
+    const handleScheduleDelete = (index: number) => {
+        store.data.scheldules.splice(index, 1)
+    }
 
 
     return (
         <ModifyDialog open={snap.opened} handleOnOpenChanged={handleOpen}
+            className={"sm:max-w-[625px]"}
             title={title} handleSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="id" className="text-right">
                         Id
                     </Label>
-                    <Input id="id" value={snap.data.id} onChange={(e) => {
+                    <Input id="id" value={snap.data.id} disabled onChange={(e) => {
 
                         store.data.id = e.target.value
                     }
@@ -312,7 +349,7 @@ export function CourseDialog({ isEdit }: {
                         store.data.teacherId = teacherData?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={teacherData.display}
-                        className="col-span-3"/>
+                        className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="teacherId" className="text-right">
@@ -323,6 +360,50 @@ export function CourseDialog({ isEdit }: {
                     }}
                         data={courseInfo.display}
                         className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="teacherId" className="text-right">
+                        Schedule
+                    </Label>
+                    <div className="col-span-3 flex flex-col gap-4">
+                        {snap.data.scheldules.map((schedule, index) => {
+                            return (
+                                <Card key={index}>
+                                    <CardContent className="p-4">
+                                        <div className={"grid grid-cols-8 gap-2"}>
+                                            <div className="col-span-4">
+                                                <DateTimePicker value={new Date(schedule.date)}
+                                                    onChange={(date) => {}} hideTime={true} />
+                                            </div>
+                                            <Input className="col-span-2" />
+                                            <Label className="flex justify-center items-center">Weeks</Label>
+                                            <div className="col-span-3">
+                                                <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${schedule.startTime}`)}
+                                                    onChange={(date) => handleTimeChange(date, index, "startTime")} />
+                                            </div>
+                                            <div className="col-span-3">
+                                                <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${schedule.endTime}`)}
+                                                    onChange={(date) => handleTimeChange(date, index, "endTime")} />
+                                            </div>
+                                            <Button variant="destructive" className="col-span-2" onClick={()=>handleScheduleDelete(index)}>Delete</Button>
+    
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                            )
+                        })}
+                        <Button className="w-full" onClick={() => {
+                            store.data.scheldules.push({
+                                courseId: store.data.id,
+                                date: DateTime.now().toISODate(),
+                                endTime: "07:00:00",
+                                startTime: "07:00:00"
+                            })
+                        }}>Add new schedule</Button>
+                    </div>
+
+
                 </div>
                 {/*<div className="grid grid-cols-4 items-center gap-4">*/}
                 {/*    <Label htmlFor="teacherId" className="text-right">*/}
@@ -335,7 +416,7 @@ export function CourseDialog({ isEdit }: {
                 {/*        className="col-span-3" />*/}
                 {/*</div>*/}
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">
+                    <Label htmlFor="room" className="text-right">
                         Room
                     </Label>
                     <Combobox value={snap.data.classroomId} onValueChange={(value) => {
@@ -344,7 +425,29 @@ export function CourseDialog({ isEdit }: {
                         data={rooms.display}
                         className="col-span-3" />
                 </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="teacherId" className="text-right">
+                        Students
+                    </Label>
+                    <CourseStudentPopover selectedData={snap.data.studentIds} setSelectedData={(value) => {
+                        const selectedStudentId = studentData.display.find((item => item.label == value))?.label
+                        if (!selectedStudentId) {
+                            console.log("Student id not found?")
+                            return
+                        }
+                        const displayId = getDisplayId(selectedStudentId)
+                        const index = store.data.studentIds.indexOf(displayId)
 
+                        if (index === -1) {
+                            store.data.studentIds.push(displayId)
+                        }
+                        else {
+                            store.data.studentIds.splice(index, 1)
+                        }
+                    }}
+                        data={studentData}
+                        className="col-span-3" />
+                </div>
                 {/*<div className="grid grid-cols-4 items-center gap-4">*/}
                 {/*    <Label htmlFor="media" className="text-right">*/}
                 {/*        Profile*/}

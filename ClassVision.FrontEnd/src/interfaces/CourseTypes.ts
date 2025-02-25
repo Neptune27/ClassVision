@@ -1,5 +1,5 @@
 import { CommonType } from "./CommonType";
-import { ScheduleType } from "./ScheduleTypes";
+import { ScheduleModifyType, ScheduleType } from "./ScheduleTypes";
 
 export interface CourseType extends CommonType, CourseModifyType {
 }
@@ -13,7 +13,7 @@ export type CourseModifyType = {
     classroomId: string,
     attendantId: string[],
     studentIds: string[],
-    scheldules: ScheduleType[],
+    scheldules: ScheduleModifyType[],
     period: number,
 }
 
