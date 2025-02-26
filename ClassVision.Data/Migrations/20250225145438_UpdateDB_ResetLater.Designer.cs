@@ -3,6 +3,7 @@ using System;
 using ClassVision.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClassVision.Data.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250225145438_UpdateDB_ResetLater")]
+    partial class UpdateDB_ResetLater
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,7 +158,6 @@ namespace ClassVision.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CourseInfoId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -521,10 +523,10 @@ namespace ClassVision.Data.Migrations
 
             modelBuilder.Entity("ClassVision.Data.Entities.Attendant", b =>
                 {
-                    b.HasOne("ClassVision.Data.Entities.Course", null)
+                    b.HasOne("ClassVision.Data.Entities.Course", "Course")
                         .WithMany("Attendants")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ClassVision.Data.Entities.Schedule", "Schedule")
@@ -533,21 +535,17 @@ namespace ClassVision.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassVision.Data.Entities.Student", null)
+                    b.HasOne("ClassVision.Data.Entities.Student", "Student")
                         .WithMany("Attendants")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassVision.Data.Entities.Enrollment", "Enrollment")
-                        .WithMany("Attendants")
-                        .HasForeignKey("CourseId", "StudentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Enrollment");
+                    b.Navigation("Course");
 
                     b.Navigation("Schedule");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("ClassVision.Data.Entities.Course", b =>
@@ -558,9 +556,7 @@ namespace ClassVision.Data.Migrations
 
                     b.HasOne("ClassVision.Data.Entities.CourseInfo", "CourseInfo")
                         .WithMany()
-                        .HasForeignKey("CourseInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseInfoId");
 
                     b.HasOne("ClassVision.Data.Entities.Teacher", "Teacher")
                         .WithMany()
@@ -679,11 +675,6 @@ namespace ClassVision.Data.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("ClassVision.Data.Entities.Enrollment", b =>
-                {
-                    b.Navigation("Attendants");
                 });
 
             modelBuilder.Entity("ClassVision.Data.Entities.Schedule", b =>

@@ -1,18 +1,13 @@
 import React from "react";
 import { ComboboxData } from "../ui/combobox";
 import { ChevronsUpDown } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn, getDisplayId } from "../../lib/utils";
 import { Checkbox } from "../ui/checkbox";
 import { StudentType } from "../../interfaces/StudentTypes";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 
-
-export const getDisplayId = (display: string) => {
-    return display.split("|")[0].trim();
-
-}
 
 export const isSelected = (real: string, display: string) => {
     return real === getDisplayId(display)

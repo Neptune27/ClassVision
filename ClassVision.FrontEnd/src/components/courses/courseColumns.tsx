@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { CourseType } from "../../interfaces/CourseTypes";
 import { courseModifyStore, courseDeleteStore } from "../../stores/courseStores";
+import { CourseInfoType } from "../../interfaces/CourseInfoType";
 
 const store = courseModifyStore
 const deleteStore = courseDeleteStore
@@ -41,8 +42,14 @@ export const courseColumns: ColumnDef<CourseType>[] = [
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "courseInfoId",
-        header: ({ column }) => columnSortable(column, "Course Id")
+        accessorKey: "courseInfo",
+        header: ({ column }) => columnSortable(column, "Info"),
+        cell: ({ row }) => {
+            const data = row.getValue("courseInfo") as CourseInfoType
+
+            return `${data.id} | ${data.name}`
+
+        }
     },
     {
         accessorKey: "teacherId",
@@ -91,12 +98,12 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                             Copy ID
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.teacherId)}
+                            onClick={() => navigator.clipboard.writeText(data.teacher.id)}
                         >
                             Copy teacher id
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.courseInfoId)}
+                            onClick={() => navigator.clipboard.writeText(data.courseInfo.id)}
                         >
                             Copy course info id
                         </DropdownMenuItem>
@@ -109,11 +116,11 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                                 id: data.id,
                                 period: 1,
                                 attendantId: [],
-                                classroomId: data.classroomId,
-                                courseInfoId: data.courseInfoId,
-                                scheldules: [],
-                                studentIds: [],
-                                teacherId: data.teacherId
+                                classroomId: data.classroom.roomId,
+                                courseInfoId: data.courseInfo.id,
+                                schedules: [],
+                                studentIds: data.enrollments.map(e => e.studentId),
+                                teacherId: data.teacher.id
                             }
                         }}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>

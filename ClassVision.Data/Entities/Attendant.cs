@@ -20,9 +20,7 @@ public class Attendant : BaseEntity
 
     public Guid ScheduleId { get; set; }
 
-    public Student Student { get; set; } = null!;
-
-    public Course Course { get; set; } = null!;
+    public Enrollment Enrollment { get; set; } = null!;
 
     public Schedule Schedule { get; set; } = null!;
 

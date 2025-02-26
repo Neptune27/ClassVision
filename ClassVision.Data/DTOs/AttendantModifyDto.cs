@@ -9,13 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClassVision.Data.DTOs;
 
-[Mapper]
-public partial class AttendantMapper
-{
-    public partial AttendantDto ToDto(Attendant attendant);
-}
-
-public class AttendantDto
+public class AttendantModifyDto
 {
     public Guid Id { get; set; }
 
@@ -29,7 +23,7 @@ public class AttendantDto
 
     public CourseDto Course { get; set; } = null!;
 
-    public ScheduleDto Schedule { get; set; } = null!;
+    public ScheduleModifyDto Schedule { get; set; } = null!;
 
     public EAttendantStatus Status { get; set; }
 

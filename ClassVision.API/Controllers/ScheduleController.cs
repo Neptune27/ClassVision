@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using ClassVision.Data.DTOs;
 
 namespace ClassVision.API.Controllers
 {
@@ -76,8 +77,17 @@ namespace ClassVision.API.Controllers
         // POST: api/Schedule
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Schedule>> PostSchedule(Schedule schedule)
+        public async Task<ActionResult<Schedule>> PostSchedule(ScheduleModifyDto dto)
         {
+            var schedule = new Schedule();
+            schedule.CreatedAt = DateTimeOffset.UtcNow;
+            schedule.LastUpdated = DateTimeOffset.UtcNow;
+            schedule.Course = await _context.Courses.FirstAsync(c => c.Id.ToString() == dto.CourseId);
+            schedule.Date = dto.Date;
+            schedule.StartTime = dto.StartTime;
+            schedule.EndTime = dto.EndTime;
+
+
             _context.Schedules.Add(schedule);
             await _context.SaveChangesAsync();
 

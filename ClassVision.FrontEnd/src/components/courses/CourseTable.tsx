@@ -53,9 +53,6 @@ export function CourseTable({ children, setSelectedRows }: {
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
-                    address: false,
-                    birthday: false,
-                    hireDate: false
                 }}
                 setSelectedRow={setSelectedRows} >
                 {children}

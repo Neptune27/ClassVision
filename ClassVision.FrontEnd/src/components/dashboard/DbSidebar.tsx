@@ -199,13 +199,13 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                         <DbSidebarMenuItem name={"Course"} url={"/dashboard/course"} icon={Command} />
                         <DbSidebarMenuItem name={"Student"} url={"/dashboard/student"} icon={Command} />
                         <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={Command} />
-                        <DbCollapsableItem title={"Collapsed"} isActive={false} >
-                        <DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>
-                        </DbCollapsableItem>
+                        {/*<DbCollapsableItem title={"Collapsed"} isActive={false} >*/}
+                        {/*<DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>*/}
+                        {/*</DbCollapsableItem>*/}
                     </SidebarMenu>
                 </SidebarGroup>
                 {/*<NavMain items={data.navMain} />*/}
-                <NavProjects projects={data.projects} />
+                {/*<NavProjects projects={data.projects} />*/}
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={data.user} />

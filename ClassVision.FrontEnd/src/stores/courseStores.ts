@@ -9,7 +9,7 @@ export const courseDefault = (): CourseModifyType => {
         courseInfoId: "",
         period: 1,
         attendantId: [],
-        scheldules: [],
+        schedules: [],
         studentIds: [],
     })
 }

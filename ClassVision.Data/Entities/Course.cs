@@ -20,7 +20,7 @@ public class Course : BaseEntity
 
     public List<Student> Students { get; set; } = [];
 
-    public Classroom Classroom = null!;
+    public Classroom Classroom { get; set; } = null!;
 
     public List<Attendant> Attendants { get; set; } = [];
 

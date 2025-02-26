@@ -11,6 +11,7 @@ import { studentDeleteStore, studentBatchDeleteStore, studentModifyStore } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
+import { DateTimePicker } from "../ui/datetime-picker"
 
 
 const baseUrl = "/api/Student"
@@ -203,21 +204,26 @@ export function StudentDialog({ isEdit }: {
                     <Label htmlFor="birthday" className="text-right">
                         Birthday
                     </Label>
-                    <DatePicker date={new Date(snap.data.birthday)} setDate={(date) => {
-                        if (date) {
-                            store.data.birthday = date.toISOString()
-                        }
-                    }} className="col-span-3"/>
+                    <div className="col-span-3">
+                        <DateTimePicker modal={true} hideTime
+                            value={new Date(snap.data.birthday)} onChange={(date) => {
+                            if (date) {
+                                store.data.birthday = date.toISOString()
+                            }
+                        }} />
+                    </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="enrollAt" className="text-right">
                         Enroll At
                     </Label>
-                    <DatePicker date={new Date(snap.data.enrollAt)} setDate={(date) => {
-                        if (date) {
-                            store.data.enrollAt = date.toISOString()
-                        }
-                    }} className="col-span-3"/>
+                    <div className="col-span-3">
+                        <DateTimePicker modal={true} hideTime value={new Date(snap.data.enrollAt)} onChange={(date) => {
+                            if (date) {
+                                store.data.enrollAt = date.toISOString()
+                            }
+                        }} />
+                    </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="phoneNumber" className="text-right">

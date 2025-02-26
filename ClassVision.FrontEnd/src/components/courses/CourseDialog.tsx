@@ -16,12 +16,14 @@ import { TeacherType } from "../../interfaces/TeacherTypes"
 import { StudentType } from "../../interfaces/StudentTypes"
 import { CourseInfoType } from "../../interfaces/CourseInfoType"
 import { ClassroomType } from "../../interfaces/ClassroomType"
-import { CourseStudentPopover, getDisplayId } from "./CourseStudentPopover"
+import { CourseStudentPopover } from "./CourseStudentPopover"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTimePicker } from "../ui/datetime-picker"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { DateTime } from "luxon"
+import { getDisplayId, toDisplayValue } from "../../lib/utils"
+import { ScheduleModifyType, ScheduleType } from "../../interfaces/ScheduleTypes"
 
 
 const baseUrl = "/api/Course"
@@ -30,6 +32,7 @@ const classroomUrl = "/api/Classroom"
 const courseInfoUrl = "/api/CourseInfo"
 const studentUrl = "/api/Student"
 const scheduleUrl = "/api/Schedule"
+const enrollmentUrl = "/api/Enrollment"
 
 export function CourseDeleteDialog() {
     const store = courseDeleteStore;
@@ -244,8 +247,29 @@ export function CourseDialog({ isEdit }: {
 
     }, [snap.opened])
 
+    useEffect(() => {
+        store.data.classroomId = toDisplayValue(store.data.classroomId, rooms.display)
+    }, [rooms])
+
+    useEffect(() => {
+        store.data.courseInfoId = toDisplayValue(store.data.courseInfoId, courseInfo.display)
+    }, [courseInfo])
+
+    useEffect(() => {
+        store.data.teacherId = toDisplayValue(store.data.teacherId, teacherData.display)
+    }, [teacherData])
+
+
+    //useEffect(() => {
+    //    store.data.teacherId = toDisplayValue(store.data.teacherId, teacherData.display)
+    //}, [studentData])
+
     const handleOpen = (open: boolean) => {
         store.opened = open
+    }
+
+    const handleFinish = async (sentData: CourseModifyType) => {
+
     }
 
     const handleEdit = async (sentData: CourseModifyType) => {
@@ -264,6 +288,35 @@ export function CourseDialog({ isEdit }: {
         store.opened = false
     }
 
+    const handleSchedule = async (schedule: ScheduleModifyType, type: "POST" | "PUT") => {
+        const url = `${scheduleUrl}/${schedule.id}`
+        const resp = await authorizedFetch(url, {
+            method: type,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(schedule)
+        })
+        console.log(await resp.text())
+    }
+
+    const handleStudent = async (studentId: string, courseId: string, type: "POST" | "PUT") => {
+        let url = `${enrollmentUrl}`
+
+        const resp = await authorizedFetch(url, {
+            method: type,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                courseId: courseId,
+                studentId: studentId
+            })
+        })
+        console.log(await resp.text())
+    }
+
+
     const handleCreate = async (sentData: CourseModifyType) => {
         const url = `${baseUrl}`
         console.log(url)
@@ -275,24 +328,55 @@ export function CourseDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
+        if (!resp.ok) {
+            console.log(await resp.text())
+            return
+        }
+
+        const data = await resp.json() as CourseModifyType
+        sentData.schedules = sentData.schedules.map(s => {
+            return {
+                ...s,
+                courseId: data.id
+            }
+        })
+
+        for (const schedule of sentData.schedules) {
+            await handleSchedule(schedule, "POST")
+        }
+
+        for (const studentId of sentData.studentIds) {
+            await handleStudent(studentId, data.id, "POST")
+        }
+
         console.log(data)
+
+
         store.opened = false
     }
 
 
     const handleSubmit = () => {
         console.log(store)
-        const data = {
-            ...snap.data
-        }
+        const data = JSON.parse(JSON.stringify(snap.data)) as CourseModifyType;
+        data.schedules = data.schedules.map(s => {
+            return {
+                ...s,
+                endTime: s.endTime.split(".")[0],
+                startTime: s.startTime.split(".")[0],
+            }
+        })
+        data.attendantId = data.attendantId.map(getDisplayId)
+        data.classroomId = getDisplayId(data.classroomId)
+        data.teacherId = getDisplayId(data.teacherId)
+        data.courseInfoId = getDisplayId(data.courseInfoId)
         console.log(data)
 
         //data.userId = userData.find(u => u.userName == data.userId)?.id ?? ""
 
 
         //TODO: Handle this
-        //isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? handleEdit(data) : handleCreate(data);
     }
 
     const handleDateChange = (date: Date | undefined, index: number) => {
@@ -300,12 +384,12 @@ export function CourseDialog({ isEdit }: {
             return
         }
 
-        const dateString = DateTime.fromJSDate(date).toRFC2822();
+        const dateString = DateTime.fromJSDate(date).toISODate();
         if (!dateString) {
             return
         }
-        store.data.scheldules[index].date = dateString
-        console.log(store.data.scheldules)
+        store.data.schedules[index].date = dateString
+        console.log(store.data.schedules)
     }
 
     const handleTimeChange = (date: Date | undefined, index: number, type: "startTime" | "endTime") => {
@@ -317,14 +401,17 @@ export function CourseDialog({ isEdit }: {
         if (!dateString) {
             return
         }
-        store.data.scheldules[index][type] = dateString
-        console.log(store.data.scheldules)
+        store.data.schedules[index][type] = dateString
+        console.log(store.data.schedules)
     }
 
     const handleScheduleDelete = (index: number) => {
-        store.data.scheldules.splice(index, 1)
+        store.data.schedules.splice(index, 1)
     }
 
+    const handlePeriodChange = (value: string, index: number) => {
+        store.data.schedules[index].period = parseInt(value)
+    }
 
     return (
         <ModifyDialog open={snap.opened} handleOnOpenChanged={handleOpen}
@@ -366,16 +453,16 @@ export function CourseDialog({ isEdit }: {
                         Schedule
                     </Label>
                     <div className="col-span-3 flex flex-col gap-4">
-                        {snap.data.scheldules.map((schedule, index) => {
+                        {snap.data.schedules.map((schedule, index) => {
                             return (
                                 <Card key={index}>
                                     <CardContent className="p-4">
                                         <div className={"grid grid-cols-8 gap-2"}>
                                             <div className="col-span-4">
-                                                <DateTimePicker value={new Date(schedule.date)}
-                                                    onChange={(date) => {}} hideTime={true} />
+                                                <DateTimePicker value={new Date(schedule.date)} modal={true}
+                                                    onChange={(date) => { handleDateChange(date, index) }} hideTime />
                                             </div>
-                                            <Input className="col-span-2" />
+                                            <Input className="col-span-2" type="number" value={schedule.period} onChange={(event) => handlePeriodChange(event.target.value, index)} />
                                             <Label className="flex justify-center items-center">Weeks</Label>
                                             <div className="col-span-3">
                                                 <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${schedule.startTime}`)}
@@ -394,7 +481,9 @@ export function CourseDialog({ isEdit }: {
                             )
                         })}
                         <Button className="w-full" onClick={() => {
-                            store.data.scheldules.push({
+                            store.data.schedules.push({
+                                id: "",
+                                period: 1,
                                 courseId: store.data.id,
                                 date: DateTime.now().toISODate(),
                                 endTime: "07:00:00",

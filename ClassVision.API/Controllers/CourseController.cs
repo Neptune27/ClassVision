@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using ClassVision.Data.DTOs.Courses;
+using System.Xml;
 
 namespace ClassVision.API.Controllers
 {
@@ -25,7 +27,13 @@ namespace ClassVision.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
         {
-            return await _context.Courses.ToListAsync();
+            return await _context.Courses
+                .Include(c => c.Schedules)
+                .Include(c => c.Teacher)
+                .Include(c => c.Classroom)
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Enrollments)
+                .ToListAsync();
         }
 
         // GET: api/Courses/5
@@ -76,8 +84,22 @@ namespace ClassVision.API.Controllers
         // POST: api/Courses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Course>> PostCourse(Course course)
+        public async Task<ActionResult<Course>> PostCourse(CourseModifyDto dto)
         {
+            var course = new Course();
+            var courseInfo = await _context.CourseInfoes.FirstAsync(ci => ci.Id == dto.CourseInfoId);
+            course.CourseInfo = courseInfo;
+
+            var teacher = await _context.Teachers.FirstAsync(it => it.Id == dto.TeacherId);
+            course.Teacher = teacher;
+
+            var classroom = await _context.Classrooms.FirstAsync(it => it.RoomId == dto.ClassroomId);
+            course.Classroom = classroom;
+
+            course.CreatedAt = DateTimeOffset.UtcNow;
+            course.LastUpdated = DateTimeOffset.UtcNow;
+            course.IsActive = true;
+
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 

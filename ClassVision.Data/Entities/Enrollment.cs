@@ -19,4 +19,6 @@ public class Enrollment : BaseEntity
 
     public Course Course { get; set; } = null!;
 
+    public List<Attendant> Attendants { get; set; } = [];
+
 }

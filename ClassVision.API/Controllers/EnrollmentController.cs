@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using ClassVision.Data.DTOs;
 
 namespace ClassVision.API.Controllers
 {
@@ -71,8 +72,17 @@ namespace ClassVision.API.Controllers
         // POST: api/Enrollment
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Enrollment>> PostEnrollment(Enrollment enrollment)
+        public async Task<ActionResult<Enrollment>> PostEnrollment(EnrollmentModifyDto dto)
         {
+            var enrollment = new Enrollment()
+            {
+                CourseId = Guid.Parse(dto.CourseId),
+                StudentId = dto.StudentId,
+                CreatedAt = DateTimeOffset.UtcNow,
+                LastUpdated = DateTimeOffset.UtcNow,
+                IsActive = true,
+            };
+
             _context.Enrollments.Add(enrollment);
             try
             {

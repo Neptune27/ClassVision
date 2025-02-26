@@ -26,7 +26,7 @@ public class StudentDto
     public DateOnly EnrollAt { get; set; }
     public string PhoneNumber { get; set; } = null!;
     public string Address { get; set; } = null!;
-    public List<AttendantDto> Attendants { get; set; } = [];
+    public List<AttendantModifyDto> Attendants { get; set; } = [];
 
-    public List<EnrollmentDto> Enrollments { get; set; } = [];
+    public List<EnrollmentModifyDto> Enrollments { get; set; } = [];
 }

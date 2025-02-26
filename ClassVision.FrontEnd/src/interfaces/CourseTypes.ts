@@ -1,9 +1,21 @@
+import { ClassroomType } from "./ClassroomType";
 import { CommonType } from "./CommonType";
+import { CourseInfoType } from "./CourseInfoType";
+import { EnrollmentType } from "./EnrollmentTypes";
 import { ScheduleModifyType, ScheduleType } from "./ScheduleTypes";
+import { TeacherType } from "./TeacherTypes";
 
-export interface CourseType extends CommonType, CourseModifyType {
+export interface CourseType extends CommonType {
+    id: string,
+    courseInfo: CourseInfoType,
+    teacher: TeacherType,
+    classroom: ClassroomType,
+    attendantId: string[],
+    attendants: any[],
+    schedules: ScheduleModifyType[],
+    enrollments: EnrollmentType[],
+    period: number,
 }
-
 
 
 export type CourseModifyType = {
@@ -13,7 +25,7 @@ export type CourseModifyType = {
     classroomId: string,
     attendantId: string[],
     studentIds: string[],
-    scheldules: ScheduleModifyType[],
+    schedules: ScheduleModifyType[],
     period: number,
 }
 

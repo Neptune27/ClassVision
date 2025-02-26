@@ -39,12 +39,8 @@ public class AppDBContext: IdentityDbContext<AppUser>
                 t.ScheduleId
             });
 
-            e.HasOne(i => i.Course)
+            e.HasOne(i => i.Enrollment)
             .WithMany(c => c.Attendants)
-            .OnDelete(DeleteBehavior.NoAction);
-
-            e.HasOne(i => i.Student)
-            .WithMany(s => s.Attendants)
             .OnDelete(DeleteBehavior.NoAction);
 
         });
