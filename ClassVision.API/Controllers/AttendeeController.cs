@@ -12,11 +12,11 @@ namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AttendantController : ControllerBase
+    public class AttendeeController : ControllerBase
     {
         private readonly AppDBContext _context;
 
-        public AttendantController(AppDBContext context)
+        public AttendeeController(AppDBContext context)
         {
             _context = context;
         }

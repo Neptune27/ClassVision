@@ -11,25 +11,15 @@ namespace ClassVision.Data.DTOs;
 
 public class AttendantModifyDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = null!;
 
     public string StudentId { get; set; } = null!;
 
-    public Guid CourseId { get; set; }
+    public string CourseId { get; set; } = null!;
 
-    public Guid ScheduleId { get; set; }
-
-    public StudentInfoDto Student { get; set; } = null!;
-
-    public CourseDto Course { get; set; } = null!;
-
-    public ScheduleModifyDto Schedule { get; set; } = null!;
+    public string ScheduleId { get; set; } = null!;
 
     public EAttendantStatus Status { get; set; }
-
-    public DateTimeOffset CreatedAt { get; set; }
-
-    public DateTimeOffset LastUpdated { get; set; }
 
     public bool IsActive { get; set; }
 }
