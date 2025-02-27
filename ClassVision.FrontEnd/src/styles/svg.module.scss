@@ -1,0 +1,13 @@
+
+.rectStroke {
+    fill-opacity: 0;
+    stroke-width: 0.25rem;
+    fill: white;
+    stroke: darkred;
+    transition: all ease-in-out 0.25s;
+
+    &:hover {
+        stroke: red;
+        stroke-width: 0.5rem;
+    }
+}
