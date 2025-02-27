@@ -109,14 +109,14 @@ export const scheduleColumns: ColumnDef<ScheduleType>[] = [
                             Copy date
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => {
-                            store.opened = true
-                            store.isEdit = true
-                            store.data = {
-                                ...data,
-                                courseId: data.course.id
-                            }
-                        }}>Edit</DropdownMenuItem>
+                        {/*<DropdownMenuItem onClick={() => {*/}
+                        {/*    store.opened = true*/}
+                        {/*    store.isEdit = true*/}
+                        {/*    store.data = {*/}
+                        {/*        ...data,*/}
+                        {/*        courseId: data.course.id*/}
+                        {/*    }*/}
+                        {/*}}>Edit</DropdownMenuItem>*/}
                         <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
