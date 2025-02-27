@@ -45,13 +45,27 @@ namespace ClassVision.API.Controllers
 
         // PUT: api/Attendants/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAttendant(Guid id, Attendant attendant)
+        [HttpPut]
+        public async Task<IActionResult> PutAttendant(AttendantModifyDto dto)
         {
-            if (id != attendant.CourseId)
+            //if (id != attendant.CourseId)
+            //{
+            //    return BadRequest();
+            //}
+
+            var courseId = Guid.Parse(dto.CourseId);
+            var studentId = dto.StudentId;
+            var status = dto.Status;
+            var scheduleId = Guid.Parse(dto.ScheduleId);
+
+            var attendant = await _context.Attendants.FindAsync(courseId, studentId, scheduleId);
+
+            if (attendant is null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            attendant.Status = status;
 
             _context.Entry(attendant).State = EntityState.Modified;
 
@@ -61,14 +75,7 @@ namespace ClassVision.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AttendantExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();

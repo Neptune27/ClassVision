@@ -143,7 +143,7 @@ export function AttendeeDialog({ isEdit }: {
     }
 
     const handleEdit = async (sentData: AttendeeModifyType) => {
-        const url = `${baseUrl}/${snap.data.courseId}|${snap.data.studentId}`
+        const url = `${baseUrl}/`
         console.log(url)
         const resp = await authorizedFetch(url, {
             method: "PUT",
@@ -202,7 +202,7 @@ export function AttendeeDialog({ isEdit }: {
             const resp = await authorizedFetch(`${courseUrl}/`)
             const data = await resp.json()
 
-            const result = data.map((datum: CourseType) => {
+            const result: ComboboxData[] = data.map((datum: CourseType) => {
                 const value = `${datum.id} | ${datum.teacher.id} ${datum.classroom.roomId}`
 
                 return ({
@@ -215,6 +215,9 @@ export function AttendeeDialog({ isEdit }: {
                 data: data,
                 display: result
             })
+
+            store.data.courseId = result?.find(r => getDisplayId(r.value) == store.data.courseId)?.value ?? ""
+
         }
 
         fetchCourse()
@@ -232,7 +235,7 @@ export function AttendeeDialog({ isEdit }: {
             const resp = await authorizedFetch(`${scheduleUrl}?courseId=${courseId}`)
             const data = await resp.json()
 
-            const result = data.map((datum: ScheduleType) => {
+            const result: ComboboxData[] = data.map((datum: ScheduleType) => {
                 const value = `${datum.id} | ${datum.course.courseInfo.name} ${datum.course.classroom.roomId}`
 
                 return ({
@@ -245,6 +248,9 @@ export function AttendeeDialog({ isEdit }: {
                 data: data,
                 display: result
             })
+            console.log(store.data.scheduleId)
+            store.data.scheduleId = result?.find(r => getDisplayId(r.value) == store.data.scheduleId)?.value ?? store.data.scheduleId
+
         }
 
         fetchSchedule()
@@ -290,7 +296,7 @@ export function AttendeeDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Course
                     </Label>
-                    <Combobox value={snap.data.courseId} onValueChange={(value) => {
+                    <Combobox disable={snap.isEdit} value={snap.data.courseId} onValueChange={(value) => {
                         store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={courses.display}
@@ -301,7 +307,7 @@ export function AttendeeDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Student
                     </Label>
-                    <Combobox value={snap.data.studentId} onValueChange={(value) => {
+                    <Combobox disable={snap.isEdit} value={snap.data.studentId} onValueChange={(value) => {
                         store.data.studentId = studentData?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={studentData.display}
@@ -312,7 +318,7 @@ export function AttendeeDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Schedule
                     </Label>
-                    <Combobox modal value={snap.data.scheduleId} onValueChange={(value) => {
+                    <Combobox disable={snap.isEdit} modal value={snap.data.scheduleId} onValueChange={(value) => {
                         store.data.scheduleId = schedule?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={schedule.display}

@@ -33,7 +33,7 @@ export default function Page() {
 
 
     const handleSetSelected = (rows: Row<AttendeeType>[]) => {
-        deleteStore.ids = rows.map(row => `${row.original.courseId}|${row.original.studentId}`)
+        deleteStore.ids = rows.map(row => `${row.original.courseId}|${row.original.studentId}|${row.original.scheduleId}`)
     }
 
     return (
