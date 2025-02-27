@@ -122,7 +122,7 @@ export const attendeeColumns: ColumnDef<AttendeeType>[] = [
                                 ...data
                             }
                         }}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteClick(`${data.courseId}|${data.studentId}`)}>Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDeleteClick(`${data.courseId}|${data.studentId}|${data.scheduleId}`)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

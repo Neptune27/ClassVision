@@ -23,12 +23,13 @@ import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
 import { StudentType } from "../../interfaces/StudentTypes"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
+import { EnrollmentType } from "../../interfaces/EnrollmentTypes"
 
 
 const baseUrl = "/api/Attendee"
 const courseUrl = "/api/Course"
 const scheduleUrl = "/api/Schedule"
-const studentUrl = "/api/Student"
+const enrollmentUrl = "/api/Enrollment"
 
 export function AttendeeDeleteDialog() {
     const store = attendeeDeleteStore;
@@ -256,11 +257,11 @@ export function AttendeeDialog({ isEdit }: {
                 return 
             }
             const courseId = getDisplayId(snap.data.courseId)
-            const resp = await authorizedFetch(`${studentUrl}/byCourse/${courseId}`)
+            const resp = await authorizedFetch(`${enrollmentUrl}?courseId=${courseId}`)
             const data = await resp.json()
 
-            const result = data.map((datum: StudentType) => {
-                const value = `${datum.id} | ${datum.firstName} ${datum.lastName}`
+            const result = data.map((datum: EnrollmentType) => {
+                const value = `${datum.studentId}`
 
                 return ({
                     value: value,

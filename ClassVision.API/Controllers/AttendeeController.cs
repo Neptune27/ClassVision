@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using ClassVision.Data.DTOs;
 
 namespace ClassVision.API.Controllers
 {
@@ -76,8 +77,20 @@ namespace ClassVision.API.Controllers
         // POST: api/Attendants
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Attendant>> PostAttendant(Attendant attendant)
+        public async Task<ActionResult<Attendant>> PostAttendant(AttendantModifyDto dto)
         {
+
+            var attendant = new Attendant()
+            {
+                Id = Guid.NewGuid(),
+                CourseId = Guid.Parse(dto.CourseId),
+                StudentId = dto.StudentId,
+                Status = dto.Status,
+                ScheduleId = Guid.Parse(dto.ScheduleId),
+                LastUpdated = DateTimeOffset.UtcNow,
+                CreatedAt = DateTimeOffset.UtcNow,
+            };
+
             _context.Attendants.Add(attendant);
             try
             {
@@ -99,10 +112,20 @@ namespace ClassVision.API.Controllers
         }
 
         // DELETE: api/Attendants/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAttendant(Guid id)
+        [HttpDelete("{idComposite}")]
+        public async Task<IActionResult> DeleteAttendant(string idComposite)
         {
-            var attendant = await _context.Attendants.FindAsync(id);
+            var ids = idComposite.Split("|").ToList();
+            if (ids.Count != 3)
+            {
+                return BadRequest();
+            }
+
+            var courseId = Guid.Parse(ids[0]);
+            var studentId = ids[1];
+            var scheduleId = Guid.Parse(ids[2]);
+
+            var attendant = await _context.Attendants.FindAsync(courseId, studentId, scheduleId);
             if (attendant == null)
             {
                 return NotFound();

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClassVision.Data;
+using ClassVision.Data.DTOs;
+using ClassVision.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClassVision.Data;
-using ClassVision.Data.Entities;
-using ClassVision.Data.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ClassVision.API.Controllers
 {
@@ -19,9 +20,16 @@ namespace ClassVision.API.Controllers
 
         // GET: api/Enrollment
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Enrollment>>> GetEnrollments()
+        public async Task<ActionResult<IEnumerable<Enrollment>>> GetEnrollments([FromQuery] string? courseId)
         {
-            return await _context.Enrollments.ToListAsync();
+
+            IQueryable<Enrollment> query = _context.Enrollments;
+            if (!string.IsNullOrWhiteSpace(courseId))
+            {
+                query = query.Where(s => s.Course.Id.ToString() == courseId);
+            }
+            var data = await query.ToListAsync();
+            return data;
         }
 
         // GET: api/Enrollment/5
