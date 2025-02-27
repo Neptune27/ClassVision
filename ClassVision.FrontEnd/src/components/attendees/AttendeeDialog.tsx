@@ -6,7 +6,7 @@ import { useSnapshot } from "valtio"
 import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
-import { AttendeeModifyType } from "../../interfaces/AttendeeTypes"
+import { AttendeeModifyType, EAttendantStatus } from "../../interfaces/AttendeeTypes"
 import { attendeeDeleteStore, attendeeBatchDeleteStore, attendeeModifyStore } from "../../stores/attendeeStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
@@ -228,11 +228,11 @@ export function AttendeeDialog({ isEdit }: {
 
             const courseId = getDisplayId(snap.data.courseId)
 
-            const resp = await authorizedFetch(`${scheduleUrl}/byCourse/${courseId}`)
+            const resp = await authorizedFetch(`${scheduleUrl}?courseId=${courseId}`)
             const data = await resp.json()
 
-            const result = data.map((datum: CourseType) => {
-                const value = `${datum.id} | ${datum.courseInfo.name} ${datum.classroom.roomId}`
+            const result = data.map((datum: ScheduleType) => {
+                const value = `${datum.id} | ${datum.course.courseInfo.name} ${datum.course.classroom.roomId}`
 
                 return ({
                     value: value,
@@ -240,14 +240,14 @@ export function AttendeeDialog({ isEdit }: {
                 })
             })
 
-            setCoursesData({
+            setScheduleData({
                 data: data,
                 display: result
             })
         }
 
-
-    }, [courses])
+        fetchSchedule()
+    }, [snap.data.courseId])
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -276,7 +276,7 @@ export function AttendeeDialog({ isEdit }: {
         }
 
         fetchStudents()
-    }, [courses])
+    }, [snap.data.courseId])
 
 
 
@@ -301,9 +301,9 @@ export function AttendeeDialog({ isEdit }: {
                         Student
                     </Label>
                     <Combobox value={snap.data.studentId} onValueChange={(value) => {
-                        store.data.studentId = courses?.display.find(item => item.label == value)?.value ?? ""
+                        store.data.studentId = studentData?.display.find(item => item.label == value)?.value ?? ""
                     }}
-                        data={courses.display}
+                        data={studentData.display}
                         className="col-span-3" />
                 </div>
 
@@ -311,11 +311,30 @@ export function AttendeeDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Schedule
                     </Label>
-                    <Combobox value={snap.data.courseId} onValueChange={(value) => {
+                    <Combobox modal value={snap.data.scheduleId} onValueChange={(value) => {
                         store.data.scheduleId = schedule?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={schedule.display}
                         className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="status" className="text-right">
+                        Status
+                    </Label>
+                    <Select value={snap.data.status.toString()} onValueChange={(value) => {
+                        store.data.status = parseInt(value)
+                    }} >
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={EAttendantStatus.PRESENT.toString()}>Present</SelectItem>
+                            <SelectItem value={EAttendantStatus.LATE.toString()}>Late</SelectItem>
+                            <SelectItem value={EAttendantStatus.ABSENT.toString()}>Absent</SelectItem>
+                            <SelectItem value={EAttendantStatus.EXCUSED.toString()}>Excused</SelectItem>
+                            <SelectItem value={EAttendantStatus.OTHER.toString()}>Other</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </ModifyDialog>

@@ -28,6 +28,21 @@ namespace ClassVision.API.Controllers
             return await _context.Students.ToListAsync();
         }
 
+        [HttpGet("byCourse/{courseId}")]
+        public async Task<ActionResult<IEnumerable<Student>>> GetStudentsByCourse(Guid courseId)
+        {
+            
+            var course = await _context.Courses.Include(c => c.Students).FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course is null)
+            {
+                return NotFound();   
+            }
+
+            return course.Students.ToList();
+
+        }
+
         // GET: api/Student/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Student>> GetStudent(string id)

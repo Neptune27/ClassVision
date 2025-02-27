@@ -54,13 +54,14 @@ export function Combobox(props: {
     data: ComboboxData[],
     open?: boolean,
     onOpenChange?: (open: boolean) => void,
-    className: string
+    className: string,
+    modal?: boolean
 }) {
-    const { value, onValueChange, data, className } = props
+    const { value, onValueChange, data, className, modal } = props
     const [open, setOpen] = React.useState(false)
 
     return (
-        <Popover open={props.open ?? open} onOpenChange={props.onOpenChange ?? setOpen}>
+        <Popover modal={modal} open={props.open ?? open} onOpenChange={props.onOpenChange ?? setOpen}>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"

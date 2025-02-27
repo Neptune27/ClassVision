@@ -24,9 +24,21 @@ namespace ClassVision.API.Controllers
 
         // GET: api/Schedule
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules()
+        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules([FromQuery] string? courseId)
         {
-            return await _context.Schedules.Include(s => s.Course).ToListAsync();
+            IQueryable<Schedule> query = _context.Schedules
+                .Include(s => s.Course)
+                .ThenInclude(c => c.CourseInfo)
+                .Include(s => s.Course)
+                .ThenInclude(c => c.Classroom);
+
+
+            if (!string.IsNullOrWhiteSpace(courseId))
+            {
+                query = query.Where(s => s.Course.Id.ToString() == courseId); 
+            }
+
+            return await query.ToListAsync();
         }
 
         // GET: api/Schedule/5
@@ -44,6 +56,8 @@ namespace ClassVision.API.Controllers
 
             return schedule;
         }
+
+
 
         // PUT: api/Schedule/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
