@@ -12,7 +12,6 @@ export default function DashboardLayout({ children }: {
             <DashboardSidebar />
             <SidebarInset>
                 {children}
-
             </SidebarInset>
         </SidebarProvider>
     )

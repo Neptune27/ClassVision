@@ -26,14 +26,16 @@ namespace ClassVision.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules()
         {
-            return await _context.Schedules.ToListAsync();
+            return await _context.Schedules.Include(s => s.Course).ToListAsync();
         }
 
         // GET: api/Schedule/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
         {
-            var schedule = await _context.Schedules.FindAsync(id);
+            var schedule = await _context.Schedules
+                .Include(s => s.Course)
+                .FirstAsync(s => s.Id == id);
 
             if (schedule == null)
             {
@@ -79,19 +81,26 @@ namespace ClassVision.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Schedule>> PostSchedule(ScheduleModifyDto dto)
         {
-            var schedule = new Schedule();
-            schedule.CreatedAt = DateTimeOffset.UtcNow;
-            schedule.LastUpdated = DateTimeOffset.UtcNow;
-            schedule.Course = await _context.Courses.FirstAsync(c => c.Id.ToString() == dto.CourseId);
-            schedule.Date = dto.Date;
-            schedule.StartTime = dto.StartTime;
-            schedule.EndTime = dto.EndTime;
+
+            for (int i = 0; i < dto.Period; i++)
+            {
+                var schedule = new Schedule
+                {
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    LastUpdated = DateTimeOffset.UtcNow,
+                    Course = await _context.Courses.FirstAsync(c => c.Id.ToString() == dto.CourseId),
+                    Date = dto.Date.AddDays(7 * i),
+                    StartTime = dto.StartTime,
+                    EndTime = dto.EndTime
+                };
+                _context.Schedules.Add(schedule);
+            }
 
 
-            _context.Schedules.Add(schedule);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSchedule", new { id = schedule.Id }, schedule);
+            return Ok("[]");
+            //return CreatedAtAction("GetSchedule", new { id = schedule.Id }, schedule);
         }
 
         // DELETE: api/Schedule/5

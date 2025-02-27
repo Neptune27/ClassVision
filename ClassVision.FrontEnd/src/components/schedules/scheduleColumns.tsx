@@ -4,17 +4,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { CourseType } from "../../interfaces/CourseTypes";
-import { courseModifyStore, courseDeleteStore } from "../../stores/courseStores";
+import { ScheduleType } from "../../interfaces/ScheduleTypes";
+import { scheduleModifyStore, scheduleDeleteStore } from "../../stores/scheduleStores";
 import { CourseInfoType } from "../../interfaces/CourseInfoType";
 
-const store = courseModifyStore
-const deleteStore = courseDeleteStore
+const store = scheduleModifyStore
+const deleteStore = scheduleDeleteStore
 const handleDeleteClick = (id: string) => {
     deleteStore.id = id
     deleteStore.opened = true
 }
-export const courseColumns: ColumnDef<CourseType>[] = [
+export const scheduleColumns: ColumnDef<ScheduleType>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -42,24 +42,25 @@ export const courseColumns: ColumnDef<CourseType>[] = [
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "courseInfo",
-        header: ({ column }) => columnSortable(column, "Info"),
+        accessorKey: "course",
+        header: ({ column }) => columnSortable(column, "Course Id"),
         cell: ({ row }) => {
-            const data = row.getValue("courseInfo") as CourseInfoType
-
-            return `${data.id} | ${data.name}`
-
+            const course = row.getValue("course") as CourseInfoType
+            return course?.id ?? ""
         }
     },
     {
-        accessorKey: "teacherId",
-        header: ({ column }) => columnSortable(column, "Teacher Id")
-
+        accessorKey: "date",
+        header: ({ column }) => columnSortable(column, "Date")
     },
     {
-        accessorKey: "classroomId",
-        header: ({ column }) => columnSortable(column, "Room")
+        accessorKey: "startTime",
+        header: ({ column }) => columnSortable(column, "Start")
     },
+    {
+        accessorKey: "endTime",
+        header: ({ column }) => columnSortable(column, "End")
+    }, 
     {
         accessorKey: "lastUpdated",
         //header: "Last Updated",
@@ -98,34 +99,22 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                             Copy ID
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.teacher.id)}
+                            onClick={() => navigator.clipboard.writeText(data.courseId)}
                         >
-                            Copy teacher id
+                            Copy course id
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.courseInfo.id)}
+                            onClick={() => navigator.clipboard.writeText(data.date)}
                         >
-                            Copy course info id
+                            Copy date
                         </DropdownMenuItem>
-
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             store.opened = true
                             store.isEdit = true
                             store.data = {
-                                id: data.id,
-                                period: 1,
-                                attendantId: [],
-                                classroomId: data.classroom.roomId,
-                                courseInfoId: data.courseInfo.id,
-                                schedules: data.schedules.map(s => {
-                                    return ({
-                                        ...s,
-                                        period: 1
-                                    })
-                                }),
-                                studentIds: data.enrollments.map(e => e.studentId),
-                                teacherId: data.teacher.id
+                                ...data,
+                                courseId: data.course.id
                             }
                         }}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>

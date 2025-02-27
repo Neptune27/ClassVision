@@ -24,6 +24,7 @@ import { Button } from "../ui/button"
 import { DateTime } from "luxon"
 import { getDisplayId, toDisplayValue } from "../../lib/utils"
 import { ScheduleModifyType, ScheduleType } from "../../interfaces/ScheduleTypes"
+import { scheduleDefault } from "../../stores/scheduleStores"
 
 
 const baseUrl = "/api/Course"
@@ -482,28 +483,14 @@ export function CourseDialog({ isEdit }: {
                         })}
                         <Button className="w-full" onClick={() => {
                             store.data.schedules.push({
-                                id: "",
-                                period: 1,
-                                courseId: store.data.id,
-                                date: DateTime.now().toISODate(),
-                                endTime: "07:00:00",
-                                startTime: "07:00:00"
+                                ...scheduleDefault(),
+                                courseId: store.data.id
                             })
                         }}>Add new schedule</Button>
                     </div>
 
 
                 </div>
-                {/*<div className="grid grid-cols-4 items-center gap-4">*/}
-                {/*    <Label htmlFor="teacherId" className="text-right">*/}
-                {/*        Student //TEMPORARY*/}
-                {/*    </Label>*/}
-                {/*    <Combobox value={snap.data.studentIds} onValueChange={(value) => {*/}
-                {/*        store.data.teacherId = teacherData?.display.find(item => item.label == value)?.value ?? ""*/}
-                {/*    }}*/}
-                {/*        data={teacherData.display}*/}
-                {/*        className="col-span-3" />*/}
-                {/*</div>*/}
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="room" className="text-right">
                         Room

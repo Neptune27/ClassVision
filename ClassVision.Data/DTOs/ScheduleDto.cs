@@ -14,4 +14,6 @@ public class ScheduleModifyDto
 
     public TimeOnly EndTime { get; set; }
 
+    public int Period { get; set; }
+
 }

@@ -186,7 +186,7 @@ const data = {
 
 const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar collapsible="icon" {...props} >
             <SidebarHeader>
                 <DashboardSidebarHeaderContent team={data.team} />
             </SidebarHeader>
@@ -197,8 +197,11 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                         <DbSidebarMenuItem name={"Classroom"} url={"/dashboard/classroom"} icon={Command} />
                         <DbSidebarMenuItem name={"Course Info"} url={"/dashboard/course-info"} icon={Command} />
                         <DbSidebarMenuItem name={"Course"} url={"/dashboard/course"} icon={Command} />
+                        <DbSidebarMenuItem name={"Enrollment"} url={"/dashboard/enrollment"} icon={Command} />
                         <DbSidebarMenuItem name={"Student"} url={"/dashboard/student"} icon={Command} />
+                        <DbSidebarMenuItem name={"Schedule"} url={"/dashboard/schedule"} icon={Command} />
                         <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={Command} />
+                        <DbSidebarMenuItem name={"Test"} url={"/dashboard/test"} icon={Command} />
                         {/*<DbCollapsableItem title={"Collapsed"} isActive={false} >*/}
                         {/*<DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>*/}
                         {/*</DbCollapsableItem>*/}

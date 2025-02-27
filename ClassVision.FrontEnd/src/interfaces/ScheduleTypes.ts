@@ -1,6 +1,8 @@
 import { CommonType } from "./CommonType";
+import { CourseType } from "./CourseTypes";
 
 export interface ScheduleType extends CommonType, ScheduleModifyType {
+    course: CourseType
 }
 
 

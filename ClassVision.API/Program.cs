@@ -67,6 +67,15 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+var fileServerOption = new FileServerOptions
+{
+};
+
+fileServerOption.StaticFileOptions.ServeUnknownFileTypes = true;
+fileServerOption.EnableDirectoryBrowsing = true;
+fileServerOption.StaticFileOptions.DefaultContentType = "application/binary";
+
+app.UseFileServer(fileServerOption);
 
 app.UseAuthentication();
 app.UseAuthorization();

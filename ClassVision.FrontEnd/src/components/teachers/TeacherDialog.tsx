@@ -255,7 +255,7 @@ export function TeacherDialog({ isEdit }: {
                         Birthday
                     </Label>
                     <div className="col-span-3">
-                        <DateTimePicker modal={true} hideTime value={new Date(snap.data.birthday)} onChange={(date) => {
+                        <DateTimePicker modal={true}  value={new Date(snap.data.birthday)} onChange={(date) => {
                             if (date) {
                                 store.data.birthday = date.toISOString()
                             }
