@@ -1,0 +1,8 @@
+numpy<2
+whls\insightface-0.7.3-cp311-cp311-win_amd64.whl onnx==1.16.1 onnxruntime-gpu==1.19.2
+uvicorn[standard]
+python-multipart
+faiss-cpu
+openpyxl
+pandas
+fastapi
