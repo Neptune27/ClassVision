@@ -191,8 +191,15 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                 <DashboardSidebarHeaderContent team={data.team} />
             </SidebarHeader>
             <SidebarContent>
+
                 <SidebarGroup>
-                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarGroupLabel>Management</SidebarGroupLabel>
+                    <SidebarMenu>
+                        <DbSidebarMenuItem name={"Attending Class"} url={"/dashboard/attending-class"} icon={Command} />
+                    </SidebarMenu>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Management</SidebarGroupLabel>
                     <SidebarMenu>
                         <DbSidebarMenuItem name={"Attendee"} url={"/dashboard/attendee"} icon={Command} />
                         <DbSidebarMenuItem name={"Classroom"} url={"/dashboard/classroom"} icon={Command} />

@@ -8,11 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
 using ClassVision.Data.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using ClassVision.API.Extensions;
 
 namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ScheduleController : ControllerBase
     {
         private readonly AppDBContext _context;
@@ -35,7 +38,7 @@ namespace ClassVision.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(courseId))
             {
-                query = query.Where(s => s.Course.Id.ToString() == courseId); 
+                query = query.Where(s => s.Course.Id.ToString() == courseId);
             }
 
             return await query.ToListAsync();
@@ -47,6 +50,14 @@ namespace ClassVision.API.Controllers
         {
             var schedule = await _context.Schedules
                 .Include(s => s.Course)
+                .ThenInclude(c => c.CourseInfo)
+                .Include(s => s.Course)
+                .ThenInclude(c => c.Enrollments)
+                .Include(s => s.Course)
+                .ThenInclude(c => c.Classroom)
+                .Include(s => s.Course)
+                .ThenInclude(c => c.Teacher)
+                .Include(s => s.Attendants)
                 .FirstAsync(s => s.Id == id);
 
             if (schedule == null)
@@ -57,7 +68,26 @@ namespace ClassVision.API.Controllers
             return schedule;
         }
 
+        // GET: api/Schedule/5
+        [HttpGet("byUser")]
+        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedulesByUser()
+        {
+            var claim = HttpContext.User.Claims.GetClaimByUserId();
 
+            if (claim is null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = claim.Value;
+
+            var schedule = await _context.Schedules
+                .Include(s => s.Course)
+                .ThenInclude(c => c.CourseInfo)
+                .Where(s => s.Course.Teacher.User.Id == userId).ToListAsync();
+
+            return schedule;
+        }
 
         // PUT: api/Schedule/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
