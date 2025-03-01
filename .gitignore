@@ -362,3 +362,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /ClassVision.API/wwwroot/*
+/ClassVision.AI/.venv
+/ClassVision.AI/images
+/ClassVision.AI/insightface_models/models
+/ClassVision.AI/saved_images
+*.xlsx
+/ClassVision.AI/whls

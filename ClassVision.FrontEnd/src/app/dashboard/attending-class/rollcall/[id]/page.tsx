@@ -11,7 +11,7 @@ export default function Page({ params}: {
     return (
         <>
             <DbHeader items={[{ name: "Dashboard" }, { name: "Attending Class", url: "/dashboard/attending-class" }, { name: "Rollcall" }, { name: params.id }]} />
-            <RollCall id={ params.id} />
+            <RollCall id={params.id} />
         </>
     )
 }
