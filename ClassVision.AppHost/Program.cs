@@ -18,7 +18,7 @@ var migration = builder.AddProject<Projects.ClassVision_Migration>("classvision-
 
 #pragma warning disable ASPIREHOSTINGPYTHON001
 var python_app = builder.AddPythonApp("classvision-ai", "../ClassVision.AI", "main.py", ".venv")
-    .WithHttpEndpoint(targetPort: 8000, port: 2080)
+    .WithHttpEndpoint(targetPort: 8000, port: 8010)
        .WithExternalHttpEndpoints()
        .WithOtlpExporter();
 #pragma warning restore ASPIREHOSTINGPYTHON001

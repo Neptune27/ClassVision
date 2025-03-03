@@ -12,8 +12,13 @@ import { ScrollArea } from "../ui/scroll-area"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { ImageCard } from "./ImageCard"
 import { TestImageCard } from "./TestImageCard"
+import { RecognitionCard } from "./RecognitionCard"
+import { rollcallStore } from "../../stores/rollcallStores"
+import { ImageFaceExampleData } from "../../interfaces/ImageFaceType"
 
 const scheduleUrl = "/api/Schedule"
+
+const store = rollcallStore;
 
 export function RollCall({ id }: {
     id: string
@@ -21,6 +26,7 @@ export function RollCall({ id }: {
     const router = useRouter()
 
     const [schedule, setSchedule] = useState<ScheduleType>()
+
 
     useEffect(() => {
         const fetchSchedule = async () => {
@@ -34,10 +40,31 @@ export function RollCall({ id }: {
         fetchSchedule()
     }, [])
 
+    useEffect(() => {
+        const students = schedule?.course.enrollments.map(e => e.student)
+            .filter(s => s != undefined)
+        if (!students) {
+            return
+        }
+
+        store.userData = students
+
+        store.data.push({
+            image: {
+                height: 453,
+                width: 680,
+                url: "/api/Media/lop6.jpg"
+            },
+            faces: ImageFaceExampleData
+        })
+
+        console.log(store)
+    }, [schedule])
+
     return (
         <div className={"p-10 h-full"}>
             <div className="container mx-auto">
-                <TestImageCard />
+                <RecognitionCard />
             </div>
 
         </div>

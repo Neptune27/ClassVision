@@ -24,3 +24,11 @@
         stroke-width: 0.25rem;
     }
 }
+
+.rectStrokeBlack {
+    fill-opacity: 0;
+    stroke-width: 0.125rem;
+    fill: white;
+    stroke: black;
+    transition: all ease-in-out 0.25s;
+}

@@ -53,6 +53,7 @@ namespace ClassVision.API.Controllers
                 .ThenInclude(c => c.CourseInfo)
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Enrollments)
+                .ThenInclude(e => e.Student)
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Classroom)
                 .Include(s => s.Course)
