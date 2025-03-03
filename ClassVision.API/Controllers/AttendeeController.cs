@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClassVision.Data;
+using ClassVision.Data.DTOs;
+using ClassVision.Data.Entities;
+using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClassVision.Data;
-using ClassVision.Data.Entities;
-using ClassVision.Data.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ClassVision.API.Controllers
 {
@@ -117,6 +118,64 @@ namespace ClassVision.API.Controllers
 
             return CreatedAtAction("GetAttendant", new { id = attendant.CourseId }, attendant);
         }
+
+        [HttpPost("bySchedule/{scheduleId}")]
+        public async Task<ActionResult<Attendant>> PostAttendantBySchedule(Guid scheduleId)
+        {
+
+            var schedule = await _context.Schedules
+                .Include(s => s.Course)
+                .ThenInclude(c => c.Enrollments)
+                .Include(s => s.Attendants)
+                .FirstAsync(s => s.Id == scheduleId);
+
+            if (schedule is null)
+            {
+                return NotFound();
+            }
+
+            var attendants = schedule.Course.Enrollments
+                .Where(e => !schedule.Attendants.Any(a => a.StudentId == e.StudentId))
+                .Select(e =>
+            {
+                return new Attendant()
+                {
+                    Id = Guid.NewGuid(),
+                    CourseId = schedule.Course.Id,
+                    StudentId = e.StudentId,
+                    Status = Data.Enums.EAttendantStatus.ABSENT,
+                    ScheduleId = schedule.Id,
+                    LastUpdated = DateTimeOffset.UtcNow,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                };
+            });
+
+
+
+            await _context.Attendants.AddRangeAsync(attendants);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+                foreach (var attendant in attendants)
+                {
+                    if (AttendantExists(attendant.CourseId))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return Ok(attendants);
+        }
+
 
         // DELETE: api/Attendants/5
         [HttpDelete("{idComposite}")]

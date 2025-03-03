@@ -1,4 +1,5 @@
 import { CommonType, ExcludeCommonType } from "./CommonType";
+import { EnrollmentType } from "./EnrollmentTypes";
 
 export const enum EAttendantStatus {
     PRESENT = 0,
@@ -10,7 +11,7 @@ export const enum EAttendantStatus {
 
 
 export interface AttendeeType extends CommonType, AttendeeModifyType {
-
+    enrollment?: EnrollmentType
 }
 
 

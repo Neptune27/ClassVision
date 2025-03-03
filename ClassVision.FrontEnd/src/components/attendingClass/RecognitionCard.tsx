@@ -28,7 +28,6 @@ export function RecognitionCard(props: {
     const { } = props
 
     const [isOpen, setIsOpen] = React.useState(true)
-    const [data, setData] = React.useState<ImageFaceType[]>(ImageFaceExampleData)
     const store = rollcallStore;
     const snap = useSnapshot(store)
 

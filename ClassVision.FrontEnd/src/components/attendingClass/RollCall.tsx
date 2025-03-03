@@ -15,8 +15,13 @@ import { TestImageCard } from "./TestImageCard"
 import { RecognitionCard } from "./RecognitionCard"
 import { rollcallStore } from "../../stores/rollcallStores"
 import { ImageFaceExampleData } from "../../interfaces/ImageFaceType"
+import { Separator } from "../ui/separator"
+import { RollCallStudentTable } from "./RollCallStudentTable"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { Button } from "../ui/button"
 
 const scheduleUrl = "/api/Schedule"
+const attendeeUrl = "/api/Attendee"
 
 const store = rollcallStore;
 
@@ -41,14 +46,16 @@ export function RollCall({ id }: {
     }, [])
 
     useEffect(() => {
-        const students = schedule?.course.enrollments.map(e => e.student)
+        const students = schedule?.course?.enrollments.map(e => e.student)
             .filter(s => s != undefined)
         if (!students) {
             return
         }
 
         store.userData = students
+        store.attentee = schedule?.attendants ?? []
 
+        store.data.splice(0, store.data.length)
         store.data.push({
             image: {
                 height: 453,
@@ -61,12 +68,37 @@ export function RollCall({ id }: {
         console.log(store)
     }, [schedule])
 
+    const handleCreateRollCall = async () => {
+        const resp = await authorizedFetch(`/api/Attendee/bySchedule/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8'
+            },
+        })
+    }
+
     return (
-        <div className={"p-10 h-full"}>
-            <div className="container mx-auto">
+        <div className={"md:p-10 h-full"}>
+            <div className="container mx-auto ">
                 <RecognitionCard />
             </div>
 
+            <Separator className="mt-4 mb-4"/>
+
+            <RollCallStudentTable >
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="default" className="ml-2">
+                            Actions
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {/*<DropdownMenuItem onClick={handleCreate}>Create</DropdownMenuItem>*/}
+                        {/*<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>*/}
+                        <DropdownMenuItem onClick={handleCreateRollCall}>Create rollcall</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </RollCallStudentTable>
         </div>
     )
 }

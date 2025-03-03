@@ -59,6 +59,7 @@ namespace ClassVision.API.Controllers
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Teacher)
                 .Include(s => s.Attendants)
+                .ThenInclude(a => a.Enrollment)
                 .FirstAsync(s => s.Id == id);
 
             if (schedule == null)
