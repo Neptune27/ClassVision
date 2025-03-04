@@ -17,6 +17,9 @@ import { FilePond, registerPlugin } from 'react-filepond';
 // Import FilePond styles
 import 'filepond/dist/filepond.min.css';
 
+
+const imageUrl = "/api/RollCallImage"
+
 const boundingBoxClassHandler = (status: EFaceStatus) => {
     switch (status) {
         case EFaceStatus.NOT_SELECTED:
@@ -42,9 +45,9 @@ export const getImageDimensions = (url: string): Promise<{ width: number, height
 };
 
 export function RecognitionCard(props: {
-
+    scheduleId: string
 }) {
-    const { } = props
+    const { scheduleId } = props
 
     const [isOpen, setIsOpen] = React.useState(true)
     const store = rollcallStore;
@@ -116,7 +119,7 @@ export function RecognitionCard(props: {
                                                 width: 0
                                             }
                                         })
-                                    }} id="file" className="h-full" allowMultiple={true} maxFiles={3} server="/api/Image" />
+                                    }} id="file" className="h-full" allowMultiple={true} maxFiles={10} server={`${imageUrl}/${scheduleId}`} />
                                 </CarouselItem>
                                 <CarouselItem>...</CarouselItem>
                             </CarouselContent>

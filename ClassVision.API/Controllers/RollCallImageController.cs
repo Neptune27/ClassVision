@@ -98,6 +98,45 @@ namespace ClassVision.API.Controllers
             return CreatedAtAction("GetRollCallImage", new { id = rollCallImage.Path }, rollCallImage);
         }
 
+        [HttpPost("{scheduleId}")]
+        public async Task<IActionResult> OnPostUploadAsync(Guid scheduleId, IFormFile filepond)
+        {
+            var schedule = await _context.Schedules.FindAsync(scheduleId);
+
+            if (schedule is null)
+            {
+                return NotFound();
+            }
+
+            // Process uploaded files
+            if (filepond.Length <= 0)
+            {
+                // Don't rely on or trust the FileName property without validation.
+                return BadRequest();
+            }
+
+            List<string> filePaths = [];
+
+            var ext = Path.GetExtension(filepond.FileName);
+            var filePath = $"/api/Media/{Guid.CreateVersion7()}{ext}";
+            var saveFilePath = Path.Combine($"./wwwroot{filePath}");
+            using var stream = System.IO.File.Create(saveFilePath);
+            await filepond.CopyToAsync(stream);
+            filePaths.Add(filePath);
+
+            var image = new RollCallImage()
+            {
+                Path = filePath,
+                Schedule = schedule
+            };
+
+            await _context.RollCallImages.AddAsync(image);
+            await _context.SaveChangesAsync();
+
+            return Ok(filePath);
+        }
+
+
         // DELETE: api/RollCallImage/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRollCallImage(string id)

@@ -56,7 +56,20 @@ export function RollCall({ id }: {
         store.userData = students
         store.attentee = schedule?.attendants ?? []
 
-        store.data.splice(0, store.data.length)
+        //@ts-ignore
+        store.data = schedule?.images?.map(i => {
+            return ({
+                image: {
+                    height: 0,
+                    width: 0,
+                    url: i.path
+                },
+                faces: []
+            })
+        }) 
+
+        //store.data.splice(0, store.data.length)
+
         store.data.push({
             image: {
                 height: 10,
@@ -81,7 +94,7 @@ export function RollCall({ id }: {
     return (
         <div className={"md:p-10 h-full"}>
             <div className="container mx-auto ">
-                <RecognitionCard />
+                <RecognitionCard scheduleId={id} />
             </div>
 
             <Separator className="mt-4 mb-4"/>
