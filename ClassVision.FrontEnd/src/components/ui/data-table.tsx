@@ -36,6 +36,10 @@ interface DataTableProps<TData, TValue> {
     initialVisibility?: {
         [K in keyof TData]?: boolean
     },
+    visibleName?: {
+        [K in keyof TData | string]?: string
+
+    },
     setSelectedRow?: (rows: Row<TData>[]) => void,
     children?: React.ReactNode
 }
@@ -46,6 +50,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         data,
         filterId,
         setSelectedRow,
+        visibleName
     } = props
 
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -115,6 +120,13 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                                         (column) => column.getCanHide()
                                     )
                                     .map((column) => {
+                                        let name = column.id
+
+                                        if (visibleName) {
+                                            const key = column.id;
+                                            name = visibleName[key] ?? name
+                                        }
+
                                         return (
                                             <DropdownMenuCheckboxItem
                                                 key={column.id}
@@ -124,7 +136,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                                                     column.toggleVisibility(!!value)
                                                 }
                                             >
-                                                {column.id}
+                                                {name}
                                             </DropdownMenuCheckboxItem>
                                         )
                                     })}

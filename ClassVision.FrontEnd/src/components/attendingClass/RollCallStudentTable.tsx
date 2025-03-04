@@ -26,7 +26,7 @@ import { Button } from "../ui/button";
 import { CourseInfoType } from "../../interfaces/CourseInfoType";
 import { StudentType } from "../../interfaces/StudentTypes";
 import { studentColumns } from "../students/studentColumns";
-import { attendeeWithNameColumns } from "../attendees/attendeeWithNameColumns";
+import { attendeeWithNameColumns } from "./attendeeWithNameColumns";
 import { AttendeeType } from "../../interfaces/AttendeeTypes";
 import { rollcallStore } from "../../stores/rollcallStores";
 import { useSnapshot } from "valtio";
@@ -53,7 +53,12 @@ export function RollCallStudentTable({ children, setSelectedRows }: {
                     scheduleId: false,
                     id: false
                 }}
-                setSelectedRow={setSelectedRows} >
+                setSelectedRow={setSelectedRows}
+                visibleName={{
+                    "enrollment_student_firstName": "Firstname",
+                    enrollment_student_lastName: "Lastname"
+                }}
+            >
                 {children}
             </DataTable>
         </div>
