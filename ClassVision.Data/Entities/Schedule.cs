@@ -24,4 +24,6 @@ public class Schedule : BaseEntity
 
     public List<Attendant> Attendants { get; set; } = [];
 
+    public List<RollCallImage> Images { get; set; } = [];
+
 }

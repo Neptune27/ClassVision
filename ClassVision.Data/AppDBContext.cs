@@ -20,6 +20,8 @@ public class AppDBContext: IdentityDbContext<AppUser>
     public DbSet<Student> Students { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
+    public DbSet<RollCallImage> RollCallImages { get; set; }
+    public DbSet<RollcallFace> RollcallFaces { get; set; }
 
 
     public AppDBContext(DbContextOptions options) : base(options)
