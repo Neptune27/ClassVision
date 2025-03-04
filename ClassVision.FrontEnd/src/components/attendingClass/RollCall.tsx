@@ -20,6 +20,7 @@ import { RollCallStudentTable } from "./RollCallStudentTable"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
 
+
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
 
@@ -58,8 +59,8 @@ export function RollCall({ id }: {
         store.data.splice(0, store.data.length)
         store.data.push({
             image: {
-                height: 453,
-                width: 680,
+                height: 10,
+                width: 10,
                 url: "/api/Media/lop6.jpg"
             },
             faces: ImageFaceExampleData

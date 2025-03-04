@@ -9,6 +9,13 @@ import svgStyle from "@/styles/svg.module.scss"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { rollcallStore } from "../../stores/rollcallStores"
 import { useSnapshot } from "valtio"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
+
+// Import React FilePond
+import { FilePond, registerPlugin } from 'react-filepond';
+
+// Import FilePond styles
+import 'filepond/dist/filepond.min.css';
 
 const boundingBoxClassHandler = (status: EFaceStatus) => {
     switch (status) {
@@ -22,6 +29,18 @@ const boundingBoxClassHandler = (status: EFaceStatus) => {
     }
 }
 
+export const getImageDimensions = (url: string): Promise<{ width: number, height: number }> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({
+            width: img.width,
+            height: img.height,
+        });
+        img.onerror = (error) => reject(error);
+        img.src = url;
+    });
+};
+
 export function RecognitionCard(props: {
 
 }) {
@@ -30,6 +49,12 @@ export function RecognitionCard(props: {
     const [isOpen, setIsOpen] = React.useState(true)
     const store = rollcallStore;
     const snap = useSnapshot(store)
+
+    const handleImageSize = (height: number, width: number, index: number) => {
+        const image = store.data[index].image
+        image.height = height
+        image.width = width
+    }
 
     return (
         <Card className="w-full">
@@ -45,26 +70,60 @@ export function RecognitionCard(props: {
                 </div>
                 <CollapsibleContent>
                     <CardContent>
-                        {snap.data.map((d, index) =>
-                            <svg key={ index} version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox={`0 0 ${d.image.width} ${d.image.height}`}>
-                                <image width={d.image.width} height={d.image.height} xlinkHref={d.image.url}></image>
-                            {d.faces.map((e, i) => {
-                                return (
-                                    <Popover key={i}>
-                                        <PopoverTrigger asChild>
-                                            <a onClick={() => {
-                                            }} >
-                                                <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
-                                            </a>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="p-0">
-                                            <FaceStudentPopoverContent id={e.id.toString()} imagePosition={index} />
-                                        </PopoverContent>
-                                    </Popover>
-                                )
-                            })}
-                        </svg>)
-                        }
+
+                        <Carousel className="w-[90%] mx-auto">
+                            <CarouselContent>
+                                {snap.data.map((d, index) =>
+                                    <CarouselItem key={index} >
+
+                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox={`0 0 ${d.image.width} ${d.image.height}`}>
+                                            <image width={d.image.width} height={d.image.height} onLoad={async (e) => {
+                                                const dimensions = await getImageDimensions(d.image.url)
+                                                handleImageSize(dimensions.height, dimensions.width, index)
+                                            }} xlinkHref={d.image.url}></image>
+                                        {d.faces.map((e, i) => {
+                                            return (
+                                                <Popover key={i}>
+                                                    <PopoverTrigger asChild>
+                                                        <a onClick={() => {
+                                                        }} >
+                                                            <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
+                                                        </a>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="p-0">
+                                                        <FaceStudentPopoverContent id={e.id.toString()} imagePosition={index} />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            )
+                                        })}
+                                    </svg>
+                                    </CarouselItem>
+                                    )
+                                }
+                                <CarouselItem>
+                                    <FilePond onprocessfile={(e, file) => {
+                                        console.log(e)
+                                        console.log(file)
+                                        if (e) {
+                                            return
+                                        }
+
+                                        store.data.push({
+                                            faces: [],
+                                            image: {
+                                                url: file.serverId,
+                                                height: 0,
+                                                width: 0
+                                            }
+                                        })
+                                    }} id="file" className="h-full" allowMultiple={true} maxFiles={3} server="/api/Image" />
+                                </CarouselItem>
+                                <CarouselItem>...</CarouselItem>
+                            </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                        </Carousel>
+
 
                     </CardContent>
                     <CardFooter className="flex justify-between">
