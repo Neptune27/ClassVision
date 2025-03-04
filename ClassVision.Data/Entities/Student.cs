@@ -33,5 +33,7 @@ public class Student : BaseEntity
 
     public List<Enrollment> Enrollments { get; set; } = [];
 
+    public List<RollcallFace> RollcallFaces { get; set; } = [];
+
     public string Media { get; set; } = string.Empty;
 }

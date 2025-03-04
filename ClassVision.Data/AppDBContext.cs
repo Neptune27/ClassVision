@@ -66,6 +66,25 @@ public class AppDBContext: IdentityDbContext<AppUser>
 
 
         });
+
+        builder.Entity<RollcallFace>(e =>
+        {
+
+            e.HasKey(t => new
+            {
+                t.StudentId,
+                t.ImageId
+            });
+
+            e.HasOne(i => i.Student)
+            .WithMany(c => c.RollcallFaces)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            e.HasOne(i => i.Image)
+                .WithMany(c => c.Faces)
+                .OnDelete(DeleteBehavior.NoAction);
+
+        });
         builder.HasPostgresExtension("vector");
 
         List<IdentityRole> identityRoles = [
