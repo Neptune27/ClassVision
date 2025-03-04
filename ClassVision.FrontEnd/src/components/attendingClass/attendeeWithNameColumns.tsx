@@ -6,7 +6,6 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { AttendeeModifyType, AttendeeType, EAttendantStatus, EAttendantStatusToString, StringToEAttendantStatus } from "../../interfaces/AttendeeTypes";
 import { attendeeModifyStore, attendeeDeleteStore } from "../../stores/attendeeStores";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Combobox, ComboboxData } from "../ui/combobox";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 
