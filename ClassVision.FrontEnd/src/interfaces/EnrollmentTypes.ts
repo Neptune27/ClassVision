@@ -1,4 +1,4 @@
-import { CommonType } from "./CommonType";
+import { CommonType, VisibleNameType } from "./CommonType";
 import { StudentType } from "./StudentTypes";
 
 export interface EnrollmentType extends CommonType, EnrollmentModifyType {
@@ -12,3 +12,12 @@ export type EnrollmentModifyType = {
     courseId: string,
 }
 
+
+export const EnrollmentVisibleName: VisibleNameType<EnrollmentType> = {
+    createdAt: "Created At",
+    isActive: "Is Active",
+    lastUpdated: "Last updated",
+    studentId: "Student Id",
+    student: "student",
+    courseId: "Course Id"
+}

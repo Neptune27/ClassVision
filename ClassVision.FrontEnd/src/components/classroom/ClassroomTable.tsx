@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { ClassroomType } from "../../interfaces/ClassroomType";
+import { ClassroomType, ClassroomVisibleName } from "../../interfaces/ClassroomType";
 
 import {
     ColumnDef,
@@ -60,9 +60,12 @@ export default function ClassroomTable({ children, setSelectedRows }: { children
     return (
         <div className="container mx-auto p-10">
             <DataTable columns={classroomColumns} data={data}
-                filter filterId={"roomId"}
-                visible 
+                filter initialFilterId={"roomId"}
+                visible
+                visibleName={ClassroomVisibleName}
+
                 setSelectedRow={setSelectedRows} >
+
                 {children}
             </DataTable>
         </div>

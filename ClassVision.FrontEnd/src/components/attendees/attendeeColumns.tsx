@@ -36,6 +36,7 @@ export const attendeeColumns: ColumnDef<AttendeeType>[] = [
         ),
         enableSorting: false,
         enableHiding: false,
+        enableColumnFilter: false
     },
     {
         accessorKey: "id",
@@ -91,6 +92,7 @@ export const attendeeColumns: ColumnDef<AttendeeType>[] = [
     },
     {
         id: "action",
+        enableColumnFilter: false,
         cell: ({ row }) => {
             const data = row.original
 

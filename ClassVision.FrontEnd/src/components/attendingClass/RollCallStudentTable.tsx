@@ -27,7 +27,7 @@ import { CourseInfoType } from "../../interfaces/CourseInfoType";
 import { StudentType } from "../../interfaces/StudentTypes";
 import { studentColumns } from "../students/studentColumns";
 import { attendeeWithNameColumns } from "./attendeeWithNameColumns";
-import { AttendeeType } from "../../interfaces/AttendeeTypes";
+import { AttendeeType, AttendeeVisibleName } from "../../interfaces/AttendeeTypes";
 import { rollcallStore } from "../../stores/rollcallStores";
 import { useSnapshot } from "valtio";
 
@@ -45,7 +45,7 @@ export function RollCallStudentTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={attendeeWithNameColumns} data={store.attentee} filter filterId={"studentId"}
+            <DataTable columns={attendeeWithNameColumns} data={store.attentee} filter initialFilterId={"studentId"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
@@ -54,10 +54,7 @@ export function RollCallStudentTable({ children, setSelectedRows }: {
                     id: false
                 }}
                 setSelectedRow={setSelectedRows}
-                visibleName={{
-                    "enrollment_student_firstName": "Firstname",
-                    enrollment_student_lastName: "Lastname"
-                }}
+                visibleName={AttendeeVisibleName}
             >
                 {children}
             </DataTable>

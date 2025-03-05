@@ -21,7 +21,7 @@ import {
 import { DataTable } from "../ui/data-table";
 import { useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { EnrollmentType } from "../../interfaces/EnrollmentTypes";
+import { EnrollmentType, EnrollmentVisibleName } from "../../interfaces/EnrollmentTypes";
 import { enrollmentColumns } from "./enrollmentColumns";
 
 
@@ -46,11 +46,12 @@ export function EnrollmentTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={enrollmentColumns} data={data} filter filterId={"studentId"}
+            <DataTable columns={enrollmentColumns} data={data} filter initialFilterId={"studentId"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
                 }}
+                visibleName={EnrollmentVisibleName}
                 setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>

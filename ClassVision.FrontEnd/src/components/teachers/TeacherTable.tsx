@@ -24,7 +24,7 @@ import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { CourseInfoType } from "../../interfaces/CourseInfoType";
-import { TeacherType } from "../../interfaces/TeacherTypes";
+import { TeacherType, TeacherVisibleName } from "../../interfaces/TeacherTypes";
 import { teacherColumns } from "./teacherColumns";
 
 
@@ -49,7 +49,7 @@ export function TeacherTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={teacherColumns} data={data} filter filterId={"id"}
+            <DataTable columns={teacherColumns} data={data} filter initialFilterId={"id"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
@@ -57,6 +57,7 @@ export function TeacherTable({ children, setSelectedRows }: {
                     birthday: false,
                     hireDate: false
                 }}
+                visibleName={TeacherVisibleName }
                 setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>

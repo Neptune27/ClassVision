@@ -23,7 +23,7 @@ import { use, useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { CourseInfoType } from "../../interfaces/CourseInfoType";
+import { CourseInfoType, CourseInfoVisibleName } from "../../interfaces/CourseInfoType";
 import { courseInfoColumns } from "./courseInfoColumns";
 
 
@@ -48,7 +48,12 @@ export function CourseInfoTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={courseInfoColumns} data={data} filter filterId={"id"} visible setSelectedRow={setSelectedRows} >
+            <DataTable columns={courseInfoColumns} data={data}
+                filter initialFilterId={"id"}
+                visible
+                visibleName={CourseInfoVisibleName}
+
+                setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>
         </div>

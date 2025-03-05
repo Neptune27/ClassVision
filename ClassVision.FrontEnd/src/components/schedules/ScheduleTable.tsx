@@ -24,7 +24,7 @@ import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { CourseInfoType } from "../../interfaces/CourseInfoType";
-import { ScheduleType } from "../../interfaces/ScheduleTypes";
+import { ScheduleType, ScheduleVisibleName } from "../../interfaces/ScheduleTypes";
 import { scheduleColumns } from "./scheduleColumns";
 
 
@@ -49,11 +49,12 @@ export function ScheduleTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={scheduleColumns} data={data} filter filterId={"id"}
+            <DataTable columns={scheduleColumns} data={data} filter initialFilterId={"id"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
                 }}
+                visibleName={ScheduleVisibleName}
                 setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>

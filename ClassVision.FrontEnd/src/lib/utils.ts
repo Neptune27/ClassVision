@@ -14,3 +14,9 @@ export const getDisplayId = (display: string) => {
 export const toDisplayValue = (original: string, display: ComboboxData[]) => {
     return display.find(d => getDisplayId(d.value) == original)?.value ?? ""
 }
+
+export function getKeyByValue<TData>(object: {
+    [K in keyof TData] : string
+}, value: string) {
+    return Object.keys(object).find(key => object[key] === value);
+}

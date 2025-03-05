@@ -1,5 +1,5 @@
 import { ClassroomType } from "./ClassroomType";
-import { CommonType } from "./CommonType";
+import { CommonType, VisibleNameType } from "./CommonType";
 import { CourseInfoType } from "./CourseInfoType";
 import { EnrollmentType } from "./EnrollmentTypes";
 import { ScheduleModifyType, ScheduleType } from "./ScheduleTypes";
@@ -15,6 +15,21 @@ export interface CourseType extends CommonType {
     schedules: ScheduleModifyType[],
     enrollments: EnrollmentType[],
     period: number,
+}
+
+export const CourseVisibleName: VisibleNameType<CourseType> = {
+    createdAt: "Created At",
+    isActive: "Is Active",
+    lastUpdated: "Last updated",
+    id: "Id",
+    courseInfo: "Course Info",
+    teacher: "Teacher",
+    classroom: "Classroom",
+    attendantId: "Attendant Ids",
+    attendants: "Attendants",
+    schedules: "Schedules",
+    enrollments: "Enrollments",
+    period: "Period"
 }
 
 

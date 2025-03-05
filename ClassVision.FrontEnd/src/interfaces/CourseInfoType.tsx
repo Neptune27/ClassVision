@@ -1,4 +1,4 @@
-import { CommonType, ExcludeCommonType } from "./CommonType";
+import { CommonType, ExcludeCommonType, VisibleNameType } from "./CommonType";
 
 export interface CourseInfoType extends CommonType, CourseInfoModifyType {
 }
@@ -8,3 +8,11 @@ export type CourseInfoModifyType = {
     name: string
 }
 
+
+export const CourseInfoVisibleName: VisibleNameType<CourseInfoType> = {
+    createdAt: "Created At",
+    isActive: "Is Active",
+    lastUpdated: "Last updated",
+    id: "Id",
+    name: "Name"
+}

@@ -1,4 +1,4 @@
-import { CommonType, ExcludeCommonType } from "./CommonType";
+import { CommonType, ExcludeCommonType, VisibleNameType } from "./CommonType";
 import { EnrollmentType } from "./EnrollmentTypes";
 
 
@@ -45,6 +45,21 @@ export const StringToEAttendantStatus = (value: string) => {
 
 export interface AttendeeType extends CommonType, AttendeeModifyType {
     enrollment?: EnrollmentType
+}
+
+
+export const AttendeeVisibleName: VisibleNameType<AttendeeType> = {
+    id: "Id",
+    studentId: "Student Id",
+    courseId: "Course Id",
+    scheduleId: "Schedule Id",
+    createdAt: "Created At",
+    enrollment: "Enrollment",
+    isActive: "Is Active",
+    lastUpdated: "Last updated",
+    status: "Status",
+    enrollment_student_lastName: "Lastname",
+    enrollment_student_firstName: "Firstname",
 }
 
 

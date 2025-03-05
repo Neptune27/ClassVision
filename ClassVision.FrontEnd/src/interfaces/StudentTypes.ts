@@ -1,4 +1,5 @@
-import { CommonType, ExcludeCommonType } from "./CommonType";
+import { CommonType, ExcludeCommonType, VisibleNameType } from "./CommonType";
+import { EnrollmentType } from "./EnrollmentTypes";
 
 export interface StudentType extends CommonType, StudentModifyType, StudentEnrollmentType {
 }
@@ -22,6 +23,21 @@ export type StudentModifyType = {
 }
 
 export type StudentEnrollmentType = {
-    enrollments: any[]
+    enrollments: EnrollmentType[]
+}
+export const StudentVisibleName: VisibleNameType<StudentType> = {
+    createdAt: "Created At",
+    isActive: "Is Active",
+    lastUpdated: "Last updated",
+    id: "Id",
+    firstName: "First Name",
+    lastName: "Last Name",
+    gender: "Gender",
+    birthday: "Birthday",
+    enrollAt: "Enroll At",
+    phoneNumber: "Phone Number",
+    address: "Address",
+    media: "Media",
+    enrollments: "Enrollments"
 }
 

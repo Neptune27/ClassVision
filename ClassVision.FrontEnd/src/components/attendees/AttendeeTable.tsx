@@ -21,7 +21,7 @@ import {
 import { DataTable } from "../ui/data-table";
 import { useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { AttendeeType } from "../../interfaces/AttendeeTypes";
+import { AttendeeType, AttendeeVisibleName } from "../../interfaces/AttendeeTypes";
 import { attendeeColumns } from "./attendeeColumns";
 
 
@@ -46,11 +46,12 @@ export function AttendeeTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={attendeeColumns} data={data} filter filterId={"studentId"}
+            <DataTable columns={attendeeColumns} data={data} filter initialFilterId={"studentId"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
                 }}
+                visibleName={AttendeeVisibleName}
                 setSelectedRow={setSelectedRows} >
                 {children}
             </DataTable>

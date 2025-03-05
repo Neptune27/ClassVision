@@ -4,4 +4,8 @@ export type CommonType = {
     isActive: boolean
 }
 
+export type VisibleNameType<TData> = {
+    [K in keyof TData]?: string
+}
+
 export type ExcludeCommonType = "lastUpdated" | "isActive" | "createdAt";

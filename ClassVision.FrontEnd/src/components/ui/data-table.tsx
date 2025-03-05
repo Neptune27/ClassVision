@@ -26,12 +26,14 @@ import { Button } from "./button"
 import React, { useEffect } from "react"
 import { Input } from "./input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu"
+import { Combobox, ComboboxData } from "./combobox"
+import { getKeyByValue } from "../../lib/utils"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     filter?: boolean,
-    filterId?: string,
+    initialFilterId?: string,
     visible?: boolean,
     initialVisibility?: {
         [K in keyof TData]?: boolean
@@ -48,7 +50,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     const {
         columns,
         data,
-        filterId,
+        initialFilterId,
         setSelectedRow,
         visibleName
     } = props
@@ -57,6 +59,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     )
+    const [filterId, setFilterId] = React.useState(initialFilterId)
 
     const initialVisibility = props.initialVisibility ?? {}
 
@@ -90,12 +93,33 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         }
     }, [rowSelection])
 
+    const showNameValue = Object.fromEntries(table
+        .getAllColumns()
+        .filter(c => c.getCanFilter())
+        .map(column => {
+            let name = column.id
+
+            if (visibleName) {
+                const key = column.id;
+                name = visibleName[key] ?? name
+            }
+
+            return ([column.id, name])
+        }));
+
+    const cbData: ComboboxData[] = Object.entries(showNameValue).map(([k, v], i) => {
+        return ({
+            label: v,
+            value: v
+        })
+    })
 
     return (
         <div>
             {(props.filter || props.visible) &&
                 <div className="flex items-center py-4">
                     {props.filter &&
+                        <>
                         <Input
                             placeholder="Filter..."
                             value={(table.getColumn(filterId ?? "")?.getFilterValue() as string) ?? ""}
@@ -104,6 +128,11 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                             }
                             className="max-w-sm"
                         />
+                        <Combobox value={showNameValue[filterId ?? ""]} onValueChange={(value) => {
+                            setFilterId(getKeyByValue(showNameValue, value))
+                        }} data={cbData} className={""} />
+                        </>
+
                     }
                     {props.children}
                     {props.visible &&
@@ -120,13 +149,6 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                                         (column) => column.getCanHide()
                                     )
                                     .map((column) => {
-                                        let name = column.id
-
-                                        if (visibleName) {
-                                            const key = column.id;
-                                            name = visibleName[key] ?? name
-                                        }
-
                                         return (
                                             <DropdownMenuCheckboxItem
                                                 key={column.id}
@@ -136,7 +158,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                                                     column.toggleVisibility(!!value)
                                                 }
                                             >
-                                                {name}
+                                                {showNameValue[column.id]}
                                             </DropdownMenuCheckboxItem>
                                         )
                                     })}
