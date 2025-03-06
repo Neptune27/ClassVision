@@ -23,6 +23,8 @@ import { useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { AttendeeType, AttendeeVisibleName } from "../../interfaces/AttendeeTypes";
 import { attendeeColumns } from "./attendeeColumns";
+import { attendeeStore } from "../../stores/attendeeStores";
+import { useSnapshot } from "valtio";
 
 
 
@@ -31,17 +33,24 @@ export function AttendeeTable({ children, setSelectedRows }: {
     setSelectedRows?:
         (rows: Row<AttendeeType>[]) => void
 }) {
-    const [data, setData] = useState<AttendeeType[]>([])
+    const store = attendeeStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
 
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/Attendee")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/Attendee")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
+
 
 
     return (

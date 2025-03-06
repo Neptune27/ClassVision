@@ -20,41 +20,29 @@ import {
 } from "@/components/ui/table"
 import { DataTable } from "../ui/data-table";
 import { classroomColumns } from "./classroomColumns";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-
-const tempData: ClassroomType[] = [
-    {
-        "roomId": "TEST",
-        "capacity": 1,
-        "createdAt": "2025-02-15T09:04:40.396837+00:00",
-        "lastUpdated": "2025-02-15T09:04:40.396865+00:00",
-        "isActive": true
-    },
-    {
-        "roomId": "TEST2",
-        "capacity": 10,
-        "createdAt": "2025-02-15T09:04:40.396837+00:00",
-        "lastUpdated": "2025-02-17T09:04:40.396865+00:00",
-        "isActive": true
-    }
-]
-
-
+import { classroomStore } from "../../stores/classroomStores";
+import { useSnapshot } from "valtio";
 export default function ClassroomTable({ children, setSelectedRows }: { children?: React.ReactNode, setSelectedRows?: (rows: Row<ClassroomType>[]) => void }) {
-    const [data, setData] = useState<ClassroomType[]>([])
 
+    const store = classroomStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/classroom")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/classroom")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
+
 
 
     return (

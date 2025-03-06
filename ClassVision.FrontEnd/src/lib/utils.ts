@@ -20,3 +20,21 @@ export function getKeyByValue<TData>(object: {
 }, value: string) {
     return Object.keys(object).find(key => object[key] === value);
 }
+
+export function triggerFetch(store: {
+    fetchTrigger: boolean
+}) {
+    store.fetchTrigger = !store.fetchTrigger
+}
+
+export const getImageDimensions = (url: string): Promise<{ width: number, height: number }> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({
+            width: img.width,
+            height: img.height,
+        });
+        img.onerror = (error) => reject(error);
+        img.src = url;
+    });
+};

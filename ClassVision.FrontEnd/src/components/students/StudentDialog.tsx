@@ -7,11 +7,12 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { EGender, StudentModifyType } from "../../interfaces/StudentTypes"
-import { studentDeleteStore, studentBatchDeleteStore, studentModifyStore } from "../../stores/studentStores"
+import { studentDeleteStore, studentBatchDeleteStore, studentModifyStore, studentStore } from "../../stores/studentStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
 import { DateTimePicker } from "../ui/datetime-picker"
+import { triggerFetch } from "../../lib/utils"
 
 
 const baseUrl = "/api/Student"
@@ -36,6 +37,8 @@ export function StudentDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(studentStore)
+
     }
 
     return (
@@ -73,6 +76,8 @@ export function StudentBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(studentStore)
+
     }
 
     return (
@@ -113,9 +118,11 @@ export function StudentDialog({ isEdit }: {
             },
             body: JSON.stringify(sentData)
         })
+        if (!resp.ok) {
+            throw resp.text
+        }
 
-        const data = await resp.json()
-        console.log(data)
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -130,13 +137,17 @@ export function StudentDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             ...snap.data
@@ -144,7 +155,9 @@ export function StudentDialog({ isEdit }: {
 
         data.birthday = format(data.birthday, 'yyyy-MM-dd')
         data.enrollAt = format(data.enrollAt, 'yyyy-MM-dd')
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(studentStore)
+
     }
 
     return (

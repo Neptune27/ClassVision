@@ -5,11 +5,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"
 import React from "react"
 import { EFaceStatus, ImageFaceExampleData, ImageFaceType } from "../../interfaces/ImageFaceType"
-import svgStyle from "@/styles/svg.module.scss"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { rollcallStore } from "../../stores/rollcallStores"
 import { useSnapshot } from "valtio"
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
+
+import svgStyle from "@/styles/svg.module.scss"
+
 
 // Import React FilePond
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -18,6 +20,7 @@ import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import { FilePondInitialFile } from "filepond"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
+import { RollcallImage } from "./RollCallImage"
 
 
 const imageUrl = "/api/RollCallImage"
@@ -34,17 +37,7 @@ const boundingBoxClassHandler = (status: EFaceStatus) => {
     }
 }
 
-export const getImageDimensions = (url: string): Promise<{ width: number, height: number }> => {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve({
-            width: img.width,
-            height: img.height,
-        });
-        img.onerror = (error) => reject(error);
-        img.src = url;
-    });
-};
+
 
 export function RecognitionCard(props: {
     scheduleId: string
@@ -78,28 +71,8 @@ export function RecognitionCard(props: {
                         <Carousel className="w-[90%] mx-auto" setApi={setCarouselApi}>
                             <CarouselContent>
                                 {snap.data.map((d, index) =>
-                                    <CarouselItem key={index} >
-
-                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox={`0 0 ${d.image.width} ${d.image.height}`}>
-                                            <image width={d.image.width} height={d.image.height} onLoad={async (e) => {
-                                                const dimensions = await getImageDimensions(d.image.url)
-                                                handleImageSize(dimensions.height, dimensions.width, index)
-                                            }} xlinkHref={d.image.url}></image>
-                                        {d.faces.map((e, i) => {
-                                            return (
-                                                <Popover key={i}>
-                                                    <PopoverTrigger asChild>
-                                                        <a>
-                                                            <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
-                                                        </a>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="p-0">
-                                                        <FaceStudentPopoverContent id={e.id.toString()} imagePosition={index} />
-                                                    </PopoverContent>
-                                                </Popover>
-                                            )
-                                        })}
-                                    </svg>
+                                    <CarouselItem key={index}>
+                                        <RollcallImage imageUrl={d.image.url} faces={d.faces} position={index} />
                                     </CarouselItem>
                                     )
                                 }

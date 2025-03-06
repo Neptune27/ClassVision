@@ -1,28 +1,16 @@
 ﻿"use client"
 
-import { ClassroomType } from "../../interfaces/ClassroomType";
-
 import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
     Row,
-    useReactTable,
 } from "@tanstack/react-table"
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { DataTable } from "../ui/data-table";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { EnrollmentType, EnrollmentVisibleName } from "../../interfaces/EnrollmentTypes";
 import { enrollmentColumns } from "./enrollmentColumns";
+import { enrollmentStore } from "../../stores/enrollmentStores";
+import { useSnapshot } from "valtio";
 
 
 
@@ -31,15 +19,21 @@ export function EnrollmentTable({ children, setSelectedRows }: {
     setSelectedRows?:
         (rows: Row<EnrollmentType>[]) => void
 }) {
-    const [data, setData] = useState<EnrollmentType[]>([])
 
+    const store = enrollmentStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/Enrollment")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/Enrollment")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
 

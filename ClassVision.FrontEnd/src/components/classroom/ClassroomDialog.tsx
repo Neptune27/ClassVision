@@ -3,12 +3,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
 import { useSnapshot } from "valtio"
-import { classroomBatchDeleteStore, classroomDeleteStore, classroomModifyStore } from "../../stores/classroomStores"
+import { classroomBatchDeleteStore, classroomDeleteStore, classroomModifyStore, classroomStore } from "../../stores/classroomStores"
 import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
+import { triggerFetch } from "../../lib/utils"
 
-const classroomStore = classroomModifyStore;
+const store = classroomModifyStore;
 
 export function ClassroomDeleteDialog() {
     const snap = useSnapshot(classroomDeleteStore)
@@ -29,6 +30,8 @@ export function ClassroomDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(classroomStore)
+
     }
 
     return (
@@ -65,6 +68,8 @@ export function ClassroomBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(classroomStore)
+
     }
 
     return (
@@ -81,7 +86,7 @@ export function ClassroomBatchDeleteDialog() {
 export function ClassroomDialog({ isEdit }: {
     isEdit: boolean
 }) {
-    const snap = useSnapshot(classroomStore)
+    const snap = useSnapshot(store)
 
     const [title, setTitle] = useState("")
 
@@ -90,7 +95,7 @@ export function ClassroomDialog({ isEdit }: {
     }, [snap.isEdit])
 
     const handleOpen = (open: boolean) => {
-        classroomStore.opened = open
+        store.opened = open
     }
 
     const handleEdit = async () => {
@@ -102,14 +107,18 @@ export function ClassroomDialog({ isEdit }: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                roomId: classroomStore.data.roomId,
-                capacity: classroomStore.data.capacity
+                roomId: store.data.roomId,
+                capacity: store.data.capacity
             })
         })
 
-        const data = await resp.json()
-        console.log(data)
-        classroomStore.opened = false
+
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
+        store.opened = false
     }
 
     const handleCreate = async () => {
@@ -121,21 +130,26 @@ export function ClassroomDialog({ isEdit }: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                roomId: classroomStore.data.roomId,
-                capacity: classroomStore.data.capacity
+                roomId: store.data.roomId,
+                capacity: store.data.capacity
             })
         })
 
-        const data = await resp.json()
-        console.log(data)
-        classroomStore.opened = false
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
+        store.opened = false
     }
 
 
-    const handleSubmit = () => {
-        console.log(classroomStore)
+    const handleSubmit = async () => {
+        console.log(store)
 
-        isEdit ? handleEdit() : handleCreate();
+        isEdit ? await handleEdit() : await handleCreate();
+        triggerFetch(classroomStore)
+
     }
 
     return (
@@ -148,7 +162,7 @@ export function ClassroomDialog({ isEdit }: {
                     </Label>
                     <Input id="roomId" value={snap.data.roomId} onChange={(e) => {
 
-                        classroomStore.data.roomId = e.target.value
+                        store.data.roomId = e.target.value
                     }
                     } className="col-span-3" />
                 </div>
@@ -158,7 +172,7 @@ export function ClassroomDialog({ isEdit }: {
                     </Label>
                     <Input id="capacity" value={snap.data.capacity} onChange={(e) => {
 
-                        classroomStore.data.capacity = parseInt(e.target.value)
+                        store.data.capacity = parseInt(e.target.value)
                     }
                     }
                         className="col-span-3" />

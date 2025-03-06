@@ -8,6 +8,8 @@ import { AttendeeModifyType, AttendeeType, EAttendantStatus, EAttendantStatusToS
 import { attendeeModifyStore, attendeeDeleteStore } from "../../stores/attendeeStores";
 import { Combobox, ComboboxData } from "../ui/combobox";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
+import { triggerFetch } from "../../lib/utils";
+import { rollcallStore } from "../../stores/rollcallStores";
 
 const store = attendeeModifyStore
 const deleteStore = attendeeDeleteStore
@@ -37,7 +39,7 @@ const eAttendantCBData : ComboboxData[] = [{
 },
 ]
 
-const handleEdit = async (sentData: AttendeeModifyType) => {
+const handleEdit = async (sentData: AttendeeModifyType, refresh = true) => {
     const url = `/api/Attendee`
     const resp = await authorizedFetch(url, {
         method: "PUT",
@@ -47,8 +49,11 @@ const handleEdit = async (sentData: AttendeeModifyType) => {
         body: JSON.stringify(sentData)
     })
 
-    const data = await resp.json()
+    const data = await resp.text()
     console.log(data)
+    if (refresh) {
+        triggerFetch(rollcallStore)
+    }
 }
 export const attendeeWithNameColumns: ColumnDef<AttendeeType>[] = [
     {
@@ -102,7 +107,6 @@ export const attendeeWithNameColumns: ColumnDef<AttendeeType>[] = [
         header: ({ column }) => columnSortable(column, "Status"),
         cell: ({ row }) => {
             const current = row.getValue("status") as EAttendantStatus
-            console.log(current)
             return (
                 <Combobox value={EAttendantStatusToString(current)} onValueChange={(value) => {
                     handleEdit({

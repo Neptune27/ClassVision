@@ -7,12 +7,12 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { EGender, TeacherModifyType } from "../../interfaces/TeacherTypes"
-import { teacherDeleteStore, teacherBatchDeleteStore, teacherModifyStore } from "../../stores/teacherStores"
+import { teacherDeleteStore, teacherBatchDeleteStore, teacherModifyStore, teacherStore } from "../../stores/teacherStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
 import { Combobox } from "../ui/combobox"
 import { DateTimePicker } from "../ui/datetime-picker"
+import { triggerFetch } from "../../lib/utils"
 
 
 const baseUrl = "/api/Teacher"
@@ -38,6 +38,7 @@ export function TeacherDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(teacherStore)
     }
 
     return (
@@ -75,6 +76,8 @@ export function TeacherBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(teacherStore)
+
     }
 
     return (
@@ -125,8 +128,11 @@ export function TeacherDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -141,13 +147,16 @@ export function TeacherDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             ...snap.data
@@ -157,7 +166,9 @@ export function TeacherDialog({ isEdit }: {
 
         data.birthday = format(data.birthday, 'yyyy-MM-dd')
         data.hireDate = format(data.hireDate, 'yyyy-MM-dd')
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(teacherStore)
+
     }
 
 

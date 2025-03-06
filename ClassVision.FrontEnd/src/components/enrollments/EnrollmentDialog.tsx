@@ -7,13 +7,13 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { EnrollmentModifyType } from "../../interfaces/EnrollmentTypes"
-import { enrollmentDeleteStore, enrollmentBatchDeleteStore, enrollmentModifyStore } from "../../stores/enrollmentStores"
+import { enrollmentDeleteStore, enrollmentBatchDeleteStore, enrollmentModifyStore, enrollmentStore } from "../../stores/enrollmentStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { DateTimePicker } from "../ui/datetime-picker"
-import { getDisplayId } from "../../lib/utils"
+import { getDisplayId, triggerFetch } from "../../lib/utils"
 import { CourseInfoType } from "../../interfaces/CourseInfoType"
 import { CourseType } from "../../interfaces/CourseTypes"
 import { EGender } from "../../interfaces/TeacherTypes"
@@ -48,6 +48,7 @@ export function EnrollmentDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(enrollmentStore)
     }
 
     return (
@@ -85,6 +86,8 @@ export function EnrollmentBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(enrollmentStore)
+
     }
 
     return (
@@ -142,8 +145,11 @@ export function EnrollmentDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -158,13 +164,16 @@ export function EnrollmentDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             ...snap.data
@@ -172,11 +181,8 @@ export function EnrollmentDialog({ isEdit }: {
 
         data.courseId = getDisplayId(data.courseId)
 
-        //data.userId = userData.find(u => u.userName == data.userId)?.id ?? ""
-
-        //data.birthday = format(data.birthday, 'yyyy-MM-dd')
-        //data.hireDate = format(data.hireDate, 'yyyy-MM-dd')
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(enrollmentStore)
     }
 
 

@@ -45,7 +45,7 @@ export function RollCallStudentTable({ children, setSelectedRows }: {
 
     return (
         <div className="container mx-auto p-10">
-            <DataTable columns={attendeeWithNameColumns} data={store.attentee} filter initialFilterId={"studentId"}
+            <DataTable columns={attendeeWithNameColumns} data={snap.attentee} filter initialFilterId={"studentId"}
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { CourseModifyType } from "../../interfaces/CourseTypes"
-import { courseDeleteStore, courseBatchDeleteStore, courseModifyStore } from "../../stores/courseStores"
+import { courseDeleteStore, courseBatchDeleteStore, courseModifyStore, courseStore } from "../../stores/courseStores"
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { TeacherType } from "../../interfaces/TeacherTypes"
 import { StudentType } from "../../interfaces/StudentTypes"
@@ -19,7 +19,7 @@ import { DateTimePicker } from "../ui/datetime-picker"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { DateTime } from "luxon"
-import { getDisplayId, toDisplayValue } from "../../lib/utils"
+import { getDisplayId, toDisplayValue, triggerFetch } from "../../lib/utils"
 import { ScheduleModifyType, ScheduleType } from "../../interfaces/ScheduleTypes"
 import { scheduleDefault } from "../../stores/scheduleStores"
 
@@ -52,6 +52,8 @@ export function CourseDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(courseStore)
+
     }
 
     return (
@@ -89,6 +91,8 @@ export function CourseBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(courseStore)
+
     }
 
     return (
@@ -354,7 +358,7 @@ export function CourseDialog({ isEdit }: {
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = JSON.parse(JSON.stringify(snap.data)) as CourseModifyType;
         data.schedules = data.schedules.map(s => {
@@ -374,7 +378,9 @@ export function CourseDialog({ isEdit }: {
 
 
         //TODO: Handle this
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(courseStore)
+
     }
 
     const handleDateChange = (date: Date | undefined, index: number) => {

@@ -405,11 +405,13 @@ export const ImageFaceExampleData: ImageFaceType[] = [
             "h": "212"
         }
     },
-    {
-        "id": 38,
-        "status": 0,
-        "data": {
-            "x": ""
-        }
-    }
+
 ]
+
+//{
+//    "id": 38,
+//        "status": 0,
+//            "data": {
+//        "x": ""
+//    }
+//}

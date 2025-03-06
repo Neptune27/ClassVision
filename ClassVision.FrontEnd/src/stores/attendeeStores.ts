@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { AttendeeModifyType, EAttendantStatus } from '../interfaces/AttendeeTypes'
+import { AttendeeModifyType, AttendeeType, EAttendantStatus } from '../interfaces/AttendeeTypes'
 import { DateTime } from 'luxon'
 
 export const attendeeDefault = (): AttendeeModifyType => {
@@ -11,6 +11,11 @@ export const attendeeDefault = (): AttendeeModifyType => {
         status: EAttendantStatus.PRESENT
     })
 }
+
+export const attendeeStore = proxy<{ fetchTrigger: boolean, data: AttendeeType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const attendeeModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: AttendeeModifyType }>({
     opened: false,

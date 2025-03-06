@@ -19,6 +19,7 @@ import { Separator } from "../ui/separator"
 import { RollCallStudentTable } from "./RollCallStudentTable"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
+import { useSnapshot } from "valtio"
 
 
 const scheduleUrl = "/api/Schedule"
@@ -32,19 +33,24 @@ export function RollCall({ id }: {
     const router = useRouter()
 
     const [schedule, setSchedule] = useState<ScheduleType>()
+    const snap = useSnapshot(store) 
+
+    const fetchSchedule = async () => {
+        const resp = await authorizedFetch(`${scheduleUrl}/${id}`);
+        const data = await resp.json()
+        console.log(data)
+
+        setSchedule(data)
+    }
 
 
     useEffect(() => {
-        const fetchSchedule = async () => {
-            const resp = await authorizedFetch(`${scheduleUrl}/${id}`);
-            const data = await resp.json()
-            console.log(data)
-
-            setSchedule(data)
-        }
-
         fetchSchedule()
     }, [])
+
+    useEffect(() => {
+        fetchSchedule()
+    }, [snap.fetchTrigger])
 
     useEffect(() => {
         const students = schedule?.course?.enrollments.map(e => e.student)
@@ -56,6 +62,7 @@ export function RollCall({ id }: {
         store.userData = students
         store.attentee = schedule?.attendants ?? []
 
+        store.data = []
         //@ts-ignore
         store.data = schedule?.images?.map(i => {
             return ({

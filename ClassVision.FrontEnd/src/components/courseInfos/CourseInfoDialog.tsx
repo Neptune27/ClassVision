@@ -6,9 +6,10 @@ import { useSnapshot } from "valtio"
 import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
-import { courseInfoBatchDeleteStore, courseInfoDeleteStore, courseInfoModifyStore } from "../../stores/courseInfoStore"
+import { courseInfoBatchDeleteStore, courseInfoDeleteStore, courseInfoModifyStore, courseInfoStore } from "../../stores/courseInfoStore"
 import { ClassroomModifyType } from "../../interfaces/ClassroomType"
 import { CourseInfoModifyType } from "../../interfaces/CourseInfoType"
+import { triggerFetch } from "../../lib/utils"
 
 
 const baseUrl = "/api/CourseInfo"
@@ -33,6 +34,8 @@ export function CourseInfoDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(courseInfoStore)
+
     }
 
     return (
@@ -70,6 +73,8 @@ export function CourseInfoBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(courseInfoStore)
+
     }
 
     return (
@@ -111,8 +116,12 @@ export function CourseInfoDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -127,20 +136,25 @@ export function CourseInfoDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             id: store.data.id,
             name: store.data.name
         }
 
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(courseInfoStore)
+
     }
 
     return (

@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { ScheduleModifyType } from '../interfaces/ScheduleTypes'
+import { ScheduleModifyType, ScheduleType } from '../interfaces/ScheduleTypes'
 import { DateTime } from 'luxon'
 
 export const scheduleDefault = (): ScheduleModifyType => {
@@ -12,6 +12,11 @@ export const scheduleDefault = (): ScheduleModifyType => {
         period: 1
     })
 }
+
+export const scheduleStore = proxy<{ fetchTrigger: boolean, data: ScheduleType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const scheduleModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: ScheduleModifyType }>({
     opened: false,

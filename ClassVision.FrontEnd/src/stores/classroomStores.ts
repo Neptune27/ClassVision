@@ -1,5 +1,5 @@
 import { proxy, useSnapshot } from 'valtio'
-import { ClassroomModifyType } from '../interfaces/ClassroomType'
+import { ClassroomModifyType, ClassroomType } from '../interfaces/ClassroomType'
 
 export const classroomDefault = (): ClassroomModifyType => {
     return ({
@@ -7,6 +7,11 @@ export const classroomDefault = (): ClassroomModifyType => {
         roomId: ""
     })
 }
+
+export const classroomStore = proxy<{ fetchTrigger: boolean, data: ClassroomType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const classroomModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: ClassroomModifyType }>({
     opened: false,

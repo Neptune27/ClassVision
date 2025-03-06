@@ -1,5 +1,4 @@
 "use client"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
 import { useSnapshot } from "valtio"
@@ -7,20 +6,11 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { AttendeeModifyType, EAttendantStatus } from "../../interfaces/AttendeeTypes"
-import { attendeeDeleteStore, attendeeBatchDeleteStore, attendeeModifyStore } from "../../stores/attendeeStores"
+import { attendeeDeleteStore, attendeeBatchDeleteStore, attendeeModifyStore, attendeeStore } from "../../stores/attendeeStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { DatePicker } from "../ui/date-picker"
-import { format } from "date-fns"
 import { Combobox, ComboboxData } from "../ui/combobox"
-import { DateTimePicker } from "../ui/datetime-picker"
-import { getDisplayId } from "../../lib/utils"
-import { CourseInfoType } from "../../interfaces/CourseInfoType"
+import { getDisplayId, triggerFetch } from "../../lib/utils"
 import { CourseType } from "../../interfaces/CourseTypes"
-import { EGender } from "../../interfaces/TeacherTypes"
-import { Card, CardContent } from "../ui/card"
-import { Button } from "react-day-picker"
-import { SimpleTimePicker } from "../ui/simple-time-picker"
-import { DateTime } from "luxon"
 import { StudentType } from "../../interfaces/StudentTypes"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { EnrollmentType } from "../../interfaces/EnrollmentTypes"
@@ -51,6 +41,8 @@ export function AttendeeDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(attendeeStore)
+
     }
 
     return (
@@ -88,6 +80,8 @@ export function AttendeeBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(attendeeStore)
+
     }
 
     return (
@@ -153,8 +147,12 @@ export function AttendeeDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -169,13 +167,17 @@ export function AttendeeDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             ...snap.data
@@ -184,12 +186,9 @@ export function AttendeeDialog({ isEdit }: {
         data.courseId = getDisplayId(data.courseId)
         data.studentId = getDisplayId(data.studentId)
         data.scheduleId = getDisplayId(data.scheduleId)
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(attendeeStore)
 
-        //data.userId = userData.find(u => u.userName == data.userId)?.id ?? ""
-
-        //data.birthday = format(data.birthday, 'yyyy-MM-dd')
-        //data.hireDate = format(data.hireDate, 'yyyy-MM-dd')
-        isEdit ? handleEdit(data) : handleCreate(data);
     }
 
 

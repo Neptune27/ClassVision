@@ -26,6 +26,8 @@ import { Button } from "../ui/button";
 import { CourseInfoType } from "../../interfaces/CourseInfoType";
 import { CourseType, CourseVisibleName } from "../../interfaces/CourseTypes";
 import { courseColumns } from "./courseColumns";
+import { courseStore } from "../../stores/courseStores";
+import { useSnapshot } from "valtio";
 
 
 
@@ -34,15 +36,22 @@ export function CourseTable({ children, setSelectedRows }: {
     setSelectedRows?:
         (rows: Row<CourseType>[]) => void
 }) {
-    const [data, setData] = useState<CourseType[]>([])
 
+
+    const store = courseStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/Course")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/Course")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
 

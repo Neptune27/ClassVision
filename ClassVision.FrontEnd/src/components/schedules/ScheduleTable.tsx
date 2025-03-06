@@ -1,31 +1,17 @@
 ﻿"use client"
 
-import { ClassroomType } from "../../interfaces/ClassroomType";
 
 import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
     Row,
-    useReactTable,
 } from "@tanstack/react-table"
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { DataTable } from "../ui/data-table";
-import { use, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { CourseInfoType } from "../../interfaces/CourseInfoType";
 import { ScheduleType, ScheduleVisibleName } from "../../interfaces/ScheduleTypes";
 import { scheduleColumns } from "./scheduleColumns";
+import { scheduleStore } from "../../stores/scheduleStores";
+import { useSnapshot } from "valtio";
 
 
 
@@ -34,15 +20,21 @@ export function ScheduleTable({ children, setSelectedRows }: {
     setSelectedRows?:
         (rows: Row<ScheduleType>[]) => void
 }) {
-    const [data, setData] = useState<ScheduleType[]>([])
 
+    const store = scheduleStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/Schedule")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/Schedule")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
 

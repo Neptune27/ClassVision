@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { EnrollmentModifyType } from '../interfaces/EnrollmentTypes'
+import { EnrollmentModifyType, EnrollmentType } from '../interfaces/EnrollmentTypes'
 import { DateTime } from 'luxon'
 
 export const enrollmentDefault = (): EnrollmentModifyType => {
@@ -8,6 +8,11 @@ export const enrollmentDefault = (): EnrollmentModifyType => {
         studentId: ""
     })
 }
+
+export const enrollmentStore = proxy<{ fetchTrigger: boolean, data: EnrollmentType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const enrollmentModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: EnrollmentModifyType }>({
     opened: false,

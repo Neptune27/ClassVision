@@ -10,21 +10,14 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+i
 import { DataTable } from "../ui/data-table";
 import { use, useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
 import { CourseInfoType, CourseInfoVisibleName } from "../../interfaces/CourseInfoType";
 import { courseInfoColumns } from "./courseInfoColumns";
+import { courseInfoStore } from "../../stores/courseInfoStore";
+import { useSnapshot } from "valtio";
 
 
 
@@ -33,17 +26,25 @@ export function CourseInfoTable({ children, setSelectedRows }: {
     setSelectedRows?:
         (rows: Row<CourseInfoType>[]) => void
 }) {
-    const [data, setData] = useState<CourseInfoType[]>([])
 
+    const store = courseInfoStore;
+    const snap = useSnapshot(store)
+    const data = snap.data
+
+    const fetchData = async () => {
+        const resp = await authorizedFetch("/api/CourseInfo")
+        store.data = await resp.json()
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const resp = await authorizedFetch("/api/CourseInfo")
-            setData(await resp.json())
-        }
+        fetchData()
+    }, [snap.fetchTrigger])
 
+    useEffect(() => {
         fetchData()
     }, [])
+
+
 
 
     return (

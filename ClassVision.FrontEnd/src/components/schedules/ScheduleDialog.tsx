@@ -7,13 +7,13 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
 import { ScheduleModifyType } from "../../interfaces/ScheduleTypes"
-import { scheduleDeleteStore, scheduleBatchDeleteStore, scheduleModifyStore } from "../../stores/scheduleStores"
+import { scheduleDeleteStore, scheduleBatchDeleteStore, scheduleModifyStore, scheduleStore } from "../../stores/scheduleStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { DateTimePicker } from "../ui/datetime-picker"
-import { getDisplayId } from "../../lib/utils"
+import { getDisplayId, triggerFetch } from "../../lib/utils"
 import { CourseInfoType } from "../../interfaces/CourseInfoType"
 import { CourseType } from "../../interfaces/CourseTypes"
 import { EGender } from "../../interfaces/TeacherTypes"
@@ -21,6 +21,7 @@ import { Card, CardContent } from "../ui/card"
 import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
+import { studentStore } from "../../stores/studentStores"
 
 
 const baseUrl = "/api/Schedule"
@@ -46,6 +47,8 @@ export function ScheduleDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+        triggerFetch(scheduleStore)
+
     }
 
     return (
@@ -83,6 +86,8 @@ export function ScheduleBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
+        triggerFetch(scheduleStore)
+
     }
 
     return (
@@ -132,8 +137,11 @@ export function ScheduleDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
@@ -148,13 +156,16 @@ export function ScheduleDialog({ isEdit }: {
             body: JSON.stringify(sentData)
         })
 
-        const data = await resp.json()
-        console.log(data)
+        if (!resp.ok) {
+            throw await resp.text()
+        }
+
+        console.log(resp.status)
         store.opened = false
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(store)
         const data = {
             ...snap.data
@@ -166,7 +177,8 @@ export function ScheduleDialog({ isEdit }: {
 
         //data.birthday = format(data.birthday, 'yyyy-MM-dd')
         //data.hireDate = format(data.hireDate, 'yyyy-MM-dd')
-        isEdit ? handleEdit(data) : handleCreate(data);
+        isEdit ? await handleEdit(data) : await handleCreate(data);
+        triggerFetch(scheduleStore)
     }
 
 

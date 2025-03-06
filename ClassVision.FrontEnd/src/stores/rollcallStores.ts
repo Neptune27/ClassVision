@@ -11,11 +11,13 @@ export type RollcallStoreType = {
     data: {
         image: ImageBasicInfomation,
         faces: ImageFaceType[]
-    }[]
+    }[],
+    fetchTrigger: boolean,
 }
 
 export const rollcallStore = proxy<RollcallStoreType>({
     userData: [],
     attentee: [],
-    data: []
+    data: [],
+    fetchTrigger: false
 })

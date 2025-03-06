@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { CourseInfoModifyType } from '../interfaces/CourseInfoType'
+import { CourseInfoModifyType, CourseInfoType } from '../interfaces/CourseInfoType'
 
 export const courseInfoDefault = (): CourseInfoModifyType => {
     return ({
@@ -7,6 +7,11 @@ export const courseInfoDefault = (): CourseInfoModifyType => {
         name: "",
     })
 }
+
+export const courseInfoStore = proxy<{ fetchTrigger: boolean, data: CourseInfoType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const courseInfoModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: CourseInfoModifyType }>({
     opened: false,

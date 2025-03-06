@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { EGender, StudentModifyType } from '../interfaces/StudentTypes'
+import { EGender, StudentModifyType, StudentType } from '../interfaces/StudentTypes'
 import { DateTime } from 'luxon'
 
 export const studentDefault = (): StudentModifyType => {
@@ -15,6 +15,10 @@ export const studentDefault = (): StudentModifyType => {
         phoneNumber: ""
     })
 }
+export const studentStore = proxy<{ fetchTrigger: boolean, data: StudentType[] }>({
+    fetchTrigger: false,
+    data: []
+})
 
 export const studentModifyStore = proxy<{ opened: boolean, isEdit: boolean, data: StudentModifyType }>({
     opened: false,
