@@ -138,10 +138,11 @@ namespace ClassVision.API.Controllers
 
 
         // DELETE: api/RollCallImage/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRollCallImage(string id)
+        public async Task<IActionResult> DeleteRollCallImage([FromQuery] string path)
         {
-            var rollCallImage = await _context.RollCallImages.FindAsync(id);
+
+
+            var rollCallImage = await _context.RollCallImages.FirstOrDefaultAsync(r => r.Path.Contains(path));
             if (rollCallImage == null)
             {
                 return NotFound();
@@ -152,6 +153,8 @@ namespace ClassVision.API.Controllers
 
             return NoContent();
         }
+
+
 
         private bool RollCallImageExists(string id)
         {

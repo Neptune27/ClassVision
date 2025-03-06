@@ -9,13 +9,15 @@ import svgStyle from "@/styles/svg.module.scss"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { rollcallStore } from "../../stores/rollcallStores"
 import { useSnapshot } from "valtio"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
 
 // Import React FilePond
 import { FilePond, registerPlugin } from 'react-filepond';
 
 // Import FilePond styles
 import 'filepond/dist/filepond.min.css';
+import { FilePondInitialFile } from "filepond"
+import { authorizedFetch } from "../../utils/authorizedFetcher"
 
 
 const imageUrl = "/api/RollCallImage"
@@ -48,7 +50,7 @@ export function RecognitionCard(props: {
     scheduleId: string
 }) {
     const { scheduleId } = props
-
+    const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
     const store = rollcallStore;
     const snap = useSnapshot(store)
@@ -73,8 +75,7 @@ export function RecognitionCard(props: {
                 </div>
                 <CollapsibleContent>
                     <CardContent>
-
-                        <Carousel className="w-[90%] mx-auto">
+                        <Carousel className="w-[90%] mx-auto" setApi={setCarouselApi}>
                             <CarouselContent>
                                 {snap.data.map((d, index) =>
                                     <CarouselItem key={index} >
@@ -88,8 +89,7 @@ export function RecognitionCard(props: {
                                             return (
                                                 <Popover key={i}>
                                                     <PopoverTrigger asChild>
-                                                        <a onClick={() => {
-                                                        }} >
+                                                        <a>
                                                             <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
                                                         </a>
                                                     </PopoverTrigger>
@@ -119,9 +119,20 @@ export function RecognitionCard(props: {
                                                 width: 0
                                             }
                                         })
-                                    }} id="file" className="h-full" allowMultiple={true} maxFiles={10} server={`${imageUrl}/${scheduleId}`} />
+                                    }} id="file" className="h-full" onremovefile={async (e, f) => {
+                                        if (e) {
+                                            console.log("Wtf")
+                                            console.log(e)
+                                            return
+                                        }
+                                        const id = f.serverId
+                                        await authorizedFetch(`/api/RollCallImage?path=${id}`, {
+                                            method: "DELETE"
+                                        })
+
+
+                                        }} allowMultiple={true} maxFiles={10} server={`${imageUrl}/${scheduleId}`} />
                                 </CarouselItem>
-                                <CarouselItem>...</CarouselItem>
                             </CarouselContent>
                             <CarouselPrevious />
                             <CarouselNext />
@@ -130,8 +141,24 @@ export function RecognitionCard(props: {
 
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button variant="outline">Cancel</Button>
-                        <Button>Deploy</Button>
+                        <Button variant="destructive" onClick={async () => {
+                            const index = carouselApi?.selectedScrollSnap()
+                            if (index === undefined) {
+                                return
+                            }
+
+                            const id = store.data[index].image.url
+                            const resp = await authorizedFetch(`/api/RollCallImage?path=${id}`, {
+                                method: "DELETE"
+                            })
+
+                            if (resp.ok) {
+                                store.data.splice(index, 1)
+                            }
+                        }}>Delete</Button>
+                        <Button onClick={() => {
+
+                        }}>Submit</Button>
                     </CardFooter>
                 </CollapsibleContent>
             </Collapsible>
