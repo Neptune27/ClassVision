@@ -70,11 +70,11 @@ public class AppDBContext: IdentityDbContext<AppUser>
         builder.Entity<RollcallFace>(e =>
         {
 
-            e.HasKey(t => new
+            e.HasIndex(t => new
             {
                 t.StudentId,
                 t.ImageId
-            });
+            }).IsUnique();
 
             e.HasOne(i => i.Student)
             .WithMany(c => c.RollcallFaces)

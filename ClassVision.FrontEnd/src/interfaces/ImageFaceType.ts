@@ -8,8 +8,6 @@ export const enum EFaceStatus {
 
 export type ImageBasicInfomation = {
     url: string,
-    width: number,
-    height: number
 }
 
 export type ImageFaceType = {

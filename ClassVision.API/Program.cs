@@ -8,6 +8,7 @@ using ClassVision.API.Interfaces.Services;
 using ClassVision.API.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using ClassVision.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,5 +82,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Map SignalR message hub
+app.MapHub<RollcallHub>("/rollcallhub");
 
 app.Run();
