@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassVision.Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,6 +22,8 @@ public class RollcallFace
     public int H { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
+
+    public EFaceStatus Status { get; set; }
 
     public string? StudentId { get;set; }
     public Student? Student { get; set; }
