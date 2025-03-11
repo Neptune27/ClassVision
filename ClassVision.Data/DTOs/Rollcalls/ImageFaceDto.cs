@@ -19,14 +19,13 @@ public class ImageFaceDto
     //    w: number | string,
     //    h: number | string,
     //}
-
+    [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
 
     [JsonPropertyName("user_id")]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
 
+    [JsonPropertyName("status")]
     public EFaceStatus Status { get; set; }
-
-    public BoundingData Data { get; set; } = null!;
 
 }

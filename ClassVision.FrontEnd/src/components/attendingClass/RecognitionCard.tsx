@@ -6,7 +6,7 @@ import { Button } from "../ui/button"
 import React from "react"
 import { EFaceStatus, ImageFaceExampleData, ImageFaceType } from "../../interfaces/ImageFaceType"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
-import { rollcallStore } from "../../stores/rollcallStores"
+import { rollCallStore } from "../../stores/rollcallStores"
 import { useSnapshot } from "valtio"
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
 
@@ -45,14 +45,8 @@ export function RecognitionCard(props: {
     const { scheduleId } = props
     const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
-    const store = rollcallStore;
+    const store = rollCallStore;
     const snap = useSnapshot(store)
-
-    const handleImageSize = (height: number, width: number, index: number) => {
-        const image = store.data[index].image
-        image.height = height
-        image.width = width
-    }
 
     return (
         <Card className="w-full">
@@ -72,7 +66,7 @@ export function RecognitionCard(props: {
                             <CarouselContent>
                                 {snap.data.map((d, index) =>
                                     <CarouselItem key={index}>
-                                        <RollcallImage imageUrl={d.image.url} faces={d.faces} position={index} />
+                                        <RollcallImage imageUrl={d.path} faces={d.faces} position={index} />
                                     </CarouselItem>
                                     )
                                 }
@@ -86,11 +80,7 @@ export function RecognitionCard(props: {
 
                                         store.data.push({
                                             faces: [],
-                                            image: {
-                                                url: file.serverId,
-                                                height: 0,
-                                                width: 0
-                                            }
+                                            path: file.serverId,
                                         })
                                     }} id="file" className="h-full" onremovefile={async (e, f) => {
                                         if (e) {
@@ -120,7 +110,7 @@ export function RecognitionCard(props: {
                                 return
                             }
 
-                            const id = store.data[index].image.url
+                            const id = store.data[index].path
                             const resp = await authorizedFetch(`/api/RollCallImage?path=${id}`, {
                                 method: "DELETE"
                             })

@@ -8,6 +8,10 @@ import { EFaceStatus, ImageFaceType } from "../../interfaces/ImageFaceType"
 
 import svgStyle from "@/styles/svg.module.scss"
 import { getImageDimensions } from "../../lib/utils"
+import { rollCallHubStore } from "../../stores/rollcallStores"
+
+
+const hubStore = rollCallHubStore;
 
 
 const boundingBoxClassHandler = (status: EFaceStatus) => {

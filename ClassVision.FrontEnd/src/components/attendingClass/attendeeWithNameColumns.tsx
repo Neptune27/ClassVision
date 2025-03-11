@@ -9,7 +9,7 @@ import { attendeeModifyStore, attendeeDeleteStore } from "../../stores/attendeeS
 import { Combobox, ComboboxData } from "../ui/combobox";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
 import { triggerFetch } from "../../lib/utils";
-import { rollcallStore } from "../../stores/rollcallStores";
+import { rollCallStore } from "../../stores/rollcallStores";
 
 const store = attendeeModifyStore
 const deleteStore = attendeeDeleteStore
@@ -39,7 +39,8 @@ const eAttendantCBData : ComboboxData[] = [{
 },
 ]
 
-const handleEdit = async (sentData: AttendeeModifyType, refresh = true) => {
+
+export const handleEdit = async (sentData: AttendeeModifyType, refresh = true) => {
     const url = `/api/Attendee`
     const resp = await authorizedFetch(url, {
         method: "PUT",
@@ -52,7 +53,7 @@ const handleEdit = async (sentData: AttendeeModifyType, refresh = true) => {
     const data = await resp.text()
     console.log(data)
     if (refresh) {
-        triggerFetch(rollcallStore)
+        triggerFetch(rollCallStore)
     }
 }
 export const attendeeWithNameColumns: ColumnDef<AttendeeType>[] = [

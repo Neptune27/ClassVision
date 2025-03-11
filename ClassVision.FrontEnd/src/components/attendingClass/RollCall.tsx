@@ -4,28 +4,23 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import svgStyle from "@/styles/svg.module.scss"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable"
-import { ScrollArea } from "../ui/scroll-area"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
-import { ImageCard } from "./ImageCard"
-import { TestImageCard } from "./TestImageCard"
 import { RecognitionCard } from "./RecognitionCard"
-import { rollcallStore } from "../../stores/rollcallStores"
-import { ImageFaceExampleData } from "../../interfaces/ImageFaceType"
+import { rollCallHubStore, rollCallStore } from "../../stores/rollcallStores"
+import { EFaceStatus, ImageFaceExampleData } from "../../interfaces/ImageFaceType"
 import { Separator } from "../ui/separator"
 import { RollCallStudentTable } from "./RollCallStudentTable"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
 import { useSnapshot } from "valtio"
+import { useProxy } from 'valtio/utils';
+import { useHub } from "../../hooks/useHub"
 
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
 
-const store = rollcallStore;
+const store = rollCallStore;
+const hubStore = rollCallHubStore;
 
 export function RollCall({ id }: {
     id: string
@@ -33,7 +28,7 @@ export function RollCall({ id }: {
     const router = useRouter()
 
     const [schedule, setSchedule] = useState<ScheduleType>()
-    const snap = useSnapshot(store) 
+    const snap = useSnapshot(store)
 
     const fetchSchedule = async () => {
         const resp = await authorizedFetch(`${scheduleUrl}/${id}`);
@@ -44,8 +39,56 @@ export function RollCall({ id }: {
     }
 
 
+
+
+    const logInfo = (resp: {
+        path: string,
+        imageFaces: {
+            [id: string]: {
+                id: string,
+                user_id: string,
+                status: EFaceStatus
+            }
+        }
+    }) => {
+        const data = store.data.find(it => it.path == resp.path)
+
+        if (!data) {
+            console.log("WTF")
+            return
+        }
+
+        for (var key in resp.imageFaces) {
+            const current = resp.imageFaces[key]
+
+            const item = data.faces.find(f => f.id == key)
+
+            if (!item) {
+                continue
+            }
+            item.status = current.status
+            item.user_id = current.user_id
+
+        }
+
+    }
+
     useEffect(() => {
         fetchSchedule()
+        const joinSocket = async () => {
+            await hubStore.startConnection()
+            hubStore.hub?.on("ReceiveMessage", logInfo)
+            await hubStore.hub?.invoke("JoinPath", id)
+        }
+
+        joinSocket()
+        return () => {
+            if (!hubStore.hub) {
+                return
+            }
+
+            hubStore.hub.off("ReceiveMessage")
+        }
     }, [])
 
     useEffect(() => {
@@ -66,11 +109,7 @@ export function RollCall({ id }: {
         //@ts-ignore
         store.data = schedule?.images?.map(i => {
             return ({
-                image: {
-                    height: 0,
-                    width: 0,
-                    url: i.path
-                },
+                path: i.path,
                 faces: []
             })
         }) 
@@ -78,11 +117,7 @@ export function RollCall({ id }: {
         //store.data.splice(0, store.data.length)
 
         store.data.push({
-            image: {
-                height: 10,
-                width: 10,
-                url: "/api/Media/lop6.jpg"
-            },
+            path: "/api/Media/lop6.jpg",
             faces: ImageFaceExampleData
         })
 

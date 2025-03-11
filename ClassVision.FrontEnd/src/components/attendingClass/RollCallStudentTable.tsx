@@ -28,7 +28,7 @@ import { StudentType } from "../../interfaces/StudentTypes";
 import { studentColumns } from "../students/studentColumns";
 import { attendeeWithNameColumns } from "./attendeeWithNameColumns";
 import { AttendeeType, AttendeeVisibleName } from "../../interfaces/AttendeeTypes";
-import { rollcallStore } from "../../stores/rollcallStores";
+import { rollCallStore } from "../../stores/rollcallStores";
 import { useSnapshot } from "valtio";
 
 
@@ -39,7 +39,7 @@ export function RollCallStudentTable({ children, setSelectedRows }: {
     (rows: Row<AttendeeType>[]) => void
 }) {
 
-    const store = rollcallStore;
+    const store = rollCallStore;
     const snap = useSnapshot(store)
 
 

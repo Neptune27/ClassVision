@@ -85,6 +85,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 //Map SignalR message hub
-app.MapHub<RollcallHub>("/rollcallhub");
+app.MapHub<RollcallHub>("/api/rollcallhub");
 
 app.Run();
