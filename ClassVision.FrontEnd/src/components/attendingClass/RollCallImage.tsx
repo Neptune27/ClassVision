@@ -58,6 +58,7 @@ export function RollcallImage({ imageUrl, faces, position }: {
                         <Popover key={i}>
                             <PopoverTrigger asChild>
                                 <a>
+                                    {e.user_id && <text x={e.data.x} y={e.data.y} fill="green">{e.user_id}</text>}
                                     <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
                                 </a>
                             </PopoverTrigger>

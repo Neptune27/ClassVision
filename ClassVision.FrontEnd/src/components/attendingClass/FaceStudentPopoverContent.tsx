@@ -50,17 +50,34 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
         //handleEdit(attendee)
 
         const data = store.data[imagePosition]
-        const facePosition = data.faces.find(f => f.id == id)
-        if (!facePosition) {
+
+        const oldFacePosition = data.faces.find(f => f.user_id == attendee.enrollment?.studentId)
+
+        const newFacePosition = data.faces.find(f => f.id == id)
+        if (!newFacePosition) {
             console.log("Wtf")
             return
         }
 
-        console.log(facePosition)
-        facePosition.status = EFaceStatus.SELECTED
-        facePosition.user_id = attendee.enrollment?.studentId
+        console.log(newFacePosition)
+        newFacePosition.status = EFaceStatus.SELECTED
+        newFacePosition.user_id = attendee.enrollment?.studentId
 
-        handleSignal(data.path, facePosition)
+        handleSignal(data.path, newFacePosition)
+
+
+        if (!oldFacePosition) {
+            return
+        }
+
+        if (oldFacePosition == newFacePosition) {
+            return
+        }
+
+        oldFacePosition.status = EFaceStatus.NOT_SELECTED
+        oldFacePosition.user_id = undefined
+        handleSignal(data.path, oldFacePosition)
+
     }
 
     const handleSignal = (path: string, facePosition: ImageFaceType) => {
