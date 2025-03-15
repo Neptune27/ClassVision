@@ -1,9 +1,9 @@
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@radix-ui/react-collapsible"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown} from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"
-import React from "react"
+import React, { useState } from "react"
 import { EFaceStatus, ImageFaceExampleData, ImageFaceType } from "../../interfaces/ImageFaceType"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { rollCallStore } from "../../stores/rollcallStores"
@@ -21,6 +21,8 @@ import 'filepond/dist/filepond.min.css';
 import { FilePondInitialFile } from "filepond"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { RollcallImage } from "./RollCallImage"
+import { toSvgString } from "../../lib/qrUltis"
+import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
 
 
 const imageUrl = "/api/RollCallImage"
@@ -45,6 +47,8 @@ export function RecognitionCard(props: {
     const { scheduleId } = props
     const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
+
+    const [svg, setSvg] = useState("")
     const store = rollCallStore;
     const snap = useSnapshot(store)
 
@@ -70,6 +74,12 @@ export function RecognitionCard(props: {
                                     </CarouselItem>
                                     )
                                 }
+                                {svg != "" &&
+                                    <CarouselItem>
+                                        <div dangerouslySetInnerHTML={{__html: svg}} />
+                                    </CarouselItem>
+                                }
+
                                 <CarouselItem>
                                     <FilePond onprocessfile={(e, file) => {
                                         console.log(e)
@@ -96,6 +106,7 @@ export function RecognitionCard(props: {
 
                                         }} allowMultiple={true} maxFiles={10} server={`${imageUrl}/${scheduleId}`} />
                                 </CarouselItem>
+                                
                             </CarouselContent>
                             <CarouselPrevious />
                             <CarouselNext />
@@ -119,9 +130,24 @@ export function RecognitionCard(props: {
                                 store.data.splice(index, 1)
                             }
                         }}>Delete</Button>
-                        <Button onClick={() => {
 
-                        }}>Submit</Button>
+                        <div>
+                            <Button variant="secondary" onClick={() => {
+
+                                // Name abbreviated for the sake of these examples here
+                                //const QRC = qrcodegen.QrCode;
+
+                                // Simple operation
+                                const qr0 = QrCode.encodeText(`${location.href}`, QrCodeEcc.MEDIUM);
+                                const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  // See qrcodegen-input-demo
+                                setSvg(svg)
+
+                            }}>Share</Button>
+                            <Button onClick={() => {
+
+                            }}>Submit</Button>
+                        </div>
+
                     </CardFooter>
                 </CollapsibleContent>
             </Collapsible>
