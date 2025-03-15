@@ -13,6 +13,7 @@ import { Checkbox } from "../ui/checkbox";
 import { EFaceStatus, ImageFaceType } from "../../interfaces/ImageFaceType";
 import { AttendeeType, EAttendantStatus } from "../../interfaces/AttendeeTypes";
 import { handleEdit } from "./attendeeWithNameColumns";
+import { Button } from "../ui/button";
 
 export function FaceStudentPopoverContent({ id, imagePosition }: {
     id: string,
@@ -32,8 +33,8 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
         }
 
         const selectedStudentIds = data.faces.filter(f => f.status == EFaceStatus.SELECTED).map(f => f.user_id)
-
-        const student = store.attentee.filter(u => !selectedStudentIds.includes(u.studentId))
+        const current = data.faces.find(f => f.id == id)
+        const student = store.attentee.filter(u => current?.user_id == u.studentId || !selectedStudentIds.includes(u.studentId))
         return student
     }
 
@@ -45,8 +46,8 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
         setStudents(filterAttendeeNotIn())
     }, [all])
 
-    const handleUpdateAttendee = (attendee: AttendeeType) => {
-        attendee.status = EAttendantStatus.PRESENT
+    const handleUpdateAttendee = (attendee: AttendeeType, status: EAttendantStatus) => {
+        attendee.status = status
         //handleEdit(attendee)
 
         const data = store.data[imagePosition]
@@ -70,9 +71,9 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
             return
         }
 
-        if (oldFacePosition == newFacePosition) {
-            return
-        }
+        //if (oldFacePosition == newFacePosition) {
+        //    return
+        //}
 
         oldFacePosition.status = EFaceStatus.NOT_SELECTED
         oldFacePosition.user_id = undefined
@@ -86,14 +87,31 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
         hubStore.hub?.invoke("UpdateData", path, facePosition.id.toString(), JSON.stringify({ ...facePosition, id: facePosition.id.toString() }));
     }
 
+    const handleDeselect = () => {
+        const current = store.data[imagePosition].faces.find(f => f.id == id)
+
+        if (!current) return
+
+        const attendee = store.attentee.find((v) => v.enrollment?.studentId == current.user_id)
+
+        if (!attendee) return
+
+        handleUpdateAttendee(attendee, EAttendantStatus.ABSENT)
+    }
+
     return (
         <Command>
             <CommandInput placeholder="Search..." className="h-9" />
-            <div className="flex flex-row-reverse m-2 gap-2">
-                <Label htmlFor="all" className="text-center ">All</Label>
-                <Checkbox id="all" checked={all} onClick={() => {
-                    setAll(!all)
-                }} />
+            <div className="flex justify-between m-2 gap-2">
+                <Button variant="destructive" onClick={handleDeselect}>Deselect
+                </Button>
+                <div>
+                    <Checkbox id="all" checked={all} onClick={() => {
+                        setAll(!all)
+                    }} />
+                    <Label htmlFor="all" className="text-center ">All</Label>
+
+                </div>
             </div>
             <CommandList>
                 <CommandEmpty>No student found.</CommandEmpty>
@@ -110,7 +128,7 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
                                     return
                                 }
 
-                                handleUpdateAttendee(student);
+                                handleUpdateAttendee(student, EAttendantStatus.PRESENT);
 
                                 //setSelectedData(currentValue)
                                 //setOpen(false)
