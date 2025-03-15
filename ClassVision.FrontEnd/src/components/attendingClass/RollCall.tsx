@@ -14,6 +14,7 @@ import { Button } from "../ui/button"
 import { useSnapshot } from "valtio"
 import { useProxy } from 'valtio/utils';
 import { useHub } from "../../hooks/useHub"
+import { EAttendantStatus } from "../../interfaces/AttendeeTypes"
 
 
 const scheduleUrl = "/api/Schedule"
@@ -69,6 +70,21 @@ export function RollCall({ id }: {
             item.status = current.status
             item.user_id = current.user_id
 
+            let status = EAttendantStatus.ABSENT
+            switch (current.status) {
+                case EFaceStatus.SELECTED:
+                    status = EAttendantStatus.PRESENT
+                    break
+                default:
+                    status = EAttendantStatus.ABSENT
+                    break
+                    
+            }
+
+            const att = store.attentee.find(a => a.studentId == current.user_id)
+            if (att) {
+                att.status = status
+            }
         }
 
     }

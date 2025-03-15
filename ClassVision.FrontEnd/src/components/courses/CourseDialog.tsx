@@ -366,6 +366,7 @@ export function CourseDialog({ isEdit }: {
                 ...s,
                 endTime: s.endTime.split(".")[0],
                 startTime: s.startTime.split(".")[0],
+                date: s.date.split("T")[0]
             }
         })
         data.attendantId = data.attendantId.map(getDisplayId)

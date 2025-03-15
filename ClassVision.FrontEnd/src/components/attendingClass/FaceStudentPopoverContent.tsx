@@ -78,6 +78,8 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
         oldFacePosition.user_id = undefined
         handleSignal(data.path, oldFacePosition)
 
+
+
     }
 
     const handleSignal = (path: string, facePosition: ImageFaceType) => {
