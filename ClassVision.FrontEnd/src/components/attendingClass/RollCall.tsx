@@ -23,10 +23,15 @@ const attendeeUrl = "/api/Attendee"
 const store = rollCallStore;
 const hubStore = rollCallHubStore;
 
-export function RollCall({ id }: {
-    id: string
+export function RollCall({ id, isClient }: {
+    id: string,
+    isClient?: boolean
 }) {
     const router = useRouter()
+
+    if (isClient == undefined) {
+        isClient = false
+    }
 
     const [schedule, setSchedule] = useState<ScheduleType>()
     const snap = useSnapshot(store)
@@ -152,25 +157,28 @@ export function RollCall({ id }: {
     return (
         <div className={"md:p-10 h-full"}>
             <div className="container mx-auto ">
-                <RecognitionCard scheduleId={id} />
+                <RecognitionCard scheduleId={id} isClient={isClient} />
             </div>
 
-            <Separator className="mt-4 mb-4"/>
+            {isClient === false && <>
+                <Separator className="mt-4 mb-4" />
 
-            <RollCallStudentTable >
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="default" className="ml-2">
-                            Actions
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {/*<DropdownMenuItem onClick={handleCreate}>Create</DropdownMenuItem>*/}
-                        {/*<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>*/}
-                        <DropdownMenuItem onClick={handleCreateRollCall}>Create rollcall</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </RollCallStudentTable>
+                <RollCallStudentTable >
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="default" className="ml-2">
+                                Actions
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {/*<DropdownMenuItem onClick={handleCreate}>Create</DropdownMenuItem>*/}
+                            {/*<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>*/}
+                            <DropdownMenuItem onClick={handleCreateRollCall}>Create rollcall</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </RollCallStudentTable>
+                </>
+            }
         </div>
     )
 }

@@ -13,7 +13,7 @@ export function toSvgString(qr: QrCode, border: number, lightColor: string, dark
 				parts.push(`M${x + border},${y + border}h1v1h-1z`);
 		}
 	}
-	return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${qr.size + border} ${qr.size + border}" stroke="none">
+	return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${qr.size + border * 2} ${qr.size + border * 2}" stroke="none">
 	<rect width="100%" height="100%" fill="${lightColor}"/>
 	<path d="${parts.join(" ")}" fill="${darkColor}"/>
 </svg>

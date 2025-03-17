@@ -6,7 +6,7 @@ import { Button } from "../ui/button"
 import React, { useState } from "react"
 import { EFaceStatus, ImageFaceExampleData, ImageFaceType } from "../../interfaces/ImageFaceType"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
-import { rollCallStore } from "../../stores/rollcallStores"
+import { rollCallQRStore, rollCallStore } from "../../stores/rollcallStores"
 import { useSnapshot } from "valtio"
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
 
@@ -23,6 +23,7 @@ import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { RollcallImage } from "./RollCallImage"
 import { toSvgString } from "../../lib/qrUltis"
 import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
+import { ModifyDialog } from "../dialogs/ModifyDialog"
 
 
 const imageUrl = "/api/RollCallImage"
@@ -39,20 +40,41 @@ const boundingBoxClassHandler = (status: EFaceStatus) => {
     }
 }
 
+export function QrDialog() {
+    const store = rollCallQRStore;
+    const snap = useSnapshot(store)
+
+    const handleOpen = (open: boolean) => {
+        store.opened = open
+    }
+
+    return (
+        <ModifyDialog open={snap.opened} title={"QR Code"}
+            handleOnOpenChanged={handleOpen}
+            handleSubmit={() => handleOpen(false)}
+        >
+            <div dangerouslySetInnerHTML={{ __html: snap.data }} />
+        </ModifyDialog>
+    )
+
+}
+
 
 
 export function RecognitionCard(props: {
-    scheduleId: string
+    scheduleId: string,
+    isClient: boolean
 }) {
-    const { scheduleId } = props
+    const { scheduleId, isClient } = props
     const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
 
-    const [svg, setSvg] = useState("")
     const store = rollCallStore;
     const snap = useSnapshot(store)
 
     return (
+        <>
+        <QrDialog/>
         <Card className="w-full">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <div className="relative">
@@ -74,39 +96,35 @@ export function RecognitionCard(props: {
                                     </CarouselItem>
                                     )
                                 }
-                                {svg != "" &&
+
+                                {!isClient &&
                                     <CarouselItem>
-                                        <div dangerouslySetInnerHTML={{__html: svg}} />
-                                    </CarouselItem>
-                                }
-
-                                <CarouselItem>
-                                    <FilePond onprocessfile={(e, file) => {
-                                        console.log(e)
-                                        console.log(file)
-                                        if (e) {
-                                            return
-                                        }
-
-                                        store.data.push({
-                                            faces: [],
-                                            path: file.serverId,
-                                        })
-                                    }} id="file" className="h-full" onremovefile={async (e, f) => {
-                                        if (e) {
-                                            console.log("Wtf")
+                                        <FilePond onprocessfile={(e, file) => {
                                             console.log(e)
-                                            return
-                                        }
-                                        const id = f.serverId
-                                        await authorizedFetch(`/api/RollCallImage?path=${id}`, {
-                                            method: "DELETE"
-                                        })
+                                            console.log(file)
+                                            if (e) {
+                                                return
+                                            }
+
+                                            store.data.push({
+                                                faces: [],
+                                                path: file.serverId,
+                                            })
+                                        }} id="file" className="h-full" onremovefile={async (e, f) => {
+                                            if (e) {
+                                                console.log("Wtf")
+                                                console.log(e)
+                                                return
+                                            }
+                                            const id = f.serverId
+                                            await authorizedFetch(`/api/RollCallImage?path=${id}`, {
+                                                method: "DELETE"
+                                            })
 
 
                                         }} allowMultiple={true} maxFiles={10} server={`${imageUrl}/${scheduleId}`} />
-                                </CarouselItem>
-                                
+                                    </CarouselItem>
+                                }
                             </CarouselContent>
                             <CarouselPrevious />
                             <CarouselNext />
@@ -115,42 +133,46 @@ export function RecognitionCard(props: {
 
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button variant="destructive" onClick={async () => {
-                            const index = carouselApi?.selectedScrollSnap()
-                            if (index === undefined) {
-                                return
-                            }
+                        {!isClient && <>
+                            <Button variant="destructive" onClick={async () => {
+                                const index = carouselApi?.selectedScrollSnap()
+                                if (index === undefined) {
+                                    return
+                                }
 
-                            const id = store.data[index].path
-                            const resp = await authorizedFetch(`/api/RollCallImage?path=${id}`, {
-                                method: "DELETE"
-                            })
+                                const id = store.data[index].path
+                                const resp = await authorizedFetch(`/api/RollCallImage?path=${id}`, {
+                                    method: "DELETE"
+                                })
 
-                            if (resp.ok) {
-                                store.data.splice(index, 1)
-                            }
-                        }}>Delete</Button>
+                                if (resp.ok) {
+                                    store.data.splice(index, 1)
+                                }
+                            }}>Delete</Button>
 
-                        <div>
-                            <Button variant="secondary" onClick={() => {
+                            <div className="flex gap-2">
+                                <Button variant="secondary" onClick={() => {
 
-                                // Name abbreviated for the sake of these examples here
-                                //const QRC = qrcodegen.QrCode;
+                                        const qr0 = QrCode.encodeText(`${location.host}/clients/${scheduleId}`, QrCodeEcc.MEDIUM);
+                                    const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  // See qrcodegen-input-demo
 
-                                // Simple operation
-                                const qr0 = QrCode.encodeText(`${location.href}`, QrCodeEcc.MEDIUM);
-                                const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  // See qrcodegen-input-demo
-                                setSvg(svg)
+                                    rollCallQRStore.data = svg
+                                    rollCallQRStore.opened = true
 
-                            }}>Share</Button>
-                            <Button onClick={() => {
 
-                            }}>Submit</Button>
-                        </div>
+                                }}>Share</Button>
+                                <Button onClick={() => {
+
+                                }}>Submit</Button>
+                            </div>
+
+                        </>}
 
                     </CardFooter>
                 </CollapsibleContent>
             </Collapsible>
         </Card>
+
+        </>
     )
 }
