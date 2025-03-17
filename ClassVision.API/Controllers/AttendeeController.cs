@@ -44,6 +44,22 @@ namespace ClassVision.API.Controllers
             return attendant;
         }
 
+
+        [HttpGet("byClass/{id}")]
+        public async Task<IActionResult> GetAttendeeByClass(Guid id)
+        {
+            var data = await _context.Courses.Where(c => c.Id == id)
+            .Include(s => s.Enrollments)
+            .ThenInclude(e => e.Student)
+            .Include(s => s.Enrollments)
+            .ThenInclude(s => s.Attendants)
+            .Select(c => 
+                c.Enrollments)
+            .SingleAsync();
+
+            return Ok(data);
+        }
+
         // PUT: api/Attendants/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]

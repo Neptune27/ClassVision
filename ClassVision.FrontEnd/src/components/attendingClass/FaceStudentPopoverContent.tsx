@@ -12,7 +12,7 @@ import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { EFaceStatus, ImageFaceType } from "../../interfaces/ImageFaceType";
 import { AttendeeType, EAttendantStatus } from "../../interfaces/AttendeeTypes";
-import { handleEdit } from "./attendeeWithNameColumns";
+import { handleAttendeeEdit } from "./attendeeWithNameColumns";
 import { Button } from "../ui/button";
 
 export function FaceStudentPopoverContent({ id, imagePosition }: {

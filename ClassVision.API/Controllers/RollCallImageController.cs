@@ -138,6 +138,7 @@ namespace ClassVision.API.Controllers
 
 
         // DELETE: api/RollCallImage/5
+        [HttpDelete]
         public async Task<IActionResult> DeleteRollCallImage([FromQuery] string path)
         {
 

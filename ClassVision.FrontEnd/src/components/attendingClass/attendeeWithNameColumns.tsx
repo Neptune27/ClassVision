@@ -17,7 +17,7 @@ const handleDeleteClick = (id: string) => {
     deleteStore.id = id
     deleteStore.opened = true
 }
-const eAttendantCBData : ComboboxData[] = [{
+export const eAttendantCBData : ComboboxData[] = [{
     label: "Present",
     value: "Present"
 },
@@ -40,7 +40,7 @@ const eAttendantCBData : ComboboxData[] = [{
 ]
 
 
-export const handleEdit = async (sentData: AttendeeModifyType, refresh = true) => {
+export const handleAttendeeEdit = async (sentData: AttendeeModifyType, refresh = true) => {
     const url = `/api/Attendee`
     const resp = await authorizedFetch(url, {
         method: "PUT",
@@ -110,7 +110,7 @@ export const attendeeWithNameColumns: ColumnDef<AttendeeType>[] = [
             const current = row.getValue("status") as EAttendantStatus
             return (
                 <Combobox value={EAttendantStatusToString(current)} onValueChange={(value) => {
-                    handleEdit({
+                    handleAttendeeEdit({
                         id: row.getValue("id"),
                         courseId: row.getValue("courseId"),
                         scheduleId: row.getValue("scheduleId"),
