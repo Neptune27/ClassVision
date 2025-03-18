@@ -46,6 +46,8 @@ class FaceRecognitionContext:
     
     
     
+
+
     def get_features(self, image):
         try:
             processed_image = image
@@ -57,7 +59,7 @@ class FaceRecognitionContext:
                 try:
                     bbox = tuple(map(int, feature[0]))  # Chuyển numpy.int thành int
                     score = float(feature[1])  # Chuyển numpy.float thành float
-                    embed = [float(x) for x in feature[2]]  # Chuyển numpy.array thành list float
+                    embed = feature[2].tolist() 
                     pose = tuple(map(float, feature[3]))  # Chuyển numpy.float thành float
                     kps = [{"x": float(kp[0]), "y": float(kp[1])} for kp in feature[4]]  # Chuyển keypoints
 
@@ -66,26 +68,25 @@ class FaceRecognitionContext:
                         "ID": i,
                         "BBox": {"x": bbox[0], "y": bbox[1], "w": bbox[2], "h": bbox[3]},
                         "Score": score,
-                        "Embed": ",".join(map(str, embed)),  # Chuyển mảng thành chuỗi CSV
+                        "Embed": embed,
                         "Pose": {"yaw": pose[0], "pitch": pose[1], "roll": pose[2]},
-                        "Keypoints": kps
+                        "Keypoints": kps  # Thêm keypoints vào JSON
                     }
-
                     face_data.append(face_json)
 
                 except Exception as e:
-                    print("Error processing feature:", e)
+                    # logging.error(f"Error processing feature {i}: {e}")
                     traceback.print_exc()
-                    continue  # Bỏ qua lỗi nhưng vẫn tiếp tục
-                    
+                    continue  # Bỏ qua lỗi nhưng vẫn tiếp tục xử lý các khuôn mặt khác
+
             # Chuyển danh sách thành JSON
-            json_result = json.dumps(face_data, indent=4)
-            return json_result
+            return json.dumps(face_data, indent=4)
 
         except Exception as e:
-            print("Error at Detect faces in FaceRecognitionContext")
+            # logging.error("Error at Detect faces in FaceRecognitionContext")
             traceback.print_exc()
-            return json.dumps([])  # Trả về JSON rỗng nếu lỗi
+            return json.dumps([])
+
 
 
     def get_info_face(self, image):
@@ -174,7 +175,34 @@ class FaceRecognitionContext:
             print(f"Error loading embeddings: {e}")
             return []
         
-    def recognize_face(self,image):
+    def recognize_face_xlxs(self,image):
+        try:
+            embeddings_data = self.load_embeddings_from_excel()
+            if not embeddings_data:
+                print("Không có dữ liệu embeddings để so sánh.")
+                return None
+            id_list = [entry["ID"] for entry in embeddings_data]
+            embed_list = np.array([entry["Embed"] for entry in embeddings_data])
+            print(id_list)
+            processed_image = image
+            detected_faces = self.detection.detect(image)
+            
+            extracted_features = self.extraction.extract(detected_faces)
+            recognized_ids = []
+            for feature in extracted_features:
+                matched_id = self.recognition.recognize(feature, id_list, embed_list)
+                recognized_ids.append(matched_id)
+            print("Danh sách ID nhận diện:", recognized_ids)
+            
+            
+        except Exception as e:
+            print("Error at Detect faces in FaceRecognitionContext")
+            traceback.print_exc()
+            
+        return processed_image
+    
+
+    def recognize_face_list_id(self,image,user_id):
         try:
             embeddings_data = self.load_embeddings_from_excel()
             if not embeddings_data:
