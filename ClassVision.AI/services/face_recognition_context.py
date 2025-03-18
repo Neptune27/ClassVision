@@ -4,6 +4,7 @@ import numpy as np
 import traceback
 from openpyxl import load_workbook
 import json
+from collections import Counter
 
 class FaceRecognitionContext:
     def __init__(self, preprocessing, detection,extraction,annotation,recognition):
@@ -43,10 +44,6 @@ class FaceRecognitionContext:
         return processed_image
     
     # RECOGNIZE FACE
-    
-    
-    
-
 
     def get_features(self, image):
         try:
@@ -202,28 +199,77 @@ class FaceRecognitionContext:
         return processed_image
     
 
-    def recognize_face_list_id(self,image,user_id):
+    def recognize_face_list_user(self, image, user_embeddings, list_user_ids_register):
         try:
-            embeddings_data = self.load_embeddings_from_excel()
-            if not embeddings_data:
+            if not user_embeddings:
                 print("Không có dữ liệu embeddings để so sánh.")
-                return None
-            id_list = [entry["ID"] for entry in embeddings_data]
-            embed_list = np.array([entry["Embed"] for entry in embeddings_data])
-            print(id_list)
-            processed_image = image
-            detected_faces = self.detection.detect(image)
+                return [], []
+
+            result_faces = []
+            removed_faces = []
+            faces = []  # Chứa đầy đủ thông tin, bao gồm cả embedding
+
+            # Tách ID và embedding từ dữ liệu
+            id_list = [entry["ID"] for entry in user_embeddings]
+            embed_list = np.array(
+                [entry["Embed"] for entry in user_embeddings if entry["Embed"] is not None],
+                dtype=np.float32
+            )
             
+            processed_image = self.preprocessing.process(image)
+            detected_faces = self.detection.detect(processed_image)
             extracted_features = self.extraction.extract(detected_faces)
-            recognized_ids = []
+
             for feature in extracted_features:
-                matched_id = self.recognition.recognize(feature, id_list, embed_list)
-                recognized_ids.append(matched_id)
-            print("Danh sách ID nhận diện:", recognized_ids)
-            
-            
+                bbox = tuple(map(int, feature[0]))  # (x, y, w, h)
+                score_detect = float(feature[1])  # Độ tin cậy của nhận diện
+                embed = feature[2]  # Vector đặc trưng của khuôn mặt
+
+                matched_results = self.recognition.recognize(embed, id_list, embed_list)
+                if matched_results:
+                    best_match_id = matched_results[0]["ID"]
+                    best_match_distance = matched_results[0]["Distance"]
+                else:
+                    best_match_id, best_match_distance = None, None
+
+                face_data = {
+                    "id_pending_face": None,
+                    "id_user": best_match_id,
+                    "BBox": {"x": bbox[0], "y": bbox[1], "w": bbox[2], "h": bbox[3]},
+                    "Score_detect": score_detect,
+                    "Score_recognition": best_match_distance,
+                    "status": "recognized",
+                    "embedding": embed  # Giữ trong danh sách nội bộ
+                }
+                faces.append(face_data)
+
+            # Lọc ra ID có khoảng cách nhỏ nhất
+            id_min_score = {}
+            for face in faces:
+                user_id = face["id_user"]
+                if user_id:
+                    if user_id not in id_min_score or face["Score_recognition"] < id_min_score[user_id]["Score_recognition"]:
+                        id_min_score[user_id] = face
+
+            for face in faces:
+                user_id = face["id_user"]
+                if user_id and id_min_score.get(user_id) is not face:
+                    removed_faces.append({
+                        "BBox": face["BBox"],
+                        "Score_detect": face["Score_detect"],
+                        "embedding": face["embedding"]  # Vẫn lưu embedding vào danh sách bị loại
+                    })
+                    face["id_user"] = None
+                    face["status"] = "pending"
+
+            # Tạo result_faces mà KHÔNG có embedding
+            result_faces = [
+                {key: face[key] for key in face if key != "embedding"} for face in faces
+            ]
+            result_faces = [face for face in result_faces if face["id_user"] is not None]
+
+            return result_faces, removed_faces
         except Exception as e:
             print("Error at Detect faces in FaceRecognitionContext")
             traceback.print_exc()
-            
-        return processed_image
+            return [], []

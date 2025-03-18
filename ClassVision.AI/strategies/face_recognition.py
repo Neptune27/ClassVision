@@ -48,11 +48,11 @@ class FaceRecognitionByCosine(RecognitionStrategy):
     def __init__(self,   top_k=1):
         self.top_k = top_k
 
-    def recognize(self, feature, id_list, embed_list):
+    def recognize(self, embed, id_list, embed_list):
         try:
-            embedding = np.array(feature[2], dtype=np.float32).reshape(1, -1)  # Đảm bảo feature là numpy array
+            embedding = np.array(embed, dtype=np.float32).reshape(1, -1)  # Đảm bảo feature là numpy array
 
-            print("\n--- Nhận diện khuôn mặt bằng Approximate Nearest Neighbors (ANN) ---")
+            # print("\n--- Nhận diện khuôn mặt bằng Approximate Nearest Neighbors (ANN) ---")
             # print("Embedding đầu vào:", embedding)
 
             # Chuyển embed_list thành dạng numpy float32
@@ -65,14 +65,14 @@ class FaceRecognitionByCosine(RecognitionStrategy):
             # Tìm kiếm top-k kết quả gần nhất
             distances, indices = index.search(embedding, self.top_k)
 
-            print("Khoảng cách ANN:", distances)
-            print("Chỉ mục ANN:", indices)
+            # print("Khoảng cách ANN:", distances)
+            # print("Chỉ mục ANN:", indices)
 
             # Lấy ID tương ứng với index
             best_match_ids = [id_list[idx] for idx in indices[0] if idx < len(id_list)]
-
-            print("ID phù hợp nhất:", best_match_ids)
-            return best_match_ids if best_match_ids else None
+            result = [{"ID": best_match_ids[0], "Distance": float(distances[0][0])}]
+            # print("ID phù hợp nhất:", best_match_ids)
+            return result if result else None
 
         except Exception as e:
             print("Lỗi trong recognize:")
