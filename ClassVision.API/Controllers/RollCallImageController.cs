@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
+using System.Net.Http.Headers;
 
 namespace ClassVision.API.Controllers
 {
@@ -15,10 +16,12 @@ namespace ClassVision.API.Controllers
     public class RollCallImageController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly HttpClient client;
 
-        public RollCallImageController(AppDBContext context)
+        public RollCallImageController(AppDBContext context, HttpClient client)
         {
             _context = context;
+            this.client = client;
         }
 
         // GET: api/RollCallImage
@@ -101,7 +104,9 @@ namespace ClassVision.API.Controllers
         [HttpPost("{scheduleId}")]
         public async Task<IActionResult> OnPostUploadAsync(Guid scheduleId, IFormFile filepond)
         {
-            var schedule = await _context.Schedules.FindAsync(scheduleId);
+            var schedule = await _context.Schedules
+                .Include(s => s.Attendants)
+                .Where(s => s.Id == scheduleId).SingleAsync();
 
             if (schedule is null)
             {
@@ -120,20 +125,43 @@ namespace ClassVision.API.Controllers
             var ext = Path.GetExtension(filepond.FileName);
             var filePath = $"/api/Media/{Guid.CreateVersion7()}{ext}";
             var saveFilePath = Path.Combine($"./wwwroot{filePath}");
-            using var stream = System.IO.File.Create(saveFilePath);
-            await filepond.CopyToAsync(stream);
-            filePaths.Add(filePath);
-
-            var image = new RollCallImage()
+            using (var stream = System.IO.File.Create(saveFilePath))
             {
-                Path = filePath,
-                Schedule = schedule
-            };
+                await filepond.CopyToAsync(stream);
+                filePaths.Add(filePath);
 
-            await _context.RollCallImages.AddAsync(image);
-            await _context.SaveChangesAsync();
+                var image = new RollCallImage()
+                {
+                    Path = filePath,
+                    Schedule = schedule
+                };
 
-            return Ok(filePath);
+                await _context.RollCallImages.AddAsync(image);
+                await _context.SaveChangesAsync();
+            }
+
+
+
+            using var form = new MultipartFormDataContent();
+            schedule.Attendants.ForEach(a =>
+            {
+                form.Add(new StringContent(a.StudentId), "user_ids");
+            });
+
+            //var fileContent = new ByteArrayContent(await System.IO.File.ReadAllBytesAsync(saveFilePath));
+            //fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(filepond.ContentType);
+            //form.Add(pdfContent, "birthCertificate", Path.GetFileName(pdfPath));
+
+
+            var fileStream = new FileStream(saveFilePath, FileMode.Open, FileAccess.Read);
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            form.Add(streamContent, "image", filepond.FileName);
+            // Replace with your actual API endpoint
+            var response = await client.PostAsync("http://localhost:8010/face_recognize", form);
+            string result = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("A");
+            return Ok(filePath);    
         }
 
 

@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, File, UploadFile, Depends
 import numpy as np
 import cv2
@@ -216,7 +217,7 @@ def process_image_and_save_faces(image_data: bytes, db: Session):
 
             results.append({
                 "id_pending_face": id_pending_face,
-                "BBox": bbox,
+                "BBox": face["BBox"],
                 "Score": score,
                 "Status": "pending"
             })
@@ -234,3 +235,5 @@ def process_image_and_save_faces(image_data: bytes, db: Session):
 
 
 
+if __name__ == "__main__":
+     uvicorn.run(app, host="0.0.0.0", port=8000)

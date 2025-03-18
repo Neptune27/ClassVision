@@ -12,6 +12,7 @@ var sql = builder.AddPostgres("ClassVision-Db", password)
     .WithPgWeb();
 
 var sqlDB = sql.AddDatabase("ClassVision");
+var aiDB = sql.AddDatabase("ClassVisionAI");
 
 var migration = builder.AddProject<Projects.ClassVision_Migration>("classvision-migration")
     .WithReference(sqlDB).WaitFor(sql);
@@ -19,13 +20,18 @@ var migration = builder.AddProject<Projects.ClassVision_Migration>("classvision-
 #pragma warning disable ASPIREHOSTINGPYTHON001
 var python_app = builder.AddPythonApp("classvision-ai", "../ClassVision.AI", "main.py", ".venv")
     .WithHttpEndpoint(targetPort: 8000, port: 8010)
-       .WithExternalHttpEndpoints()
-       .WithOtlpExporter();
+    .WithReference(aiDB)
+    .WaitFor(aiDB)
+    .WithExternalHttpEndpoints()
+    .WithOtlpExporter();
+
 #pragma warning restore ASPIREHOSTINGPYTHON001
 
 var api = builder.AddProject<Projects.ClassVision_API>("classvision-api")
     .WithExternalHttpEndpoints()
-    .WithReference(sqlDB).WaitFor(sql).WaitForCompletion(migration);
+    .WithReference(sqlDB).WaitFor(sql).WaitForCompletion(migration)
+    .WithReference(python_app);
+    ;
 
 
 var frontend = builder.AddNpmApp("classvision-frontend", "../ClassVision.FrontEnd", "dev")

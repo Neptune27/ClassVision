@@ -6,3 +6,5 @@ faiss-cpu
 openpyxl
 pandas
 fastapi
+sqlalchemy
+psycopg2
