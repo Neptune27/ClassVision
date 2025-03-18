@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ClassVision.Data;
 using ClassVision.Data.Entities;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using ClassVision.Data.DTOs.Rollcalls;
 
 namespace ClassVision.API.Controllers
 {
@@ -159,7 +161,11 @@ namespace ClassVision.API.Controllers
             form.Add(streamContent, "image", filepond.FileName);
             // Replace with your actual API endpoint
             var response = await client.PostAsync("http://localhost:8010/face_recognize", form);
-            string result = await response.Content.ReadAsStringAsync();
+            string stringResult = await response.Content.ReadAsStringAsync();
+
+            var objResult = JsonSerializer.Deserialize<AIRecognizeResult>(stringResult);
+            
+            
             Console.WriteLine("A");
             return Ok(filePath);    
         }

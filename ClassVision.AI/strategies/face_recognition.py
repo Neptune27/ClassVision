@@ -59,6 +59,7 @@ class FaceRecognitionByCosine(RecognitionStrategy):
             embed_list = np.array(embed_list, dtype=np.float32)
 
             # Tạo FAISS Index (L2 - Euclidean distance)
+            print(embed_list)
             index = faiss.IndexFlatL2(embed_list.shape[1])  # Sử dụng khoảng cách Euclidean
             index.add(embed_list)  # Thêm tất cả embeddings vào index
 
@@ -75,6 +76,6 @@ class FaceRecognitionByCosine(RecognitionStrategy):
             return result if result else None
 
         except Exception as e:
-            print("Lỗi trong recognize:")
+            # print("Lỗi trong recognize:")
             traceback.print_exc()
             return None

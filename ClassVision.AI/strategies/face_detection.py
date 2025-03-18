@@ -20,6 +20,6 @@ class InsightFaceDetection(FaceDetectionStrategy):
             result = self.detector.get(image)
             return result
         except Exception as e:
-            print("Lỗi phát hiện khuôn mặt:")
+            # print("Lỗi phát hiện khuôn mặt:")
             traceback.print_exc()  # In toàn bộ thông tin lỗi ra console
             return []

@@ -10,5 +10,6 @@ public enum EFaceStatus
 {
     NOT_SELECTED = 0,
     SELECTED = 1,
-    REMOVED = 2
+    REMOVED = 2,
+    AUTOMATED = 3,
 }

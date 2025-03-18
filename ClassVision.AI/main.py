@@ -17,6 +17,7 @@ import models
 from models import FaceEmbedding, PendingFace
 from datetime import datetime
 import uuid
+import itertools
 
 app = FastAPI()
 
@@ -147,8 +148,9 @@ async def check_user(user_ids: list[str], image: UploadFile = File(...), db: Ses
             result.append(result_pending_faces)
 
 
+        merged = list(itertools.chain(*result))
 
-        return {"user_list": list_user_ids_register, "faces": result,"message":"Hello World"}
+        return {"user_list": list_user_ids_register, "faces": merged, "message":"Hello World"}
 
 
     except Exception as e:

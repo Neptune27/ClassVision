@@ -176,7 +176,7 @@ class FaceRecognitionContext:
         try:
             embeddings_data = self.load_embeddings_from_excel()
             if not embeddings_data:
-                print("Không có dữ liệu embeddings để so sánh.")
+                # print("Không có dữ liệu embeddings để so sánh.")
                 return None
             id_list = [entry["ID"] for entry in embeddings_data]
             embed_list = np.array([entry["Embed"] for entry in embeddings_data])
@@ -189,7 +189,7 @@ class FaceRecognitionContext:
             for feature in extracted_features:
                 matched_id = self.recognition.recognize(feature, id_list, embed_list)
                 recognized_ids.append(matched_id)
-            print("Danh sách ID nhận diện:", recognized_ids)
+            # print("Danh sách ID nhận diện:", recognized_ids)
             
             
         except Exception as e:
@@ -202,7 +202,7 @@ class FaceRecognitionContext:
     def recognize_face_list_user(self, image, user_embeddings, list_user_ids_register):
         try:
             if not user_embeddings:
-                print("Không có dữ liệu embeddings để so sánh.")
+                # print("Không có dữ liệu embeddings để so sánh.")
                 return [], []
 
             result_faces = []
