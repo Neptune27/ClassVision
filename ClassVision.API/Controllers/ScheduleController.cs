@@ -48,7 +48,7 @@ namespace ClassVision.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
         {
-            var schedule = await _context.Schedules
+            var schedule = await _context.Schedules.AsNoTracking()
                 .Include(s => s.Course)
                 .ThenInclude(c => c.CourseInfo)
                 .Include(s => s.Course)
@@ -60,11 +60,17 @@ namespace ClassVision.API.Controllers
                 .ThenInclude(c => c.Teacher)
                 .Include(s => s.Attendants)
                 .ThenInclude(a => a.Enrollment)
+                .ThenInclude(e => e.Student)
                 .Include(s => s.Images)
                 .ThenInclude(i => i.Faces)
-                .ThenInclude(f => f.Student)
                 .FirstAsync(s => s.Id == id);
 
+            schedule.Course.Enrollments.ForEach(c =>
+            {
+                c.Student.Attendants = [];
+                c.Student.Enrollments = [];
+                c.Student.RollcallFaces = [];
+            });
             if (schedule == null)
             {
                 return NotFound();

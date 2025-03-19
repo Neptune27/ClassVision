@@ -10,6 +10,7 @@ using ClassVision.Data.Entities;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using ClassVision.Data.DTOs.Rollcalls;
+using ClassVision.API.Hubs;
 
 namespace ClassVision.API.Controllers
 {
@@ -122,7 +123,6 @@ namespace ClassVision.API.Controllers
                 return BadRequest();
             }
 
-            List<string> filePaths = [];
 
             var ext = Path.GetExtension(filepond.FileName);
             var filePath = $"/api/Media/{Guid.CreateVersion7()}{ext}";
@@ -130,17 +130,14 @@ namespace ClassVision.API.Controllers
             using (var stream = System.IO.File.Create(saveFilePath))
             {
                 await filepond.CopyToAsync(stream);
-                filePaths.Add(filePath);
-
-                var image = new RollCallImage()
-                {
-                    Path = filePath,
-                    Schedule = schedule
-                };
-
-                await _context.RollCallImages.AddAsync(image);
-                await _context.SaveChangesAsync();
             }
+
+
+            var image = new RollCallImage()
+            {
+                Path = filePath,
+                Schedule = schedule
+            };
 
 
 
@@ -164,10 +161,81 @@ namespace ClassVision.API.Controllers
             string stringResult = await response.Content.ReadAsStringAsync();
 
             var objResult = JsonSerializer.Deserialize<AIRecognizeResult>(stringResult);
-            
-            
+
+
+            var faces = objResult.Faces.Select(f => new RollcallFace()
+            {
+                Id = f.IdPendingFace is null ? Guid.NewGuid() : Guid.Parse(f.IdPendingFace),
+                ImageId = image.Path,
+                StudentId = f.IdUser,
+                Status = f.Status == "recognize" ? Data.Enums.EFaceStatus.AUTOMATED : Data.Enums.EFaceStatus.NOT_SELECTED,
+                X = f.BBox.X,
+                Y = f.BBox.Y,
+                W = f.BBox.W,
+                H = f.BBox.H,
+
+            });
+
+            image.Faces = [.. faces];
+
+            await _context.RollCallImages.AddAsync(image);
+            await _context.SaveChangesAsync();
             Console.WriteLine("A");
             return Ok(filePath);    
+        }
+
+
+        public record SubmitDto(string Path);
+
+        [HttpPost("submit")]
+        public async Task<IActionResult> Submit(SubmitDto dto)
+        {
+            var path = dto.Path;
+            var data = RollcallHub.RollcallData.GetValueOrDefault(path);
+
+            if (data is null)
+            {
+                return BadRequest();
+            }
+
+            var filteredData = data.Where(data => data.Value.UserId is not null)
+                .Select(data => data.Value).ToList();
+
+
+            if (filteredData is null)
+            {
+                return Ok();
+            }
+
+            var image = await _context.RollCallImages
+                .Include(i => i.Faces)
+                .Where(i => i.Path == path)
+                .SingleAsync();
+
+            var imageFaces = image.Faces
+                .Where(f => filteredData.Any(fd => fd.Id == f.Id.ToString()));
+
+            Dictionary<string, string> updateFaceDict = [];
+
+
+
+            foreach (var item in imageFaces)
+            {
+                item.Status = Data.Enums.EFaceStatus.SELECTED;
+                item.StudentId = filteredData.First(fd => fd.Id == item.Id.ToString()).UserId;
+                updateFaceDict.Add(item.Id.ToString(), item.StudentId);
+            }
+
+
+            var response = await client.PostAsJsonAsync("http://localhost:8010/update_embedding", updateFaceDict);
+            string stringResult = await response.Content.ReadAsStringAsync();
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+
+
+
         }
 
 

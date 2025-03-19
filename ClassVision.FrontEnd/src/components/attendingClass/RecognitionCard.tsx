@@ -161,8 +161,19 @@ export function RecognitionCard(props: {
 
 
                                 }}>Share</Button>
-                                <Button onClick={() => {
-
+                                <Button onClick={async () => {
+                                        for (const d of store.data) {
+                                            const path = d.path
+                                            const resp = await authorizedFetch(`${imageUrl}/submit`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    path: path
+                                                })
+                                            })
+                                        }
                                 }}>Submit</Button>
                             </div>
 

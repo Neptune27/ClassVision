@@ -131,16 +131,30 @@ export function RollCall({ id, isClient }: {
         store.data = schedule?.images?.map(i => {
             return ({
                 path: i.path,
-                faces: []
+                faces: i.faces.map(f => {
+                    return {
+                        "id": f.id,
+                        "status": f.studentId != null ? 1 : 0,
+                        //"status": f.status,
+                        "data": {
+                            "x": f.x,
+                            "y": f.y,
+                            "w": f.w,
+                            "h": f.h
+                        },
+                        "user_id": f.studentId
+
+                    }
+                })
             })
         }) 
 
         //store.data.splice(0, store.data.length)
 
-        store.data.push({
-            path: "/api/Media/lop6.jpg",
-            faces: ImageFaceExampleData
-        })
+        //store.data.push({
+        //    path: "/api/Media/lop6.jpg",
+        //    faces: ImageFaceExampleData
+        //})
 
         console.log(store)
     }, [schedule])
