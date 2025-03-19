@@ -5,6 +5,7 @@ import traceback
 from openpyxl import load_workbook
 import json
 from collections import Counter
+import os
 
 class FaceRecognitionContext:
     def __init__(self, preprocessing, detection,extraction,annotation,recognition):
@@ -31,7 +32,7 @@ class FaceRecognitionContext:
                     kps = feature[4]
 
                     processed_image = self.annotation.process(processed_image, bbox, score, pose, kps, True, True, False, False)
-                except Exception as e:
+                except Exception as e:  
                     print("Error processing feature:", e)
                     traceback.print_exc()
                     return []
@@ -210,15 +211,39 @@ class FaceRecognitionContext:
             faces = []  # Chứa đầy đủ thông tin, bao gồm cả embedding
 
             # Tách ID và embedding từ dữ liệu
+            valid_embeddings = [entry for entry in user_embeddings if entry["Embed"] is not None]
+
+            if not valid_embeddings:
+                # print("Tất cả các embeddings trong danh sách đều là None.")
+                return [], []
+
             id_list = [entry["ID"] for entry in user_embeddings]
             embed_list = np.array(
                 [entry["Embed"] for entry in user_embeddings if entry["Embed"] is not None],
                 dtype=np.float32
             )
             
-            processed_image = self.preprocessing.process(image)
+            # processed_image = self.preprocessing.process(image)
+            processed_image = image
             detected_faces = self.detection.detect(processed_image)
             extracted_features = self.extraction.extract(detected_faces)
+            for feature in extracted_features:
+                try:
+                    bbox = feature[0]
+                    score = feature[1]
+                    embed = feature[2]
+                    pose = feature[3]
+                    kps = feature[4]
+
+                    processed_image = self.annotation.process(processed_image, bbox, score, pose, kps, True, False, False, False)
+                    filename = f"face.jpg"
+                    save_path = os.path.join("saved_images", filename)
+                    cv2.imwrite(save_path, processed_image)
+
+                except Exception as e:  
+                    print("Error processing feature:", e)
+                    traceback.print_exc()
+                    return []
 
             for feature in extracted_features:
                 bbox = tuple(map(int, feature[0]))  # (x, y, w, h)

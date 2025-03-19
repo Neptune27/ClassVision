@@ -185,7 +185,10 @@ namespace ClassVision.API.Controllers
         }
 
 
-        public record SubmitDto(string Path);
+        public record SubmitDto(string Path, Guid ScheduleId);
+
+
+        //private async Task Handle
 
         [HttpPost("submit")]
         public async Task<IActionResult> Submit(SubmitDto dto)
@@ -212,26 +215,40 @@ namespace ClassVision.API.Controllers
                 .Where(i => i.Path == path)
                 .SingleAsync();
 
-            var imageFaces = image.Faces
+            var imageFacesNeedUpdated = image.Faces
                 .Where(f => filteredData.Any(fd => fd.Id == f.Id.ToString()));
 
             Dictionary<string, string> updateFaceDict = [];
 
-
-
-            foreach (var item in imageFaces)
+            foreach (var item in imageFacesNeedUpdated)
             {
                 item.Status = Data.Enums.EFaceStatus.SELECTED;
                 item.StudentId = filteredData.First(fd => fd.Id == item.Id.ToString()).UserId;
                 updateFaceDict.Add(item.Id.ToString(), item.StudentId);
             }
 
+            var imageFaceWithIds = image.Faces.Where(f => !string.IsNullOrEmpty(f.StudentId));
+
 
             var response = await client.PostAsJsonAsync("http://localhost:8010/update_embedding", updateFaceDict);
             string stringResult = await response.Content.ReadAsStringAsync();
 
-            await _context.SaveChangesAsync();
+            var schedule = await _context.Schedules
+                .Include(s => s.Attendants)
+                .Where(s => s.Id == dto.ScheduleId)
+                .SingleAsync();
 
+            if (schedule is not null)
+            {
+                var attendee = schedule.Attendants.Where(a => imageFaceWithIds.Any(f=> f.StudentId == a.StudentId));
+                foreach (var attendant in attendee)
+                {
+                    attendant.Status = Data.Enums.EAttendantStatus.PRESENT;
+                }
+            }
+
+
+            await _context.SaveChangesAsync();
             return Ok();
 
 
@@ -245,12 +262,15 @@ namespace ClassVision.API.Controllers
         {
 
 
-            var rollCallImage = await _context.RollCallImages.FirstOrDefaultAsync(r => r.Path.Contains(path));
+            var rollCallImage = await _context.RollCallImages
+                .Include(i => i.Faces)
+                .FirstOrDefaultAsync(r => r.Path.Contains(path));
             if (rollCallImage == null)
             {
                 return NotFound();
             }
 
+            _context.RollcallFaces.RemoveRange(rollCallImage.Faces);
             _context.RollCallImages.Remove(rollCallImage);
             await _context.SaveChangesAsync();
 

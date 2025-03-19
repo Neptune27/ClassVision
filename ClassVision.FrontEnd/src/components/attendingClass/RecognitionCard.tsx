@@ -170,7 +170,8 @@ export function RecognitionCard(props: {
                                                     'Content-Type': 'application/json'
                                                 },
                                                 body: JSON.stringify({
-                                                    path: path
+                                                    path: path,
+                                                    scheduleId: scheduleId
                                                 })
                                             })
                                         }

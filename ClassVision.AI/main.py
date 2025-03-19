@@ -142,10 +142,13 @@ async def check_user(user_ids: list[str], image: UploadFile = File(...), db: Ses
 
         if(len(list_user_isd_existing) > 0):
             result_faces, removed_faces = await recognize_existing_users(list_user_isd_existing,image,list_user_ids_register,db)
-            result.append(result_faces)
-
-            result_pending_faces = save_pending_faces(removed_faces,db)
-            result.append(result_pending_faces)
+            if not result_faces and not removed_faces:
+                result_register = await register_new_users(user_ids, image, db)
+                result.append(result_register)
+            else:
+                result.append(result_faces)
+                result_pending_faces = save_pending_faces(removed_faces,db)
+                result.append(result_pending_faces)
 
 
         merged = list(itertools.chain(*result))
@@ -162,6 +165,8 @@ async def recognize_existing_users(user_ids,image_data,list_user_ids_register,db
     try:
         user_data = get_user_embeddings_by_ids(user_ids,db)
         np_arr = np.frombuffer(image_data, np.uint8)
+        print("From B")
+
         image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
         print(type(user_data))
         result = face_recognition.recognize_face_list_user(image,user_data,list_user_ids_register)
@@ -243,6 +248,7 @@ def process_image_and_save_faces(image_data: bytes, db: Session):
     """ Xử lý ảnh và lưu thông tin khuôn mặt vào PendingFace """
     try:
         np_arr = np.frombuffer(image_data, np.uint8)
+        print("From A")
         image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         # Nhận diện khuôn mặt
