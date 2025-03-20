@@ -18,11 +18,12 @@ type SBTType = {
     curr: ScheduleType[],
     next: ScheduleType[]
 }
-export function ClassCard() {
-    const make = [...Array(10).keys()]
+export function ClassCard({ filteredId}: {
+    filteredId?: string
+}) {
     const [schedules, setSchedules] = useState<ScheduleType[]>([])
     const [schedulesByTime, setSBT] = useState<SBTType>({ curr: [], next: [], prev: [] })
-
+    const filterString = filteredId ?? ""
     useEffect(() => {
         const fetchSchedule = async () => {
             const resp = await authorizedFetch(`${scheduleUrl}/byUser`);
@@ -43,7 +44,7 @@ export function ClassCard() {
             next: []
         }
 
-        schedules.forEach(s => {
+        schedules.filter(s => s.course.id.includes(filterString)).forEach(s => {
             const start = new Date(`${s.date}T${s.startTime}`)
             const end = new Date(`${s.date}T${s.endTime}`) 
             if (start < now && end > now) {
@@ -81,7 +82,7 @@ export function ClassCard() {
 
                     </CardContent>
                     <CardFooter >
-                        <Link className="w-full" href={`./attending-class/rollcall/${s.id}`}>
+                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
                             <Button className="w-full">Go</Button>
                         </Link>
                     </CardFooter>
@@ -101,7 +102,7 @@ export function ClassCard() {
 
                     </CardContent>
                     <CardFooter >
-                        <Link className="w-full" href={`./attending-class/rollcall/${s.id}`}>
+                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
                             <Button className="w-full">Go</Button>
                         </Link>
                     </CardFooter>
@@ -121,7 +122,7 @@ export function ClassCard() {
 
                     </CardContent>
                     <CardFooter >
-                        <Link className="w-full" href={`./attending-class/rollcall/${s.id}`}>
+                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
                             <Button className="w-full">Go</Button>
                         </Link>
                     </CardFooter>
