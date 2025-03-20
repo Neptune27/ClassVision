@@ -3,6 +3,7 @@
 import {
     ColumnDef,
     ColumnFiltersState,
+    FilterFn,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
@@ -13,6 +14,11 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
+import {
+    RankingInfo,
+    rankItem,
+    compareItems,
+} from '@tanstack/match-sorter-utils'
 
 import {
     Table,
@@ -28,6 +34,18 @@ import { Input } from "./input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu"
 import { Combobox, ComboboxData } from "./combobox"
 import { getKeyByValue } from "../../lib/utils"
+
+
+
+declare module '@tanstack/react-table' {
+    //add fuzzy filter to the filterFns
+    interface FilterFns {
+        fuzzy: FilterFn<unknown>
+    }
+    interface FilterMeta {
+        itemRank: RankingInfo
+    }
+}
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -46,6 +64,18 @@ interface DataTableProps<TData, TValue> {
     children?: React.ReactNode
 }
 
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value)
+
+    // Store the itemRank info
+    addMeta({
+        itemRank,
+    })
+
+    // Return if the item should be filtered in/out
+    return itemRank.passed
+}
 export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     const {
         columns,
@@ -67,10 +97,16 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
 
 
     const [rowSelection, setRowSelection] = React.useState({})
-
+    const [globalFilter, setGlobalFilter] = React.useState('')
     const table = useReactTable({
         data,
         columns,
+        filterFns: {
+            fuzzy: fuzzyFilter
+        },
+
+        globalFilterFn: "fuzzy",
+        onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
@@ -83,7 +119,8 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             sorting,
             columnFilters,
             columnVisibility,
-            rowSelection
+            rowSelection,
+            globalFilter,
         },
     })
     useEffect(() => {
@@ -93,7 +130,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
         }
     }, [rowSelection])
 
-    const showNameValue = Object.fromEntries(table
+    const a = [["global", "Global"],...table
         .getAllColumns()
         .filter(c => c.getCanFilter())
         .map(column => {
@@ -105,7 +142,9 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             }
 
             return ([column.id, name])
-        }));
+        })]
+
+    const showNameValue = Object.fromEntries(a);
 
     const cbData: ComboboxData[] = Object.entries(showNameValue).map(([k, v], i) => {
         return ({
@@ -113,6 +152,14 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             value: v
         })
     })
+
+    const getFilterIdValue = (filterId: string) => {
+        if (filterId == "global") {
+            return globalFilter
+        }
+
+        return (table.getColumn(filterId)?.getFilterValue() as string) ?? ""
+    }
 
     return (
         <div>
@@ -122,10 +169,15 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
                         <>
                         <Input
                             placeholder="Filter..."
-                            value={(table.getColumn(filterId ?? "")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
+                            value={getFilterIdValue(filterId ?? "")}
+                            onChange={(event) => {
+                                if (filterId == "global") {
+                                    setGlobalFilter(event.target.value)
+                                    return
+                                }
+
                                 table.getColumn(filterId ?? "")?.setFilterValue(event.target.value)
-                            }
+                            }}
                             className="max-w-sm"
                         />
                         <Combobox value={showNameValue[filterId ?? ""]} onValueChange={(value) => {
