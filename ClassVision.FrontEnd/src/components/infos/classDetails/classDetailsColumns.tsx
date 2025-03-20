@@ -37,6 +37,14 @@ export const classDetailsDefaultColumns: ColumnDef<StudentClassInfoType>[] = [
         accessorKey: "student.id",
         header: ({ column }) => columnSortable(column, "Student Id")
     },
+    {
+        accessorKey: "student.firstName",
+        header: ({ column }) => columnSortable(column, "First Name")
+    },
+    {
+        accessorKey: "student.lastName",
+        header: ({ column }) => columnSortable(column, "Last Name")
+    },
     //{
     //    id: "action",
     //    enableColumnFilter: false,
@@ -84,7 +92,7 @@ export const createColumns = (studentDef: StudentClassInfoType) => {
 
     const generated = studentDef.attendants.map((a, i) => {
         const data: ColumnDef<StudentClassInfoType> = {
-            accessorKey: "status",
+            accessorKey: `W${i + 1}`,
             header: ({ column }) => columnSortable(column, `W${i+1}`),
             cell: ({ row }) => {
                 const current = row.original.attendants[i]

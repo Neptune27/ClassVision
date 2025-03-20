@@ -9,15 +9,16 @@ export function ModifyDialog(props: {
     descriptions?: string,
     handleOnOpenChanged: (open: boolean) => void,
     handleSubmit: (event: any) => void,
+    modal?: boolean,
     className?: string,
     children?: React.ReactNode,
 }) {
 
-    const { descriptions, handleOnOpenChanged, handleSubmit, open, title, children, className } = props;
+    const { descriptions, modal, handleOnOpenChanged, handleSubmit, open, title, children, className } = props;
 
 
     return (
-        <Dialog open={open} onOpenChange={handleOnOpenChanged}>
+        <Dialog modal={modal} open={open} onOpenChange={handleOnOpenChanged}>
             <DialogContent className={cn("sm:max-w-[425px]", className)}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>

@@ -43,7 +43,7 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
     const fetchData = async () => {
         const resp = await authorizedFetch(`/api/Attendee/byClass/${classId}`)
         store.data = await resp.json()
-
+        console.log(store.data)
         if (store.data.length > 0)
             setColumns(createColumns(store.data[0]))
     }
@@ -61,7 +61,13 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
     return (
         <div className="container mx-auto p-10">
             <DataTable columns={columns} data={data}
+                
                 visible initialVisibility={{
+                }}
+                visibleName={{
+                    student_id: "Student Id",
+                    student_lastName: "Last Name",
+                    student_firstName:"First Name"
                 }}
                 setSelectedRow={setSelectedRows} >
                 {children}

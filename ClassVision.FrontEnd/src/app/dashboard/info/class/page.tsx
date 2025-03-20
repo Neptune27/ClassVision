@@ -1,15 +1,13 @@
 import DbHeader from "@/components/dashboard/DbHeader";
+import { ClassContent } from "../../../../components/infos/class/ClassContent";
 
-export default function Page({ params }: {
-    params: {
-        id: string
-    }
-}) {
+export default function Page() {
 
 
     return (
         <>
-            <DbHeader items={[{ name: "Dashboard" }, { name: "Attending Class", url: "/dashboard/attending-class" }, { name: "Rollcall" }, { name: params.id }]} />
+            <DbHeader items={[{ name: "Dashboard" }, { name: "Info", url: "/dashboard/info" }, { name: "Class", url: "/dashboard/info/class" }]} />
+            <ClassContent />
         </>
     )
 }

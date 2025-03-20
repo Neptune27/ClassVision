@@ -235,7 +235,7 @@ export function ScheduleDialog({ isEdit }: {
 
 
     return (
-        <ModifyDialog open={snap.opened} handleOnOpenChanged={handleOpen}
+        <ModifyDialog modal={true} open={snap.opened} handleOnOpenChanged={handleOpen}
             title={title} handleSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -252,7 +252,7 @@ export function ScheduleDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Course
                     </Label>
-                    <Combobox value={snap.data.courseId} onValueChange={(value) => {
+                    <Combobox modal={true} value={snap.data.courseId} onValueChange={(value) => {
                         store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={courses.display}

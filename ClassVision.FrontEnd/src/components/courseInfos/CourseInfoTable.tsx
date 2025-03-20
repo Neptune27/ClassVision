@@ -10,7 +10,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
-i
+
 import { DataTable } from "../ui/data-table";
 import { use, useEffect, useState } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
