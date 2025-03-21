@@ -7,13 +7,14 @@ export const enum EAttendantStatus {
     ABSENT = 1,
     LATE = 2,
     EXCUSED = 3,
-    OTHER = 4
+    OTHER = 4,
+    AUTOMATED = 5,
 }
 
 export const EAttendantStatusToString = (value: EAttendantStatus) => {
     switch (value) {
         case EAttendantStatus.PRESENT:
-            return "Present";
+            return "Present (M)";
         case EAttendantStatus.ABSENT:
             return "Absent"
         case EAttendantStatus.LATE:
@@ -22,13 +23,17 @@ export const EAttendantStatusToString = (value: EAttendantStatus) => {
             return "Excused"
         case EAttendantStatus.OTHER:
             return "Other"
+        case EAttendantStatus.AUTOMATED:
+            return "Present (A)"
     }
 }
 
 export const StringToEAttendantStatus = (value: string) => {
     switch (value) {
-        case "Present":
+        case "Present (M)":
             return EAttendantStatus.PRESENT;
+        case "Present (A)":
+            return EAttendantStatus.AUTOMATED;
         case "Absent":
             return EAttendantStatus.ABSENT
         case "Late":
@@ -38,7 +43,7 @@ export const StringToEAttendantStatus = (value: string) => {
         case "Other":
             return EAttendantStatus.OTHER
         default:
-            throw new Error("Value not support")
+            throw new Error("Not supported value")
     }
 }
 

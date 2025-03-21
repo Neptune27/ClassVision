@@ -168,7 +168,7 @@ namespace ClassVision.API.Controllers
                 Id = f.IdPendingFace is null ? Guid.NewGuid() : Guid.Parse(f.IdPendingFace),
                 ImageId = image.Path,
                 StudentId = f.IdUser,
-                Status = f.Status == "recognize" ? Data.Enums.EFaceStatus.AUTOMATED : Data.Enums.EFaceStatus.NOT_SELECTED,
+                Status = f.Status == "recognized" ? Data.Enums.EFaceStatus.AUTOMATED : Data.Enums.EFaceStatus.NOT_SELECTED,
                 X = f.BBox.X,
                 Y = f.BBox.Y,
                 W = f.BBox.W,
@@ -180,7 +180,6 @@ namespace ClassVision.API.Controllers
 
             await _context.RollCallImages.AddAsync(image);
             await _context.SaveChangesAsync();
-            Console.WriteLine("A");
             return Ok(new { image });    
         }
 
@@ -227,11 +226,17 @@ namespace ClassVision.API.Controllers
                 updateFaceDict.Add(item.Id.ToString(), item.StudentId);
             }
 
-            var imageFaceWithIds = image.Faces.Where(f => !string.IsNullOrEmpty(f.StudentId));
-
-
             var response = await client.PostAsJsonAsync("http://localhost:8010/update_embedding", updateFaceDict);
             string stringResult = await response.Content.ReadAsStringAsync();
+
+
+            var imageFaceWithIds = 
+                image.Faces.Where(f => !string.IsNullOrWhiteSpace(f.StudentId))
+                .ToDictionary(i =>
+                {
+                    ArgumentException.ThrowIfNullOrWhiteSpace(i.StudentId);
+                    return i.StudentId;
+                });
 
             var schedule = await _context.Schedules
                 .Include(s => s.Attendants)
@@ -240,10 +245,13 @@ namespace ClassVision.API.Controllers
 
             if (schedule is not null)
             {
-                var attendee = schedule.Attendants.Where(a => imageFaceWithIds.Any(f=> f.StudentId == a.StudentId));
+                var attendee = schedule.Attendants.Where(a => imageFaceWithIds.ContainsKey(a.StudentId));
                 foreach (var attendant in attendee)
                 {
-                    attendant.Status = Data.Enums.EAttendantStatus.PRESENT;
+                    var imageFaceWithId = imageFaceWithIds[attendant.StudentId];
+                    attendant.Status = imageFaceWithId.Status == Data.Enums.EFaceStatus.AUTOMATED
+                        ? Data.Enums.EAttendantStatus.AUTOMATED
+                        : Data.Enums.EAttendantStatus.PRESENT;
                 }
             }
 

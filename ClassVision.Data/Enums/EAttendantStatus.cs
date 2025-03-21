@@ -12,5 +12,6 @@ public enum EAttendantStatus
     ABSENT = 1,
     LATE = 2,
     EXCUSED = 3,
-    OTHER = 4
+    OTHER = 4,
+    AUTOMATED = 5
 }

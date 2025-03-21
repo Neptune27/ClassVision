@@ -61,7 +61,9 @@ export const attendeeColumns: ColumnDef<AttendeeType>[] = [
             const current = row.getValue("status") as EAttendantStatus
             switch (current) {
                 case EAttendantStatus.PRESENT:
-                    return "Present";
+                    return "Present (M)";
+                case EAttendantStatus.AUTOMATED:
+                    return "Present (A)";
                 case EAttendantStatus.ABSENT:
                     return "Absent"
                 case EAttendantStatus.LATE:

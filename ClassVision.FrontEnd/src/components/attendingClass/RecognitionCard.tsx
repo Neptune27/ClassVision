@@ -163,7 +163,7 @@ export function RecognitionCard(props: {
                                 <Button variant="secondary" onClick={() => {
 
                                         const qr0 = QrCode.encodeText(`${location.host}/clients/${scheduleId}`, QrCodeEcc.MEDIUM);
-                                    const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  // See qrcodegen-input-demo
+                                    const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  
 
                                     rollCallQRStore.data = svg
                                     rollCallQRStore.opened = true

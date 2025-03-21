@@ -18,9 +18,13 @@ const handleDeleteClick = (id: string) => {
     deleteStore.opened = true
 }
 export const eAttendantCBData : ComboboxData[] = [{
-    label: "Present",
-    value: "Present"
+    label: "Present (M)",
+    value: "Present (M)"
 },
+    {
+        label: "Present (A)",
+        value: "Present (A)"
+    },
 {
     label: "Absent",
     value: "Absent"
@@ -37,6 +41,7 @@ export const eAttendantCBData : ComboboxData[] = [{
     label: "Other",
     value: "Other"
 },
+
 ]
 
 

@@ -6,7 +6,7 @@ export const imageDataConvert = (data: any) => {
         faces: data.faces.map(f => {
             return {
                 "id": f.id,
-                "status": f.studentId != null ? 1 : 0,
+                "status": f.status,
                 //"status": f.status,
                 "data": {
                     "x": f.x,

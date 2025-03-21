@@ -21,6 +21,8 @@ const boundingBoxClassHandler = (status: EFaceStatus) => {
             return svgStyle.rectStrokeGreen
         case EFaceStatus.REMOVED:
             return svgStyle.rectStrokeBlack
+        case EFaceStatus.AUTOMATED:
+            return svgStyle.rectStrokeBlue
 
     }
 }
