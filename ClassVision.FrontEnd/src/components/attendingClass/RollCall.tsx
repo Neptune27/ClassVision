@@ -16,6 +16,7 @@ import { useProxy } from 'valtio/utils';
 import { useHub } from "../../hooks/useHub"
 import { EAttendantStatus } from "../../interfaces/AttendeeTypes"
 import { imageDataConvert } from "../../lib/imageDataConvertion"
+import { triggerFetch } from "../../lib/utils"
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
@@ -147,6 +148,8 @@ export function RollCall({ id, isClient }: {
                 'Content-Type': 'text/plain;charset=UTF-8'
             },
         })
+
+        triggerFetch(store)
     }
 
     return (

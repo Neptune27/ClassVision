@@ -25,7 +25,7 @@ import { toSvgString } from "../../lib/qrUltis"
 import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
 import { imageDataConvert } from "../../lib/imageDataConvertion"
-
+import { triggerFetch } from "../../lib/utils"
 
 const imageUrl = "/api/RollCallImage"
 
@@ -184,6 +184,8 @@ export function RecognitionCard(props: {
                                                 })
                                             })
                                         }
+
+                                        triggerFetch(rollCallStore)
                                 }}>Submit</Button>
                             </div>
 

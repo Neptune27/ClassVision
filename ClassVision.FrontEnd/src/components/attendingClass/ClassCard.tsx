@@ -11,7 +11,7 @@ import { Button } from "../ui/button"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { ScheduleDialog } from "../schedules/ScheduleDialog"
 import { useSnapshot } from "valtio"
-import { scheduleModifyStore, scheduleDefault } from "../../stores/scheduleStores"
+import { scheduleModifyStore, scheduleDefault, scheduleStore } from "../../stores/scheduleStores"
 
 
 const scheduleUrl = "/api/Schedule"
@@ -25,6 +25,9 @@ export function ClassCard({ filteredId}: {
     filteredId?: string
 }) {
 
+
+    const store = scheduleStore;
+    const snap = useSnapshot(store)
     const modifyStore = scheduleModifyStore;
     const modifySnap = useSnapshot(modifyStore)
     const handleCreate = () => {
@@ -36,26 +39,27 @@ export function ClassCard({ filteredId}: {
 
         modifyStore.isEdit = false
         modifyStore.opened = true
-
-
-
     }
 
-    const [schedules, setSchedules] = useState<ScheduleType[]>([])
+    //const [schedules, setSchedules] = useState<ScheduleType[]>([])
     const [schedulesByTime, setSBT] = useState<SBTType>({ curr: [], next: [], prev: [] })
     const filterString = filteredId ?? ""
+    const fetchSchedule = async () => {
+        const resp = await authorizedFetch(`${scheduleUrl}/byUser`);
+        const data = await resp.json()
+        console.log(data)
+        store.data = data
+        //setSchedules(data)
+    }
+
     useEffect(() => {
-        const fetchSchedule = async () => {
-            const resp = await authorizedFetch(`${scheduleUrl}/byUser`);
-            const data = await resp.json()
-            console.log(data)
-
-            setSchedules(data)
-        }
-
         fetchSchedule()
     }, [])
 
+
+    useEffect(() => {
+        fetchSchedule()
+    }, [snap.fetchTrigger])
 
     useEffect(() => {
         const scheduleByT: SBTType = {
@@ -64,7 +68,7 @@ export function ClassCard({ filteredId}: {
             next: []
         }
 
-        schedules.filter(s => s.course.id.includes(filterString)).forEach(s => {
+        snap.data.filter(s => s.course.id.includes(filterString)).forEach(s => {
             const start = new Date(`${s.date}T${s.startTime}`)
             const end = new Date(`${s.date}T${s.endTime}`) 
             if (start < now && end > now) {
@@ -83,7 +87,7 @@ export function ClassCard({ filteredId}: {
         //console.log(available)
 
         setSBT(scheduleByT)
-    }, [schedules])
+    }, [snap.data])
 
 
     return (

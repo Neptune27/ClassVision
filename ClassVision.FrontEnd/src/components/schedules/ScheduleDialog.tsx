@@ -144,6 +144,7 @@ export function ScheduleDialog({ isEdit }: {
 
         console.log(resp.status)
         store.opened = false
+        triggerFetch(scheduleStore)
     }
 
     const handleCreate = async (sentData: ScheduleModifyType) => {
@@ -163,6 +164,8 @@ export function ScheduleDialog({ isEdit }: {
 
         console.log(resp.status)
         store.opened = false
+        triggerFetch(scheduleStore)
+
     }
 
 
