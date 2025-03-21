@@ -144,7 +144,9 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
             return ([column.id, name])
         })]
 
-    const showNameValue = Object.fromEntries(a);
+    const showNameValue: {
+        [k: string]: string
+    } = Object.fromEntries(a);
 
     const cbData: ComboboxData[] = Object.entries(showNameValue).map(([k, v], i) => {
         return ({

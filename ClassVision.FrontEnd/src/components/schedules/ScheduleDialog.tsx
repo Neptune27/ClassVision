@@ -22,6 +22,7 @@ import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
 import { studentStore } from "../../stores/studentStores"
+import { get } from "node:http"
 
 
 const baseUrl = "/api/Schedule"
@@ -172,6 +173,9 @@ export function ScheduleDialog({ isEdit }: {
         }
 
         data.courseId = getDisplayId(data.courseId)
+        data.date = data.date.split("T")[0]
+        data.startTime = data.startTime.split(".")[0]
+        data.endTime = data.endTime.split(".")[0]
 
         //data.userId = userData.find(u => u.userName == data.userId)?.id ?? ""
 
@@ -191,7 +195,7 @@ export function ScheduleDialog({ isEdit }: {
             const resp = await authorizedFetch(`${courseUrl}/`)
             const data = await resp.json()
 
-            const result = data.map((datum: CourseType) => {
+            const result: ComboboxData[] = data.map((datum: CourseType) => {
                 const value = `${datum.id} | ${datum.teacher.id} ${datum.classroom.roomId}`
 
                 return ({
@@ -199,6 +203,8 @@ export function ScheduleDialog({ isEdit }: {
                     label: value
                 })
             })
+
+            store.data.courseId = result.find(r => getDisplayId(r.value) == store.data.courseId)?.value ?? ""
 
             setCoursesData({
                 data: data,
@@ -271,11 +277,11 @@ export function ScheduleDialog({ isEdit }: {
                                             onChange={(date) => { handleDateChange(date) }} hideTime />
                                     </div>
                                     <div className="col-span-4">
-                                        <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${store.data.startTime}`)}
+                                        <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${snap.data.startTime}`)}
                                             onChange={(date) => handleTimeChange(date, "startTime")} />
                                     </div>
                                     <div className="col-span-4">
-                                        <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${store.data.endTime}`)}
+                                        <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${snap.data.endTime}`)}
                                             onChange={(date) => handleTimeChange(date, "endTime")} />
                                     </div>
 

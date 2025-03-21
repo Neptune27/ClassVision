@@ -24,6 +24,7 @@ import { RollcallImage } from "./RollCallImage"
 import { toSvgString } from "../../lib/qrUltis"
 import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
+import { imageDataConvert } from "../../lib/imageDataConvertion"
 
 
 const imageUrl = "/api/RollCallImage"
@@ -80,7 +81,7 @@ export function RecognitionCard(props: {
                 <div className="relative">
                     <CardHeader className="pb-2">
                         <CardTitle>Image</CardTitle>
-                        <CardDescription>A.</CardDescription>
+                        <CardDescription></CardDescription>
                     </CardHeader>
                     <CollapsibleTrigger className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted">
                         <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? "" : "-rotate-90"}`} />
@@ -105,19 +106,27 @@ export function RecognitionCard(props: {
                                             if (e) {
                                                 return
                                             }
+                                            const data: {
+                                                image: {
+                                                    path: string,
+                                                    faces: ImageFaceType[]
+                                                }
+                                                } = JSON.parse(file.serverId)
 
-                                            store.data.push({
-                                                faces: [],
-                                                path: file.serverId,
-                                            })
+                                                store.data.push(imageDataConvert(data.image))
                                         }} id="file" className="h-full" onremovefile={async (e, f) => {
                                             if (e) {
                                                 console.log("Wtf")
                                                 console.log(e)
                                                 return
                                             }
-                                            const id = f.serverId
-                                            await authorizedFetch(`/api/RollCallImage?path=${id}`, {
+                                            const data: {
+                                                image: {
+                                                    path: string,
+                                                    faces: ImageFaceType[]
+                                                }
+                                            } = JSON.parse(f.serverId)
+                                            await authorizedFetch(`/api/RollCallImage?path=${data.image.path}`, {
                                                 method: "DELETE"
                                             })
 

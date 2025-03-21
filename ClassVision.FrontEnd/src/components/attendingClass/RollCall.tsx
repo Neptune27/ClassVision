@@ -15,7 +15,7 @@ import { useSnapshot } from "valtio"
 import { useProxy } from 'valtio/utils';
 import { useHub } from "../../hooks/useHub"
 import { EAttendantStatus } from "../../interfaces/AttendeeTypes"
-
+import { imageDataConvert } from "../../lib/imageDataConvertion"
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
@@ -128,26 +128,7 @@ export function RollCall({ id, isClient }: {
 
         store.data = []
         //@ts-ignore
-        store.data = schedule?.images?.map(i => {
-            return ({
-                path: i.path,
-                faces: i.faces.map(f => {
-                    return {
-                        "id": f.id,
-                        "status": f.studentId != null ? 1 : 0,
-                        //"status": f.status,
-                        "data": {
-                            "x": f.x,
-                            "y": f.y,
-                            "w": f.w,
-                            "h": f.h
-                        },
-                        "user_id": f.studentId
-
-                    }
-                })
-            })
-        }) 
+        store.data = schedule?.images?.map(imageDataConvert) 
 
         //store.data.splice(0, store.data.length)
 

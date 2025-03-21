@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import image from "next/image"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { EFaceStatus, ImageFaceType } from "../../interfaces/ImageFaceType"
 

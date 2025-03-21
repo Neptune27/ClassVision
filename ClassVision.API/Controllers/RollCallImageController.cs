@@ -181,7 +181,7 @@ namespace ClassVision.API.Controllers
             await _context.RollCallImages.AddAsync(image);
             await _context.SaveChangesAsync();
             Console.WriteLine("A");
-            return Ok(filePath);    
+            return Ok(new { image });    
         }
 
 

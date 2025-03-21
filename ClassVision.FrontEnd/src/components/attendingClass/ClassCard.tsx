@@ -9,6 +9,9 @@ import { Input } from "../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Button } from "../ui/button"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
+import { ScheduleDialog } from "../schedules/ScheduleDialog"
+import { useSnapshot } from "valtio"
+import { scheduleModifyStore, scheduleDefault } from "../../stores/scheduleStores"
 
 
 const scheduleUrl = "/api/Schedule"
@@ -21,6 +24,23 @@ type SBTType = {
 export function ClassCard({ filteredId}: {
     filteredId?: string
 }) {
+
+    const modifyStore = scheduleModifyStore;
+    const modifySnap = useSnapshot(modifyStore)
+    const handleCreate = () => {
+        modifyStore.data = scheduleDefault()
+
+        if (filteredId) {
+            modifyStore.data.courseId = filteredId
+        }
+
+        modifyStore.isEdit = false
+        modifyStore.opened = true
+
+
+
+    }
+
     const [schedules, setSchedules] = useState<ScheduleType[]>([])
     const [schedulesByTime, setSBT] = useState<SBTType>({ curr: [], next: [], prev: [] })
     const filterString = filteredId ?? ""
@@ -68,7 +88,11 @@ export function ClassCard({ filteredId}: {
 
     return (
         <>
-            <h1 className="text-bold text-xl pb-4">Current:</h1>
+            <ScheduleDialog isEdit={modifySnap.isEdit} />
+            <div className="flex justify-between">
+                <h1 className="text-bold text-xl pb-4">Current:</h1>
+                <Button onClick={handleCreate}>Create new Schedule</Button>
+            </div>
             <div className="flex flex-wrap gap-4">
                 {schedulesByTime.curr.map(s => <Card key={s.id} className="max-w-[350px]">
                     <CardHeader>
