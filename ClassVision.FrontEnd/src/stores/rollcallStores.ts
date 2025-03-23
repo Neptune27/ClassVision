@@ -31,6 +31,11 @@ export const rollCallQRStore = proxy<{ opened: boolean, data: string }>({
 })
 
 
+export const rollCallCreateStore = proxy<{ opened: boolean, message: string }>({
+    message: "",
+    opened: false
+})
+
 export const rollCallHubStore = proxy<{
     hub?: HubConnection,
     startConnection: () => Promise<void>,

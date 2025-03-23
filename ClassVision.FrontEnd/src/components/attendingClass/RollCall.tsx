@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { RecognitionCard } from "./RecognitionCard"
-import { rollCallHubStore, rollCallStore } from "../../stores/rollcallStores"
+import { rollCallCreateStore, rollCallHubStore, rollCallStore } from "../../stores/rollcallStores"
 import { EFaceStatus } from "../../interfaces/ImageFaceType"
 import { Separator } from "../ui/separator"
 import { RollCallStudentTable } from "./RollCallStudentTable"
@@ -17,12 +17,14 @@ import { useHub } from "../../hooks/useHub"
 import { EAttendantStatus } from "../../interfaces/AttendeeTypes"
 import { imageDataConvert } from "../../lib/imageDataConvertion"
 import { triggerFetch } from "../../lib/utils"
+import { CreateRollCallDialog } from "./AttendingClassDialogs"
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
 
 const store = rollCallStore;
 const hubStore = rollCallHubStore;
+const createStore = rollCallCreateStore;
 
 export function RollCall({ id, isClient }: {
     id: string,
@@ -138,6 +140,10 @@ export function RollCall({ id, isClient }: {
         //    faces: ImageFaceExampleData
         //})
 
+        if (store.attentee.length == 0) {
+            handleCreateDialog(true)
+        }
+
         console.log(store)
     }, [schedule])
 
@@ -152,8 +158,15 @@ export function RollCall({ id, isClient }: {
         triggerFetch(store)
     }
 
+    const handleCreateDialog = (isFirst: boolean) => {
+        createStore.opened = true
+        createStore.message = isFirst ? "This schedule have not been instancized, press Continue to create a new instance"
+                                      : ""
+    }
+
     return (
         <div className={"md:p-10 h-full"}>
+            <CreateRollCallDialog handleSubmit={handleCreateRollCall} />
             <div className="container mx-auto ">
                 <RecognitionCard scheduleId={id} isClient={isClient} />
             </div>
@@ -171,7 +184,7 @@ export function RollCall({ id, isClient }: {
                         <DropdownMenuContent align="end">
                             {/*<DropdownMenuItem onClick={handleCreate}>Create</DropdownMenuItem>*/}
                             {/*<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>*/}
-                            <DropdownMenuItem onClick={handleCreateRollCall}>Create rollcall</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>handleCreateDialog(false)}>Create rollcall</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </RollCallStudentTable>

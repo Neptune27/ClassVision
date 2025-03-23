@@ -1,6 +1,5 @@
 import { proxy } from 'valtio'
 import { AttendeeModifyType, AttendeeType, EAttendantStatus } from '../interfaces/AttendeeTypes'
-import { DateTime } from 'luxon'
 
 export const attendeeDefault = (): AttendeeModifyType => {
     return ({

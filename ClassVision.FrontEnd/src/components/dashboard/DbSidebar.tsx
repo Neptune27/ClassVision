@@ -210,6 +210,7 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                         <DbSidebarMenuItem name={"Student"} url={"/dashboard/student"} icon={Command} />
                         <DbSidebarMenuItem name={"Schedule"} url={"/dashboard/schedule"} icon={Command} />
                         <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={Command} />
+                        <DbSidebarMenuItem name={"User"} url={"/dashboard/user"} icon={Command} />
                         <DbSidebarMenuItem name={"Test"} url={"/dashboard/test"} icon={Command} />
                         {/*<DbCollapsableItem title={"Collapsed"} isActive={false} >*/}
                         {/*<DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>*/}
