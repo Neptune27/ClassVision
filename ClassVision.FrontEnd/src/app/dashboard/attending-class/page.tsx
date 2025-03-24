@@ -1,5 +1,7 @@
 import DbHeader from "@/components/dashboard/DbHeader";
 import { ClassCard } from "../../../components/attendingClass/ClassCard";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ClassCalendar } from "../../../components/infos/calendars/ClassCalendar";
 
 
 export default function Page() {
@@ -8,12 +10,19 @@ export default function Page() {
     return (
         <>
             <DbHeader items={[{ name: "Dashboard" }, { name: "Attending Class" }]} />
-            <div className="container mx-auto p-10">
-                <div className="flex gap-2">
-                    <h1 className="text-bold text-xl pb-4">Classes:</h1>
-                </div>
-                <ClassCard />
-            </div>
+
+            <Tabs defaultValue="schedule" className="w-full p-4">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="schedule">Schedules</TabsTrigger>
+                    <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                </TabsList>
+                <TabsContent value="calendar">
+                    <ClassCalendar/>
+                </TabsContent>
+                <TabsContent value="schedule">
+                    <ClassCard />
+                </TabsContent>
+            </Tabs>
         </>
     )
 }

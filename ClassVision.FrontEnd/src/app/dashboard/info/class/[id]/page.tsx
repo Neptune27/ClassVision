@@ -1,5 +1,6 @@
 import DbHeader from "@/components/dashboard/DbHeader";
-import { ClassDetailsTable } from "../../../../../components/infos/classDetails/ClassDetailsTable";
+import { ClassDetailsTable } from "@/components/infos/classDetails/ClassDetailsTable";
+import { ClassCalendar } from "@/components/infos/calendars/ClassCalendar";
 
 import {
     Tabs,
@@ -19,13 +20,17 @@ export default function Page({ params }: {
         <>
             <DbHeader items={[{ name: "Dashboard" }, { name: "Info", url: "/dashboard/info" }, { name: "Class", url: "/dashboard/info/class" }, { name: params.id }]} />
             <Tabs defaultValue="info" className="w-full p-4">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="info">Info</TabsTrigger>
+                    <TabsTrigger value="calendar">Calendar</TabsTrigger>
                     <TabsTrigger value="schedule">Schedules</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info">
                     <ClassDetailsTable classId={params.id} >
                     </ClassDetailsTable>
+                </TabsContent>
+                <TabsContent value="calendar">
+                    <ClassCalendar filteredId={params.id} />
                 </TabsContent>
                 <TabsContent value="schedule">
                     <ClassCard filteredId={params.id} /> 

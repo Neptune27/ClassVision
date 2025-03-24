@@ -53,7 +53,9 @@ export function ClassCard({ filteredId}: {
     }
 
     useEffect(() => {
-        fetchSchedule()
+
+        if (snap.data.length == 0)
+            fetchSchedule()
     }, [])
 
 
