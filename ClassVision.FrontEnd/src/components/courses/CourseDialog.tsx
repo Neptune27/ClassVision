@@ -148,8 +148,15 @@ export function CourseDialog({ isEdit }: {
         display: []
     })
 
+    const [originalSchedule, setOriginalSchedule] = useState<string[]>([])
+    const [originalStudents, setOriginalStudents] = useState<string[]>([])
+
+
+
     useEffect(() => {
         setTitle(snap.isEdit ? "Edit" : "Create")
+        setOriginalSchedule(snap.data.schedules.map(s => s.id))
+        setOriginalStudents([...snap.data.studentIds])
     }, [snap.isEdit])
 
 
@@ -287,7 +294,8 @@ export function CourseDialog({ isEdit }: {
         console.log(await resp.text())
     }
 
-    const handleDeleteSchedule = async (id: string) => {
+    const handleDeleteSchedule = async (schedule: ScheduleModifyType) => {
+        const id = schedule.id
         const url = `${scheduleUrl}/${id}`
         const resp = await authorizedFetch(url, {
             method: "DELETE",
@@ -298,7 +306,7 @@ export function CourseDialog({ isEdit }: {
         console.log(await resp.text())
     }
 
-    const handleStudent = async (studentId: string, courseId: string, type: "POST" | "PUT") => {
+    const handleStudent = async (studentId: string, courseId: string, type: "POST" | "PUT" | "DELETE") => {
         let url = `${enrollmentUrl}`
 
         const resp = await authorizedFetch(url, {
@@ -327,6 +335,31 @@ export function CourseDialog({ isEdit }: {
 
         const data = await resp.json()
         console.log(data)
+
+
+        const newSchedule = sentData.schedules.filter(s=> s.id == "")
+        for (const schedule of newSchedule) {
+            await handleSchedule(schedule, "POST")
+        }
+
+        const deletedSchedule = sentData.schedules.filter(s => !originalSchedule.includes(s.id) && s.id != "")
+        for (const schedule of deletedSchedule) {
+            await handleDeleteSchedule(schedule)
+        }
+
+
+
+        //const newStudent = sentData.studentIds.filter(s => !originalStudents.includes(s))
+        //for (const schedule of newSchedule) {
+        //    await handleSchedule(schedule, "POST")
+        //}
+
+        //const deletedSchedule = sentData.schedules.filter(s => !originalSchedule.includes(s.id) && s.id != "")
+        //for (const schedule of deletedSchedule) {
+        //    await handleDeleteSchedule(schedule)
+        //}
+
+
         store.opened = false
     }
 
@@ -477,17 +510,17 @@ export function CourseDialog({ isEdit }: {
                                     <CardContent className="p-4">
                                         <div className={"grid grid-cols-8 gap-2"}>
                                             <div className="col-span-4">
-                                                <DateTimePicker value={new Date(schedule.date)} modal={true}
+                                                <DateTimePicker value={new Date(schedule.date)} modal={true} disabled={isEdit}
                                                     onChange={(date) => { handleDateChange(date, index) }} hideTime />
                                             </div>
-                                            <Input className="col-span-2" type="number" value={schedule.period} onChange={(event) => handlePeriodChange(event.target.value, index)} />
+                                            <Input className="col-span-2" type="number" disabled={isEdit} value={schedule.period} onChange={(event) => handlePeriodChange(event.target.value, index)} />
                                             <Label className="flex justify-center items-center">Weeks</Label>
                                             <div className="col-span-3">
-                                                <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${schedule.startTime}`)}
+                                                <SimpleTimePicker modal={true} disabled={isEdit} value={new Date(`2000-01-01T${schedule.startTime}`)}
                                                     onChange={(date) => handleTimeChange(date, index, "startTime")} />
                                             </div>
                                             <div className="col-span-3">
-                                                <SimpleTimePicker modal={true} value={new Date(`2000-01-01T${schedule.endTime}`)}
+                                                <SimpleTimePicker modal={true} disabled={isEdit} value={new Date(`2000-01-01T${schedule.endTime}`)}
                                                     onChange={(date) => handleTimeChange(date, index, "endTime")} />
                                             </div>
                                             <Button variant="destructive" className="col-span-2" onClick={()=>handleScheduleDelete(index)}>Delete</Button>
