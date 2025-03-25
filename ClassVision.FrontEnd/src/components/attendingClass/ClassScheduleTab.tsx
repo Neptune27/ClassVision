@@ -12,7 +12,7 @@ import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { ScheduleDialog } from "../schedules/ScheduleDialog"
 import { useSnapshot } from "valtio"
 import { scheduleModifyStore, scheduleDefault, scheduleStore } from "../../stores/scheduleStores"
-
+import { ScheduleInfoCard } from "./ScheduleInfoCard"
 
 const scheduleUrl = "/api/Schedule"
 const now = new Date()
@@ -21,7 +21,7 @@ type SBTType = {
     curr: ScheduleType[],
     next: ScheduleType[]
 }
-export function ClassCard({ filteredId}: {
+export function ClassScheduleTab({ filteredId}: {
     filteredId?: string
 }) {
 
@@ -100,63 +100,15 @@ export function ClassCard({ filteredId}: {
                 <Button onClick={handleCreate}>Create new Schedule</Button>
             </div>
             <div className="flex flex-wrap gap-4">
-                {schedulesByTime.curr.map(s => <Card key={s.id} className="max-w-[350px]">
-                    <CardHeader>
-                        <CardTitle>{s.course.courseInfo.name}</CardTitle>
-                        <CardDescription>
-                            <h2 className="font-bold">{s.date}</h2>
-                            <div>{s.startTime}-{s.endTime}</div>
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-
-                    </CardContent>
-                    <CardFooter >
-                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
-                            <Button className="w-full">Go</Button>
-                        </Link>
-                    </CardFooter>
-                </Card>)}
+                {schedulesByTime.curr.map(s => <ScheduleInfoCard key={s.id} schedule={s} />)}
             </div>
             <h1 className="text-bold text-xl pb-4 pt-4">Future:</h1>
             <div className="flex flex-wrap gap-4">
-                {schedulesByTime.next.map(s => <Card key={s.id} className="max-w-[350px]">
-                    <CardHeader>
-                        <CardTitle>{s.course.courseInfo.name}</CardTitle>
-                        <CardDescription>
-                            <h2 className="font-bold">{s.date}</h2>
-                            <div>{s.startTime}-{s.endTime}</div>
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-
-                    </CardContent>
-                    <CardFooter >
-                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
-                            <Button className="w-full">Go</Button>
-                        </Link>
-                    </CardFooter>
-                </Card>)}
+                {schedulesByTime.next.map(s => <ScheduleInfoCard key={s.id} schedule={s} />)}
             </div>
             <h1 className="text-bold text-xl pb-4 pt-4">Previous:</h1>
             <div className="flex flex-wrap gap-4">
-                {schedulesByTime.prev.map(s => <Card key={s.id} className="max-w-[350px]">
-                    <CardHeader>
-                        <CardTitle>{s.course.courseInfo.name}</CardTitle>
-                        <CardDescription>
-                            <h2 className="font-bold">{s.date}</h2>
-                            <div>{s.startTime}-{s.endTime}</div>
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-
-                    </CardContent>
-                    <CardFooter >
-                        <Link className="w-full" href={`/dashboard/attending-class/rollcall/${s.id}`}>
-                            <Button className="w-full">Go</Button>
-                        </Link>
-                    </CardFooter>
-                </Card>)}
+                {schedulesByTime.prev.map(s => <ScheduleInfoCard key={s.id} schedule={s} />)}
             </div>
 
             {/*{schedules.map(s => <Card key={s.id} className="max-w-[350px]">*/}

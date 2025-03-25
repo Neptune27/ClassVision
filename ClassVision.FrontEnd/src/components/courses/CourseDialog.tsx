@@ -274,22 +274,7 @@ export function CourseDialog({ isEdit }: {
 
     }
 
-    const handleEdit = async (sentData: CourseModifyType) => {
-        const url = `${baseUrl}/${snap.data.id}`
-        console.log(url)
-        const resp = await authorizedFetch(url, {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(sentData)
-        })
-
-        const data = await resp.json()
-        console.log(data)
-        store.opened = false
-    }
-
+ 
     const handleSchedule = async (schedule: ScheduleModifyType, type: "POST" | "PUT") => {
         const url = `${scheduleUrl}/${schedule.id}`
         const resp = await authorizedFetch(url, {
@@ -298,6 +283,17 @@ export function CourseDialog({ isEdit }: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(schedule)
+        })
+        console.log(await resp.text())
+    }
+
+    const handleDeleteSchedule = async (id: string) => {
+        const url = `${scheduleUrl}/${id}`
+        const resp = await authorizedFetch(url, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json'
+            },
         })
         console.log(await resp.text())
     }
@@ -317,6 +313,23 @@ export function CourseDialog({ isEdit }: {
         })
         console.log(await resp.text())
     }
+
+    const handleEdit = async (sentData: CourseModifyType) => {
+        const url = `${baseUrl}/${snap.data.id}`
+        console.log(url)
+        const resp = await authorizedFetch(url, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sentData)
+        })
+
+        const data = await resp.json()
+        console.log(data)
+        store.opened = false
+    }
+
 
 
     const handleCreate = async (sentData: CourseModifyType) => {

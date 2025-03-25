@@ -1,5 +1,5 @@
 import DbHeader from "@/components/dashboard/DbHeader";
-import { ClassCard } from "../../../components/attendingClass/ClassCard";
+import { ClassScheduleTab } from "../../../components/attendingClass/ClassScheduleTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClassCalendar } from "../../../components/infos/calendars/ClassCalendar";
 
@@ -20,7 +20,7 @@ export default function Page() {
                     <ClassCalendar/>
                 </TabsContent>
                 <TabsContent value="schedule">
-                    <ClassCard />
+                    <ClassScheduleTab />
                 </TabsContent>
             </Tabs>
         </>

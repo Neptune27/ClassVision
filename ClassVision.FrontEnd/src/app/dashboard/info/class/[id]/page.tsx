@@ -8,7 +8,7 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { ClassCard } from "@/components/attendingClass/ClassCard"
+import { ClassScheduleTab } from "@/components/attendingClass/ClassScheduleTab"
 export default function Page({ params }: {
     params: {
         id: string
@@ -33,7 +33,7 @@ export default function Page({ params }: {
                     <ClassCalendar filteredId={params.id} />
                 </TabsContent>
                 <TabsContent value="schedule">
-                    <ClassCard filteredId={params.id} /> 
+                    <ClassScheduleTab filteredId={params.id} /> 
                 </TabsContent>
             </Tabs>
 
