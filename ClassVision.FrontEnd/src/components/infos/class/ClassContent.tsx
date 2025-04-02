@@ -8,6 +8,7 @@ import { useSnapshot } from "valtio"
 import { courseStore } from "../../../stores/courseStores"
 import { authorizedFetch } from "../../../utils/authorizedFetcher"
 import Link from "next/link"
+import { DateTime } from "luxon"
 
 export function ClassContent() {
 
@@ -38,7 +39,12 @@ export function ClassContent() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                    casss
+                        <div>
+                            Teacher: {s.teacher.firstName} {s.teacher.lastName}
+                        </div>
+                        <div>
+                            {DateTime.fromISO(s.createdAt).toRelative()}
+                        </div>
                     </CardContent>
                     <CardFooter >
                         <Link className="w-full" href={`./class/${s.id}`}>

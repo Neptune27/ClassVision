@@ -193,7 +193,7 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
             <SidebarContent>
 
                 <SidebarGroup>
-                    <SidebarGroupLabel>Management</SidebarGroupLabel>
+                    <SidebarGroupLabel>Main</SidebarGroupLabel>
                     <SidebarMenu>
                         <DbSidebarMenuItem name={"Attending Class"} url={"/dashboard/attending-class"} icon={Command} />
                         <DbSidebarMenuItem name={"Class Info"} url={"/dashboard/info/class"} icon={Command} />
@@ -211,7 +211,7 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                         <DbSidebarMenuItem name={"Schedule"} url={"/dashboard/schedule"} icon={Command} />
                         <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={Command} />
                         <DbSidebarMenuItem name={"User"} url={"/dashboard/user"} icon={Command} />
-                        <DbSidebarMenuItem name={"Test"} url={"/dashboard/test"} icon={Command} />
+                        {/*<DbSidebarMenuItem name={"Test"} url={"/dashboard/test"} icon={Command} />*/}
                         {/*<DbCollapsableItem title={"Collapsed"} isActive={false} >*/}
                         {/*<DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>*/}
                         {/*</DbCollapsableItem>*/}

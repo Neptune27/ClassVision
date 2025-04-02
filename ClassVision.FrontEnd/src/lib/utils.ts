@@ -38,3 +38,7 @@ export const getImageDimensions = (url: string): Promise<{ width: number, height
         img.src = url;
     });
 };
+
+export const getRandomInt = (max: number) => {
+    return Math.floor(Math.random() * max);
+}

@@ -16,11 +16,11 @@ import { ClassroomType } from "../../interfaces/ClassroomType"
 import { CourseStudentPopover } from "./CourseStudentPopover"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTimePicker } from "../ui/datetime-picker"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Card, CardContent } from "../ui/card"
 import { Button } from "../ui/button"
 import { DateTime } from "luxon"
 import { getDisplayId, toDisplayValue, triggerFetch } from "../../lib/utils"
-import { ScheduleModifyType, ScheduleType } from "../../interfaces/ScheduleTypes"
+import { ScheduleModifyType } from "../../interfaces/ScheduleTypes"
 import { scheduleDefault } from "../../stores/scheduleStores"
 
 
