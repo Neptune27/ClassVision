@@ -6,7 +6,6 @@ import { NumberCard } from "./NumberCard"
 import { getRandomInt } from "../../lib/utils"
 import { ClassCalendar } from "../infos/calendars/ClassCalendar"
 import { Card, CardContent } from "../ui/card"
-import { count } from "console"
 
 
 const statisticUrl = `/api/statistic`
