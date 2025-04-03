@@ -16,15 +16,17 @@ const scheduleUrl = "/api/Schedule"
 const rollCallUrl = "/dashboard/attending-class/rollcall"
 
 export function ClassCalendar({
-    filteredId
+    filteredId,
+    className
 }: {
-    filteredId?: string
+    filteredId?: string,
+    className?: string
 }) {
     const store = scheduleStore;
     const snap = useSnapshot(store)
 
     const [events, setEvents] = useState<EventSourceInput>([])
-   
+
 
     const filterString = filteredId ?? ""
     const fetchSchedule = async () => {
@@ -62,7 +64,7 @@ export function ClassCalendar({
 
 
     return (
-        <div className="mx-auto w-[812px]">
+        <div className={className}>
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridDay]}
                 initialView="timeGridWeek"

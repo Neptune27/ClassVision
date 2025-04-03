@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { NumberCard } from "./NumberCard"
 import { getRandomInt } from "../../lib/utils"
+import { ClassCalendar } from "../infos/calendars/ClassCalendar"
+import { Card, CardContent } from "../ui/card"
+import { count } from "console"
 
 
 const statisticUrl = `/api/statistic`
@@ -44,6 +47,11 @@ export function StatisticCard() {
     return (
         <div className="container mx-auto p-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card className=" md:col-span-2 lg:col-span-4">
+                    <CardContent className="p-6">
+                        <ClassCalendar className="mx-auto" />
+                    </CardContent>
+                </Card>
                 <NumberCard label={"Currently Available"} value={data.currentlyAvailable} duration={duration + getRandomInt(randomDuration)} />
                 <NumberCard label={"Total Classes"} value={data.totalClasses} duration={duration + getRandomInt(randomDuration)} />
                 <NumberCard label={"Total Students"} value={data.totalStudents} duration={duration + getRandomInt(randomDuration)} />

@@ -43,6 +43,12 @@ export function ClassContent() {
                             Teacher: {s.teacher.firstName} {s.teacher.lastName}
                         </div>
                         <div>
+                            Total: {s.schedules.length} Session(s)
+                        </div>
+                        {/*<div>*/}
+                        {/*    {DateTime.fromISO(s.createdAt).toRelative()}*/}
+                        {/*</div>*/}
+                        <div>
                             {DateTime.fromISO(s.createdAt).toRelative()}
                         </div>
                     </CardContent>

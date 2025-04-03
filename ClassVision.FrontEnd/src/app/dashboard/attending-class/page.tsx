@@ -17,7 +17,7 @@ export default function Page() {
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
                 </TabsList>
                 <TabsContent value="calendar">
-                    <ClassCalendar/>
+                    <ClassCalendar className="mx-auto w-[812px]"/>
                 </TabsContent>
                 <TabsContent value="schedule">
                     <ClassScheduleTab />

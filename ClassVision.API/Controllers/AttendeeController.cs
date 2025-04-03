@@ -1,4 +1,5 @@
-﻿using ClassVision.Data;
+﻿using ClassVision.API.Services;
+using ClassVision.Data;
 using ClassVision.Data.DTOs;
 using ClassVision.Data.Entities;
 using Humanizer;
@@ -14,14 +15,10 @@ namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AttendeeController : ControllerBase
+    public class AttendeeController(AppDBContext context, SpreadsheetService spreadsheetService) : ControllerBase
     {
-        private readonly AppDBContext _context;
-
-        public AttendeeController(AppDBContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDBContext _context = context;
+        private readonly SpreadsheetService spreadsheetService = spreadsheetService;
 
         // GET: api/Attendants
         [HttpGet]
@@ -58,6 +55,44 @@ namespace ClassVision.API.Controllers
             .SingleAsync();
 
             return Ok(data);
+        }
+
+        [HttpGet("byClass/toExcel/{id}")]
+        public async Task<IActionResult> ExportByClass(Guid id)
+        {
+            var data = await _context.Courses.Where(c => c.Id == id)
+            .Include(s => s.Enrollments)
+            .ThenInclude(e => e.Student)
+            .Include(s => s.Enrollments)
+            .ThenInclude(s => s.Attendants)
+            .Select(c =>
+                c.Enrollments)
+            .SingleAsync();
+
+
+            var filePath = $"/api/Media/Excels/{Guid.CreateVersion7()}.xlsx";
+            var saveFilePath = Path.Combine($"./wwwroot{filePath}");
+
+            //System.IO.Directory.CreateDirectory(saveFilePath);
+
+            List<Dictionary<string, string>> converted = [.. data.Select(d =>
+            {
+                Dictionary<string, string> dict = [];
+                dict.Add("Student Id", d.Student.Id);
+                dict.Add("First Name", d.Student.FirstName);
+                dict.Add("Last Name", d.Student.LastName);
+
+                for (int i = 0; i < d.Attendants.Count; i++)
+                {
+                    var attendant = d.Attendants[i];
+                    dict.Add($"W{i+1}", attendant.Status.ToString());
+			    }
+
+                return dict;
+            })];
+            spreadsheetService.Export(converted, saveFilePath, "A1");
+
+            return Ok(filePath);
         }
 
         // PUT: api/Attendants/5
@@ -191,6 +226,7 @@ namespace ClassVision.API.Controllers
 
             return Ok(attendants);
         }
+
 
 
         // DELETE: api/Attendants/5

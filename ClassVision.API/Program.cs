@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDBContext>(option =>
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<HttpClient>();
+builder.Services.AddSingleton<SpreadsheetService>();
 
 builder.Services.AddMediator();
 

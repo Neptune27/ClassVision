@@ -9,12 +9,13 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 import { ClassScheduleTab } from "@/components/attendingClass/ClassScheduleTab"
+
+
 export default function Page({ params }: {
     params: {
         id: string
     }
 }) {
-
 
     return (
         <>
@@ -27,10 +28,11 @@ export default function Page({ params }: {
                 </TabsList>
                 <TabsContent value="info">
                     <ClassDetailsTable classId={params.id} >
+                       
                     </ClassDetailsTable>
                 </TabsContent>
                 <TabsContent value="calendar">
-                    <ClassCalendar filteredId={params.id} />
+                    <ClassCalendar filteredId={params.id} className="mx-auto w-[812px]" />
                 </TabsContent>
                 <TabsContent value="schedule">
                     <ClassScheduleTab filteredId={params.id} /> 

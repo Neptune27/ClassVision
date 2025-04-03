@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageReference Include="Mediator.SourceGenerator" Version="2.1.7">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +37,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ClassVision.Data\ClassVision.Data.csproj" />
     <ProjectReference Include="..\ClassVision.ServiceDefaults\ClassVision.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\api\Media\Excels\" />
   </ItemGroup>
 
 </Project>
