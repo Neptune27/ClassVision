@@ -235,6 +235,11 @@ export function AttendeeDialog({ isEdit }: {
             const data = await resp.json()
 
             const result: ComboboxData[] = data.map((datum: ScheduleType) => {
+
+                if (datum.course == undefined) {
+                    return
+                }
+
                 const value = `${datum.id} | ${datum.course.courseInfo.name} ${datum.course.classroom.roomId}`
 
                 return ({
@@ -296,7 +301,7 @@ export function AttendeeDialog({ isEdit }: {
                         Course
                     </Label>
                     <Combobox disable={snap.isEdit} value={snap.data.courseId} onValueChange={(value) => {
-                        store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
+                        store.data.courseId = courses?.display.find((item: { label: string }) => item.label == value)?.value ?? ""
                     }}
                         data={courses.display}
                         className="col-span-3" />
@@ -307,7 +312,7 @@ export function AttendeeDialog({ isEdit }: {
                         Student
                     </Label>
                     <Combobox disable={snap.isEdit} value={snap.data.studentId} onValueChange={(value) => {
-                        store.data.studentId = studentData?.display.find(item => item.label == value)?.value ?? ""
+                        store.data.studentId = studentData?.display.find((item: { label: string }) => item.label == value)?.value ?? ""
                     }}
                         data={studentData.display}
                         className="col-span-3" />
@@ -318,7 +323,7 @@ export function AttendeeDialog({ isEdit }: {
                         Schedule
                     </Label>
                     <Combobox disable={snap.isEdit} modal value={snap.data.scheduleId} onValueChange={(value) => {
-                        store.data.scheduleId = schedule?.display.find(item => item.label == value)?.value ?? ""
+                        store.data.scheduleId = schedule?.display.find((item: { label: string }) => item.label == value)?.value ?? ""
                     }}
                         data={schedule.display}
                         className="col-span-3" />
@@ -327,7 +332,7 @@ export function AttendeeDialog({ isEdit }: {
                     <Label htmlFor="status" className="text-right">
                         Status
                     </Label>
-                    <Select value={snap.data.status.toString()} onValueChange={(value) => {
+                    <Select value={snap.data.status.toString()} onValueChange={(value: string) => {
                         store.data.status = parseInt(value)
                     }} >
                         <SelectTrigger className="col-span-3">

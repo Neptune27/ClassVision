@@ -20,8 +20,6 @@ public class Course : BaseEntity
 
     public List<ClassUser> Students { get; set; } = [];
 
-    public Classroom Classroom { get; set; } = null!;
-
     public List<Attendant> Attendants { get; set; } = [];
 
     public List<Enrollment> Enrollments { get; set; } = [];

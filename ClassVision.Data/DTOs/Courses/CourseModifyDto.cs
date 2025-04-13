@@ -17,13 +17,11 @@ public class CourseModifyDto
 
     public string Id { get; set; } = "";
 
-    public string CourseInfoId { get; set; } = null!;
+    public string CourseInfo { get; set; } = null!;
 
     public string TeacherId { get; set; } = null!;
 
     public List<ClassUser> Students { get; set; } = [];
-
-    public string ClassroomId { get; set; } = null!;
 
     public List<Attendant> Attendants { get; set; } = [];
 

@@ -19,7 +19,7 @@ public class StatisticController(AppDBContext context) : ControllerBase
     {
         var now = DateTimeOffset.UtcNow;
         var totalClasses = await context.Courses.CountAsync();
-        var totalStudents = await context.Students.CountAsync();
+        var totalStudents = await context.ClassUsers.CountAsync();
         var totalTeachers = await context.Teachers.CountAsync();
         var totalClassroom = await context.Classrooms.CountAsync();
         var totalAttendee = await context.Attendants.CountAsync();

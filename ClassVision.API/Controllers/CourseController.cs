@@ -30,7 +30,6 @@ namespace ClassVision.API.Controllers
             return await _context.Courses
                 .Include(c => c.Schedules)
                 .Include(c => c.Teacher)
-                .Include(c => c.Classroom)
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Enrollments)
                 .ToListAsync();
@@ -87,19 +86,17 @@ namespace ClassVision.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Course>> PostCourse(CourseModifyDto dto)
         {
-            var course = new Course();
-            var courseInfo = await _context.CourseInfoes.FirstAsync(ci => ci.Id == dto.CourseInfoId);
-            course.CourseInfo = courseInfo;
 
-            var teacher = await _context.Teachers.FirstAsync(it => it.Id == dto.TeacherId);
-            course.Teacher = teacher;
+            var teacher = await _context.ClassUsers.FirstAsync(it => it.Id == dto.TeacherId);
 
-            var classroom = await _context.Classrooms.FirstAsync(it => it.RoomId == dto.ClassroomId);
-            course.Classroom = classroom;
-
-            course.CreatedAt = DateTimeOffset.UtcNow;
-            course.LastUpdated = DateTimeOffset.UtcNow;
-            course.IsActive = true;
+            var course = new Course
+            {
+                CourseInfo = dto.CourseInfo,
+                Teacher = teacher,
+                CreatedAt = DateTimeOffset.UtcNow,
+                LastUpdated = DateTimeOffset.UtcNow,
+                IsActive = true
+            };
 
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();

@@ -11,15 +11,17 @@ import {
 import { ClassScheduleTab } from "@/components/attendingClass/ClassScheduleTab"
 
 
-export default function Page({ params }: {
-    params: {
+export default async function Page({ params }: {
+    params: Promise<{
         id: string
-    }
+    }>
 }) {
+
+    const { id } = await params
 
     return (
         <>
-            <DbHeader items={[{ name: "Dashboard" }, { name: "Info", url: "/dashboard/info" }, { name: "Class", url: "/dashboard/info/class" }, { name: params.id }]} />
+            <DbHeader items={[{ name: "Dashboard" }, { name: "Info", url: "/dashboard/info" }, { name: "Class", url: "/dashboard/info/class" }, { name: id }]} />
             <Tabs defaultValue="info" className="w-full p-4">
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="info">Info</TabsTrigger>
@@ -27,15 +29,15 @@ export default function Page({ params }: {
                     <TabsTrigger value="schedule">Rollcall</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info">
-                    <ClassDetailsTable classId={params.id} >
+                    <ClassDetailsTable classId={id} >
                        
                     </ClassDetailsTable>
                 </TabsContent>
                 <TabsContent value="calendar">
-                    <ClassCalendar filteredId={params.id} initialView={"dayGridMonth"} className="mx-auto w-[812px]" />
+                    <ClassCalendar filteredId={id} initialView={"dayGridMonth"} className="mx-auto w-[812px]" />
                 </TabsContent>
                 <TabsContent value="schedule">
-                    <ClassScheduleTab filteredId={params.id} /> 
+                    <ClassScheduleTab filteredId={id} /> 
                 </TabsContent>
             </Tabs>
 

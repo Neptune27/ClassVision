@@ -25,7 +25,7 @@ namespace ClassVision.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClassUser>>> GetStudents()
         {
-            return await _context.Students.ToListAsync();
+            return await _context.ClassUsers.ToListAsync();
         }
 
         [HttpGet("byCourse/{courseId}")]
@@ -47,7 +47,7 @@ namespace ClassVision.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ClassUser>> GetStudent(string id)
         {
-            var student = await _context.Students.FindAsync(id);
+            var student = await _context.ClassUsers.FindAsync(id);
 
             if (student == null)
             {
@@ -93,7 +93,7 @@ namespace ClassVision.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ClassUser>> PostStudent(ClassUser student)
         {
-            _context.Students.Add(student);
+            _context.ClassUsers.Add(student);
             try
             {
                 await _context.SaveChangesAsync();
@@ -117,13 +117,13 @@ namespace ClassVision.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudent(string id)
         {
-            var student = await _context.Students.FindAsync(id);
+            var student = await _context.ClassUsers.FindAsync(id);
             if (student == null)
             {
                 return NotFound();
             }
 
-            _context.Students.Remove(student);
+            _context.ClassUsers.Remove(student);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -131,7 +131,7 @@ namespace ClassVision.API.Controllers
 
         private bool StudentExists(string id)
         {
-            return _context.Students.Any(e => e.Id == id);
+            return _context.ClassUsers.Any(e => e.Id == id);
         }
     }
 }

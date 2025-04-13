@@ -32,8 +32,7 @@ namespace ClassVision.API.Controllers
             IQueryable<Schedule> query = _context.Schedules
                 .Include(s => s.Course)
                 .ThenInclude(c => c.CourseInfo)
-                .Include(s => s.Course)
-                .ThenInclude(c => c.Classroom);
+                .Include(s => s.Course);
 
 
             if (!string.IsNullOrWhiteSpace(courseId))
@@ -54,8 +53,6 @@ namespace ClassVision.API.Controllers
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Enrollments)
                 .ThenInclude(e => e.Student)
-                .Include(s => s.Course)
-                .ThenInclude(c => c.Classroom)
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Teacher)
                 .Include(s => s.Attendants)

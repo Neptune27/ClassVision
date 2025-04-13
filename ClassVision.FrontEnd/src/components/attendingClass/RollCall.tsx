@@ -67,7 +67,7 @@ export function RollCall({ id, isClient }: {
             return
         }
 
-        for (var key in resp.imageFaces) {
+        for (const key in resp.imageFaces) {
             const current = resp.imageFaces[key]
 
             const item = data.faces.find(f => f.id == key)
