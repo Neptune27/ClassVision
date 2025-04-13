@@ -15,7 +15,7 @@ public class Enrollment : BaseEntity
 
     public Guid CourseId { get; set; }
 
-    public Student Student { get; set; } = null!;
+    public ClassUser Student { get; set; } = null!;
 
     public Course Course { get; set; } = null!;
 

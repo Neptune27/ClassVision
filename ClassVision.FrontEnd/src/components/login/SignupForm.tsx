@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { FormEvent } from "react"
 import { useFormStatus } from "react-dom"
 
-export function LoginForm({
+export function SignUpForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
@@ -21,22 +21,27 @@ export function LoginForm({
         // @ts-ignore
         const usernameElement = e.target[0] as HTMLInputElement
         // @ts-ignore
-        const passwordElement = e.target[1] as HTMLInputElement
+        const emailElement = e.target[1] as HTMLInputElement
+        // @ts-ignore
+        const passwordElement = e.target[2] as HTMLInputElement
 
         const username = usernameElement.value
+        const email = emailElement.value
         const password = passwordElement.value
 
         console.log(e)
         console.log(usernameElement.value)
+        console.log(emailElement.value)
         console.log(passwordElement.value)
 
-        const result = await fetch(`/api/Account/Login`, {
+        const result = await fetch(`/api/Account/SignUp`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 username: username,
+                email: email,
                 password: password,
             }),
         });
@@ -91,6 +96,30 @@ export function LoginForm({
                     />
                 </div>
                 < div className="grid gap-2" >
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                        id="firstName"
+                        type="text"
+                        required
+                    />
+                </div>
+                < div className="grid gap-2" >
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                        id="lastName"
+                        type="text"
+                        required
+                    />
+                </div>
+                < div className="grid gap-2" >
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        required
+                    />
+                </div>
+                < div className="grid gap-2" >
                     <div className="flex items-center" >
                         <Label htmlFor="password" > Password </Label>
                         {/*<a*/}
@@ -103,7 +132,7 @@ export function LoginForm({
                     < Input id="password" type="password" required />
                 </div>
                 < Button type="submit" className="w-full" >
-                    Login
+                    Sign Up
                 </Button>
                 {/*< div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border" >*/}
                 {/*    <span className="relative z-10 bg-background px-2 text-muted-foreground" >*/}
@@ -140,9 +169,9 @@ export function LoginForm({
                 {/*    </Button>*/}
                 {/*</div>*/}
                 < div className="text-center text-sm" >
-                    Don&apos;t have an account? {" "}
-                    <a href="/signup" className="underline underline-offset-4" >
-                        Sign up
+                    Already have an account? {" "}
+                    <a href="/login" className="underline underline-offset-4" >
+                        Log in
                     </a>
                 </div>
             </div>

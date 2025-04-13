@@ -14,11 +14,11 @@ public class Course : BaseEntity
     [Key]
     public Guid Id { get; set; }
 
-    public CourseInfo CourseInfo { get; set; } = null!;
+    public string CourseInfo { get; set; } = null!;
 
-    public Teacher Teacher { get; set; } = null!;
+    public ClassUser Teacher { get; set; } = null!;
 
-    public List<Student> Students { get; set; } = [];
+    public List<ClassUser> Students { get; set; } = [];
 
     public Classroom Classroom { get; set; } = null!;
 

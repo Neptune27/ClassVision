@@ -24,7 +24,7 @@ export default function Page({ params }: {
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="info">Info</TabsTrigger>
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                    <TabsTrigger value="schedule">Schedules</TabsTrigger>
+                    <TabsTrigger value="schedule">Rollcall</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info">
                     <ClassDetailsTable classId={params.id} >
@@ -32,7 +32,7 @@ export default function Page({ params }: {
                     </ClassDetailsTable>
                 </TabsContent>
                 <TabsContent value="calendar">
-                    <ClassCalendar filteredId={params.id} className="mx-auto w-[812px]" />
+                    <ClassCalendar filteredId={params.id} initialView={"dayGridMonth"} className="mx-auto w-[812px]" />
                 </TabsContent>
                 <TabsContent value="schedule">
                     <ClassScheduleTab filteredId={params.id} /> 

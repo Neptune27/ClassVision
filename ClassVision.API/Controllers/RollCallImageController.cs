@@ -180,6 +180,8 @@ namespace ClassVision.API.Controllers
 
             await _context.RollCallImages.AddAsync(image);
             await _context.SaveChangesAsync();
+            RollcallHub.RollcallData.TryAdd(image.Path, []);
+
             return Ok(new { image });    
         }
 

@@ -97,7 +97,7 @@ export function ClassScheduleTab({ filteredId}: {
             <ScheduleDialog isEdit={modifySnap.isEdit} />
             <div className="flex justify-between">
                 <h1 className="text-bold text-xl pb-4">Current:</h1>
-                <Button onClick={handleCreate}>Create new Schedule</Button>
+                <Button onClick={handleCreate}>Create new Rollcall</Button>
             </div>
             <div className="flex flex-wrap gap-4">
                 {schedulesByTime.curr.map(s => <ScheduleInfoCard key={s.id} schedule={s} />)}

@@ -10,24 +10,15 @@ using System.Threading.Tasks;
 namespace ClassVision.Data.Entities;
 
 
-public class Student : BaseEntity
+public class ClassUser : BaseEntity
 {
     [Key]
     public string Id { get; set; } = null!;
+    public AppUser User { get; set; } = null!;
 
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;
-
-    public EGender Gender { get; set; }
-
-    public DateOnly Birthday { get; set; }
-
-    public DateOnly EnrollAt { get; set; }
-
-    public string PhoneNumber { get; set; } = null!;
-
-    public string Address { get; set; } = null!;
 
     public List<Attendant> Attendants { get; set; } = [];
 
@@ -36,4 +27,6 @@ public class Student : BaseEntity
     public List<RollcallFace> RollcallFaces { get; set; } = [];
 
     public string Media { get; set; } = string.Empty;
+
+    public List<DateTimeOffset> LoginTime { get; set; } = [];
 }

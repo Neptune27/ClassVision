@@ -17,7 +17,7 @@ public class AppDBContext: IdentityDbContext<AppUser>
     public DbSet<Course> Courses { get; set; }
     public DbSet<CourseInfo> CourseInfoes { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
-    public DbSet<Student> Students { get; set; }
+    public DbSet<ClassUser> Students { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
     public DbSet<RollCallImage> RollCallImages { get; set; }

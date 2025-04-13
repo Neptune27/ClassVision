@@ -13,7 +13,7 @@ namespace ClassVision.Data.DTOs;
 [Mapper]
 public partial class StudentMapper
 {
-    public partial StudentDto ToDto(Student student);
+    public partial StudentDto ToDto(ClassUser student);
 }
 
 public class StudentDto

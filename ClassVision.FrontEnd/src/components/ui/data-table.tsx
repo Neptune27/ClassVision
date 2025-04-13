@@ -34,6 +34,7 @@ import { Input } from "./input"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu"
 import { Combobox, ComboboxData } from "./combobox"
 import { getKeyByValue } from "../../lib/utils"
+import { ScrollArea } from "./scroll-area"
 
 
 
@@ -164,7 +165,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
     }
 
     return (
-        <div>
+        <div className="">
             {(props.filter || props.visible) &&
                 <div className="flex items-center py-4">
                     {props.filter &&

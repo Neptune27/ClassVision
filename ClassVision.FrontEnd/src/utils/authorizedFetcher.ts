@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 import useToken from "../hooks/useToken"
 
 const authorizedFetch = async (input: string | URL | globalThis.Request,
@@ -29,6 +30,10 @@ const authorizedFetch = async (input: string | URL | globalThis.Request,
     if (result.status == 401) {
         console.log("Unauthorized, redirecting")
         redirectOnUnathorized();
+    }
+
+    if (!result.ok) {
+        toast("Something unexpected happend.")
     }
 
     return result

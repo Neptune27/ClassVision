@@ -23,13 +23,13 @@ namespace ClassVision.API.Controllers
 
         // GET: api/Student
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
+        public async Task<ActionResult<IEnumerable<ClassUser>>> GetStudents()
         {
             return await _context.Students.ToListAsync();
         }
 
         [HttpGet("byCourse/{courseId}")]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudentsByCourse(Guid courseId)
+        public async Task<ActionResult<IEnumerable<ClassUser>>> GetStudentsByCourse(Guid courseId)
         {
             
             var course = await _context.Courses.Include(c => c.Students).FirstOrDefaultAsync(c => c.Id == courseId);
@@ -45,7 +45,7 @@ namespace ClassVision.API.Controllers
 
         // GET: api/Student/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudent(string id)
+        public async Task<ActionResult<ClassUser>> GetStudent(string id)
         {
             var student = await _context.Students.FindAsync(id);
 
@@ -60,7 +60,7 @@ namespace ClassVision.API.Controllers
         // PUT: api/Student/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(string id, Student student)
+        public async Task<IActionResult> PutStudent(string id, ClassUser student)
         {
             if (id != student.Id)
             {
@@ -91,7 +91,7 @@ namespace ClassVision.API.Controllers
         // POST: api/Student
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
+        public async Task<ActionResult<ClassUser>> PostStudent(ClassUser student)
         {
             _context.Students.Add(student);
             try

@@ -18,9 +18,7 @@ export function ScheduleInfoCard({ schedule }: {
         <Card className="max-w-[350px]">
             <CardHeader>
                 <CardTitle className="flex justify-between">
-                    <text>
                         {schedule.course.courseInfo.name}
-                    </text>
                     <DropdownMenu>
                         <DropdownMenuTrigger><EllipsisIcon /></DropdownMenuTrigger>
                         <DropdownMenuContent>

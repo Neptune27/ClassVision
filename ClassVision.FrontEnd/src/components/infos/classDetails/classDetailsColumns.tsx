@@ -90,6 +90,13 @@ export const classDetailsDefaultColumns: ColumnDef<StudentClassInfoType>[] = [
 export const createColumns = (studentDef: StudentClassInfoType) => {
     const colsDef = [...classDetailsDefaultColumns]
 
+
+    const totalCol: ColumnDef<StudentClassInfoType> = {
+        accessorKey: "Total",
+        header: ({ column }) => columnSortable(column, `Total`),
+        cell: ({ row }) => `${row.original.attendants.filter(a => a.status !== EAttendantStatus.ABSENT).length}/${row.original.attendants.length}`
+    }
+
     const generated = studentDef.attendants.map((a, i) => {
         const data: ColumnDef<StudentClassInfoType> = {
             accessorKey: `W${i + 1}`,
@@ -111,9 +118,11 @@ export const createColumns = (studentDef: StudentClassInfoType) => {
             }
         }
 
+        
+
         return data
     })
 
-    colsDef.push(...generated)
+    colsDef.push(totalCol, ...generated)
     return colsDef
 }

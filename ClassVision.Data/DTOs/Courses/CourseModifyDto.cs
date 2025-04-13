@@ -21,7 +21,7 @@ public class CourseModifyDto
 
     public string TeacherId { get; set; } = null!;
 
-    public List<Student> Students { get; set; } = [];
+    public List<ClassUser> Students { get; set; } = [];
 
     public string ClassroomId { get; set; } = null!;
 

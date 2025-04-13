@@ -1,40 +1,40 @@
 
 .rectStrokeRed {
     fill-opacity: 0;
-    stroke-width: 0.125rem;
+    stroke-width: 0.25%;
     fill: white;
     stroke: darkred;
     transition: all ease-in-out 0.25s;
 
     &:hover {
         stroke: red;
-        stroke-width: 0.25rem;
+        stroke-width: 0.5%;
     }
 }
 
 .rectStrokeGreen {
     fill-opacity: 0;
-    stroke-width: 0.125rem;
+    stroke-width: 0.25%;
     fill: white;
     stroke: darkgreen;
     transition: all ease-in-out 0.25s;
 
     &:hover {
         stroke: green;
-        stroke-width: 0.25rem;
+        stroke-width: 0.5%;
     }
 }
 
 .rectStrokeBlue {
     fill-opacity: 0;
-    stroke-width: 0.125rem;
+    stroke-width: 0.25%;
     fill: white;
     stroke: darkblue;
     transition: all ease-in-out 0.25s;
 
     &:hover {
         stroke: blue;
-        stroke-width: 0.25rem;
+        stroke-width: 0.5%;
     }
 }
 

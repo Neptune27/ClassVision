@@ -2,14 +2,27 @@
 import {
     AudioWaveform,
     BookOpen,
+    BookText,
     Bot,
+    Calendar,
+    CalendarPlus,
     Command,
+    FileUser,
     Frame,
     GalleryVerticalEnd,
+    GraduationCap,
+    LandPlot,
     Map,
+    Merge,
+    Notebook,
+    NotebookTabs,
     PieChart,
+    School,
     Settings2,
+    Speech,
     SquareTerminal,
+    User,
+    UserRound,
 } from "lucide-react"
 
 import { NavMain } from "../nav-main"
@@ -25,13 +38,13 @@ import DbSidebarMenuSubItem from "./DbSidebarMenuSubItem"
 // This is sample data.
 const data = {
     user: {
-        name: "shadcn",
-        email: "m@example.com",
+        name: localStorage.getItem("username"),
+        email: localStorage.getItem("email"),
         avatar: "/avatars/shadcn.jpg",
     },
     team:
     {
-        name: "Acme Inc",
+        name: "ClassVision",
         logo: GalleryVerticalEnd,
         plan: "Enterprise",
     },
@@ -195,22 +208,22 @@ const DashboardSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
                 <SidebarGroup>
                     <SidebarGroupLabel>Main</SidebarGroupLabel>
                     <SidebarMenu>
-                        <DbSidebarMenuItem name={"Attending Class"} url={"/dashboard/attending-class"} icon={Command} />
-                        <DbSidebarMenuItem name={"Class Info"} url={"/dashboard/info/class"} icon={Command} />
+                        <DbSidebarMenuItem name={"Class"} url={"/dashboard/info/class"} icon={School} />
+                        <DbSidebarMenuItem name={"Attending"} url={"/dashboard/attending-class"} icon={Calendar} />
                     </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>Management</SidebarGroupLabel>
                     <SidebarMenu>
-                        <DbSidebarMenuItem name={"Attendee"} url={"/dashboard/attendee"} icon={Command} />
-                        <DbSidebarMenuItem name={"Classroom"} url={"/dashboard/classroom"} icon={Command} />
-                        <DbSidebarMenuItem name={"Course Info"} url={"/dashboard/course-info"} icon={Command} />
-                        <DbSidebarMenuItem name={"Course"} url={"/dashboard/course"} icon={Command} />
-                        <DbSidebarMenuItem name={"Enrollment"} url={"/dashboard/enrollment"} icon={Command} />
-                        <DbSidebarMenuItem name={"Student"} url={"/dashboard/student"} icon={Command} />
-                        <DbSidebarMenuItem name={"Schedule"} url={"/dashboard/schedule"} icon={Command} />
-                        <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={Command} />
-                        <DbSidebarMenuItem name={"User"} url={"/dashboard/user"} icon={Command} />
+                        <DbSidebarMenuItem name={"Attendee"} url={"/dashboard/attendee"} icon={Speech} />
+                        <DbSidebarMenuItem name={"Classroom"} url={"/dashboard/classroom"} icon={LandPlot} />
+                        <DbSidebarMenuItem name={"Course Info"} url={"/dashboard/course-info"} icon={BookText} />
+                        <DbSidebarMenuItem name={"Course"} url={"/dashboard/course"} icon={NotebookTabs} />
+                        <DbSidebarMenuItem name={"Enrollment"} url={"/dashboard/enrollment"} icon={Merge} />
+                        <DbSidebarMenuItem name={"Student"} url={"/dashboard/student"} icon={GraduationCap} />
+                        <DbSidebarMenuItem name={"Schedule"} url={"/dashboard/schedule"} icon={CalendarPlus} />
+                        <DbSidebarMenuItem name={"Teacher"} url={"/dashboard/teacher"} icon={FileUser} />
+                        <DbSidebarMenuItem name={"User"} url={"/dashboard/user"} icon={User} />
                         {/*<DbSidebarMenuItem name={"Test"} url={"/dashboard/test"} icon={Command} />*/}
                         {/*<DbCollapsableItem title={"Collapsed"} isActive={false} >*/}
                         {/*<DbSidebarMenuSubItem title={"Item 1"} url={"#"}/>*/}

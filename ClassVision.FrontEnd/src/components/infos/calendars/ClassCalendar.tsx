@@ -17,8 +17,10 @@ const rollCallUrl = "/dashboard/attending-class/rollcall"
 
 export function ClassCalendar({
     filteredId,
-    className
+    className,
+    initialView
 }: {
+    initialView?: string,
     filteredId?: string,
     className?: string
 }) {
@@ -67,8 +69,8 @@ export function ClassCalendar({
         <div className={className}>
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridDay]}
-                initialView="timeGridWeek"
-                timeZone="UTC"
+                initialView={initialView ?? "timeGridWeek"}
+                timeZone="GMT+7"
                 slotLabelFormat={{
                     hour: 'numeric',
                     minute: '2-digit',

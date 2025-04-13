@@ -112,7 +112,7 @@ export function RecognitionCard(props: {
                                                     faces: ImageFaceType[]
                                                 }
                                                 } = JSON.parse(file.serverId)
-
+                                                //triggerFetch(store)
                                                 store.data.push(imageDataConvert(data.image))
                                         }} id="file" className="h-full" onremovefile={async (e, f) => {
                                             if (e) {
