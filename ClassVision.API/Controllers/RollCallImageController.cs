@@ -16,16 +16,10 @@ namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RollCallImageController : ControllerBase
+    public class RollCallImageController(AppDBContext context, HttpClient client) : ControllerBase
     {
-        private readonly AppDBContext _context;
-        private readonly HttpClient client;
-
-        public RollCallImageController(AppDBContext context, HttpClient client)
-        {
-            _context = context;
-            this.client = client;
-        }
+        private readonly AppDBContext _context = context;
+        private readonly HttpClient client = client;
 
         // GET: api/RollCallImage
         [HttpGet]
