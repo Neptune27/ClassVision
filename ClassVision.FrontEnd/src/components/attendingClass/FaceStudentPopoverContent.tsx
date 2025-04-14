@@ -5,7 +5,7 @@ import { rollCallHubStore, rollCallStore } from "../../stores/rollcallStores";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { isInSelected } from "../courses/CourseStudentPopover";
 import { useEffect, useState } from "react";
-import { StudentType } from "../../interfaces/StudentTypes";
+import { ClassUserType } from "../../interfaces/ClassUserTypes";
 import { Check } from "lucide-react";
 import { cn, getDisplayId } from "../../lib/utils";
 import { Label } from "../ui/label";

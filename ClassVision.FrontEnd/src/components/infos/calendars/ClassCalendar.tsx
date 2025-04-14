@@ -56,7 +56,7 @@ export function ClassCalendar({
                 start: DateTime.fromISO(`${d.date}T${d.startTime}Z`).toJSDate(),
                 end: DateTime.fromISO(`${d.date}T${d.endTime}Z`).toJSDate(),
                 url: `${rollCallUrl}/${d.id}`,
-                title: `${d.course?.courseInfo.name}`
+                title: `${d.course?.courseName}`
             }
         })
         console.log(newEvent)

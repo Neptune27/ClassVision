@@ -21,7 +21,7 @@ import { Card, CardContent } from "../ui/card"
 import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
-import { studentStore } from "../../stores/studentStores"
+import { classUserStore } from "../../stores/classUserStores"
 import { get } from "node:http"
 
 

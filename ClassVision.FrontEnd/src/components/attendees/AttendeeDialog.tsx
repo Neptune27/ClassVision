@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { getDisplayId, triggerFetch } from "../../lib/utils"
 import { CourseType } from "../../interfaces/CourseTypes"
-import { StudentType } from "../../interfaces/StudentTypes"
+import { ClassUserType } from "../../interfaces/ClassUserTypes"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { EnrollmentType } from "../../interfaces/EnrollmentTypes"
 
@@ -112,7 +112,7 @@ export function AttendeeDialog({ isEdit }: {
     })
 
     const [studentData, setStudentData] = useState<{
-        data: StudentType[],
+        data: ClassUserType[],
         display: ComboboxData[]
     }>({
         data: [],
@@ -240,7 +240,7 @@ export function AttendeeDialog({ isEdit }: {
                     return
                 }
 
-                const value = `${datum.id} | ${datum.course.courseInfo.name} ${datum.course.classroom.roomId}`
+                const value = `${datum.id} | ${datum.course.courseName.name} ${datum.course.classroom.roomId}`
 
                 return ({
                     value: value,

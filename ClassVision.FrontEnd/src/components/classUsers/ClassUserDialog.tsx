@@ -6,8 +6,8 @@ import { useSnapshot } from "valtio"
 import { useEffect, useState } from "react"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { DeleteDialog } from "../dialogs/DeleteDialog"
-import { EGender, StudentModifyType } from "../../interfaces/StudentTypes"
-import { studentDeleteStore, studentBatchDeleteStore, studentModifyStore, studentStore } from "../../stores/studentStores"
+import { ClassUserModifyType } from "../../interfaces/ClassUserTypes"
+import { classUserDeleteStore, classUserBatchDeleteStore, classUserModifyStore, classUserStore } from "../../stores/classUserStores"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { DatePicker } from "../ui/date-picker"
 import { format } from "date-fns"
@@ -17,8 +17,8 @@ import { triggerFetch } from "../../lib/utils"
 
 const baseUrl = "/api/Student"
 
-export function StudentDeleteDialog() {
-    const store = studentDeleteStore;
+export function ClassUserDeleteDialog() {
+    const store = classUserDeleteStore;
     const snap = useSnapshot(store)
 
     const handleOpen = (open: boolean) => {
@@ -37,7 +37,7 @@ export function StudentDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
-        triggerFetch(studentStore)
+        triggerFetch(classUserStore)
 
     }
 
@@ -52,8 +52,8 @@ export function StudentDeleteDialog() {
 }
 
 
-export function StudentBatchDeleteDialog() {
-    const store = studentBatchDeleteStore
+export function ClassUserBatchDeleteDialog() {
+    const store = classUserBatchDeleteStore
     const snap = useSnapshot(store)
 
     const handleOpen = (open: boolean) => {
@@ -76,7 +76,7 @@ export function StudentBatchDeleteDialog() {
         const resps = await Promise.all(promisedResps)
 
         console.log(resps.map((resp) => resp.status))
-        triggerFetch(studentStore)
+        triggerFetch(classUserStore)
 
     }
 
@@ -91,10 +91,10 @@ export function StudentBatchDeleteDialog() {
 }
 
 
-export function StudentDialog({ isEdit }: {
+export function ClassUserDialog({ isEdit }: {
     isEdit: boolean
 }) {
-    const store = studentModifyStore
+    const store = classUserModifyStore
 
     const snap = useSnapshot(store)
 
@@ -108,7 +108,7 @@ export function StudentDialog({ isEdit }: {
         store.opened = open
     }
 
-    const handleEdit = async (sentData: StudentModifyType) => {
+    const handleEdit = async (sentData: ClassUserModifyType) => {
         const url = `${baseUrl}/${snap.data.id}`
         console.log(url)
         const resp = await authorizedFetch(url, {
@@ -126,7 +126,7 @@ export function StudentDialog({ isEdit }: {
         store.opened = false
     }
 
-    const handleCreate = async (sentData: StudentModifyType) => {
+    const handleCreate = async (sentData: ClassUserModifyType) => {
         const url = `${baseUrl}`
         console.log(url)
         const resp = await authorizedFetch(url, {
@@ -153,10 +153,8 @@ export function StudentDialog({ isEdit }: {
             ...snap.data
         }
 
-        data.birthday = format(data.birthday, 'yyyy-MM-dd')
-        data.enrollAt = format(data.enrollAt, 'yyyy-MM-dd')
         isEdit ? await handleEdit(data) : await handleCreate(data);
-        triggerFetch(studentStore)
+        triggerFetch(classUserStore)
 
     }
 
@@ -194,58 +192,6 @@ export function StudentDialog({ isEdit }: {
                         store.data.lastName = e.target.value
                     }
                     }
-                        className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="gender" className="text-right">
-                        Gender
-                    </Label>
-                    <Select value={ snap.data.gender.toString()} onValueChange={(value) => {
-                        store.data.gender = parseInt(value)
-                    }} >
-                        <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Gender" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={EGender.MALE.toString()}>Male</SelectItem>
-                            <SelectItem value={EGender.FEMALE.toString()}>Female</SelectItem>
-                            <SelectItem value={EGender.OTHER.toString()}>Other</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="birthday" className="text-right">
-                        Birthday
-                    </Label>
-                    <div className="col-span-3">
-                        <DateTimePicker modal={true} hideTime
-                            value={new Date(snap.data.birthday)} onChange={(date) => {
-                            if (date) {
-                                store.data.birthday = date.toISOString()
-                            }
-                        }} />
-                    </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="enrollAt" className="text-right">
-                        Enroll At
-                    </Label>
-                    <div className="col-span-3">
-                        <DateTimePicker modal={true} hideTime value={new Date(snap.data.enrollAt)} onChange={(date) => {
-                            if (date) {
-                                store.data.enrollAt = date.toISOString()
-                            }
-                        }} />
-                    </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="phoneNumber" className="text-right">
-                        Phone Number
-                    </Label>
-                    <Input id="phoneNumber" value={snap.data.phoneNumber} onChange={(e) => {
-
-                        store.data.phoneNumber = e.target.value
-                    }}
                         className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">

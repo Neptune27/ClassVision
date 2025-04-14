@@ -1,8 +1,8 @@
 import { AttendeeModifyType, AttendeeType } from "./AttendeeTypes";
-import { StudentType } from "./StudentTypes";
+import { ClassUserType } from "./ClassUserTypes";
 
 export interface StudentClassInfoType {
-    student: StudentType,
+    student: ClassUserType,
     attendants: AttendeeModifyType[]
 }
 export interface ClassInfoType {

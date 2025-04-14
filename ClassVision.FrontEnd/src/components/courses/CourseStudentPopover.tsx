@@ -3,7 +3,7 @@ import { ComboboxData } from "../ui/combobox";
 import { ChevronsUpDown } from "lucide-react";
 import { cn, getDisplayId } from "../../lib/utils";
 import { Checkbox } from "../ui/checkbox";
-import { StudentType } from "../../interfaces/StudentTypes";
+import { ClassUserType } from "../../interfaces/ClassUserTypes";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
@@ -21,7 +21,7 @@ export function CourseStudentPopover(props: {
     selectedData: readonly string[],
     setSelectedData: (newData: string) => void
     data: {
-        data: StudentType[],
+        data: ClassUserType[],
         display: ComboboxData[]
     },
     className: string,

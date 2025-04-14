@@ -14,7 +14,7 @@ public class Course : BaseEntity
     [Key]
     public Guid Id { get; set; }
 
-    public string CourseInfo { get; set; } = null!;
+    public string CourseName { get; set; } = null!;
 
     public ClassUser Teacher { get; set; } = null!;
 

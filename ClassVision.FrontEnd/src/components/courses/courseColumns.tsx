@@ -103,7 +103,7 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                             Copy teacher id
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.courseInfo.id)}
+                            onClick={() => navigator.clipboard.writeText(data.courseName.id)}
                         >
                             Copy course info id
                         </DropdownMenuItem>
@@ -117,7 +117,7 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                                 period: 1,
                                 attendantId: [],
                                 classroomId: data.classroom.roomId,
-                                courseInfoId: data.courseInfo.id,
+                                courseInfoId: data.courseName.id,
                                 schedules: data.schedules.map(s => {
                                     return ({
                                         ...s,

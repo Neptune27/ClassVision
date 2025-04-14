@@ -6,7 +6,7 @@ export const courseDefault = (): CourseModifyType => {
         id: "",
         teacherId: "",
         classroomId: "",
-        courseInfoId: "",
+        courseName: "",
         period: 1,
         attendantId: [],
         schedules: [],

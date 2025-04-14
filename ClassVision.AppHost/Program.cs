@@ -11,8 +11,8 @@ var sql = builder.AddPostgres("ClassVision-Db", password)
     .WithLifetime(ContainerLifetime.Persistent)
     .WithPgWeb();
 
-var sqlDB = sql.AddDatabase("ClassVision");
-var aiDB = sql.AddDatabase("ClassVisionAI");
+var sqlDB = sql.AddDatabase("ClassVision", "ClassVision");
+var aiDB = sql.AddDatabase("ClassVisionAI", "ClassVisionAI");
 
 var migration = builder.AddProject<Projects.ClassVision_Migration>("classvision-migration")
     .WithReference(sqlDB).WaitFor(sql);

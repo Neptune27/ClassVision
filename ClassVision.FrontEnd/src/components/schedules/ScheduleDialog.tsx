@@ -21,7 +21,7 @@ import { Card, CardContent } from "../ui/card"
 import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
-import { studentStore } from "../../stores/studentStores"
+import { classUserStore } from "../../stores/classUserStores"
 import { get } from "node:http"
 
 
@@ -102,8 +102,9 @@ export function ScheduleBatchDeleteDialog() {
 }
 
 
-export function ScheduleDialog({ isEdit }: {
-    isEdit: boolean
+export function ScheduleDialog({ isEdit, isAdmin }: {
+    isEdit: boolean,
+    isAdmin?: boolean
 }) {
     const store = scheduleModifyStore
 
@@ -199,7 +200,7 @@ export function ScheduleDialog({ isEdit }: {
             const data = await resp.json()
 
             const result: ComboboxData[] = data.map((datum: CourseType) => {
-                const value = `${datum.id} | ${datum.teacher.id} ${datum.classroom.roomId}`
+                const value = `${datum.id} | ${datum.teacher.id}`
 
                 return ({
                     value: value,
@@ -247,26 +248,28 @@ export function ScheduleDialog({ isEdit }: {
         <ModifyDialog modal={true} open={snap.opened} handleOnOpenChanged={handleOpen}
             title={title} handleSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="id" className="text-right">
-                        Id
-                    </Label>
-                    <Input id="id" value={snap.data.id} disabled={snap.isEdit} onChange={(e) => {
+                {/*<div className="grid grid-cols-4 items-center gap-4">*/}
+                {/*    <Label htmlFor="id" className="text-right">*/}
+                {/*        Id*/}
+                {/*    </Label>*/}
+                {/*    <Input id="id" value={snap.data.id} disabled={snap.isEdit} onChange={(e) => {*/}
 
-                        store.data.id = e.target.value
-                    }
-                    } className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">
-                        Course
-                    </Label>
-                    <Combobox modal={true} value={snap.data.courseId} onValueChange={(value) => {
-                        store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
-                    }}
-                        data={courses.display}
-                        className="col-span-3" />
-                </div>
+                {/*        store.data.id = e.target.value*/}
+                {/*    }*/}
+                {/*    } className="col-span-3" />*/}
+                {/*</div>*/}
+                {isAdmin &&
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="teacherId" className="text-right">
+                            Course
+                        </Label>
+                        <Combobox modal={true} value={snap.data.courseId} onValueChange={(value) => {
+                            store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
+                        }}
+                            data={courses.display}
+                            className="col-span-3" />
+                    </div>
+                }
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="teacherId" className="text-right">
                         Schedule

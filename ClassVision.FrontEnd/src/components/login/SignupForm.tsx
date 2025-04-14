@@ -21,20 +21,29 @@ export function SignUpForm({
         // @ts-ignore
         const usernameElement = e.target[0] as HTMLInputElement
         // @ts-ignore
-        const emailElement = e.target[1] as HTMLInputElement
+        const firstNameElement = e.target[1] as HTMLInputElement
         // @ts-ignore
-        const passwordElement = e.target[2] as HTMLInputElement
+        const lastNameElement = e.target[2] as HTMLInputElement
+
+
+
+        // @ts-ignore
+        const emailElement = e.target[3] as HTMLInputElement
+        // @ts-ignore
+        const passwordElement = e.target[4] as HTMLInputElement
 
         const username = usernameElement.value
         const email = emailElement.value
         const password = passwordElement.value
+        const firstName = firstNameElement.value
+        const lastName = lastNameElement.value
 
         console.log(e)
         console.log(usernameElement.value)
         console.log(emailElement.value)
         console.log(passwordElement.value)
 
-        const result = await fetch(`/api/Account/SignUp`, {
+        const result = await fetch(`/api/Account/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -43,6 +52,8 @@ export function SignUpForm({
                 username: username,
                 email: email,
                 password: password,
+                firstName: firstName,
+                lastName: lastName
             }),
         });
 

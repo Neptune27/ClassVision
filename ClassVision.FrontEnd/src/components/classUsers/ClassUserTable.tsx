@@ -8,19 +8,19 @@ import {
 import { DataTable } from "../ui/data-table";
 import { useEffect } from "react";
 import { authorizedFetch } from "../../utils/authorizedFetcher";
-import { StudentType, StudentVisibleName } from "../../interfaces/StudentTypes";
-import { studentColumns } from "./studentColumns";
-import { studentStore } from "../../stores/studentStores";
+import { ClassUserType, StudentVisibleName } from "../../interfaces/ClassUserTypes";
+import { studentColumns } from "./classUserColumns";
+import { classUserStore } from "../../stores/classUserStores";
 import { useSnapshot } from "valtio";
 
 
 
-export function StudentTable({ children, setSelectedRows }: {
+export function ClassUserTable({ children, setSelectedRows }: {
     children?: React.ReactNode,
     setSelectedRows?:
-        (rows: Row<StudentType>[]) => void
+        (rows: Row<ClassUserType>[]) => void
 }) {
-    const store = studentStore;
+    const store = classUserStore;
     const snap = useSnapshot(store)
     const data = snap.data
 
@@ -45,9 +45,7 @@ export function StudentTable({ children, setSelectedRows }: {
                 visible initialVisibility={{
                     createdAt: false,
                     lastUpdated: false,
-                    address: false,
-                    birthday: false,
-                    enrollAt: false
+                    isActive: false
                 }}
                 visibleName={StudentVisibleName}
                 setSelectedRow={setSelectedRows} >

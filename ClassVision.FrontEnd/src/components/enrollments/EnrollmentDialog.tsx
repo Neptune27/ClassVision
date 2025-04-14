@@ -21,7 +21,7 @@ import { Card, CardContent } from "../ui/card"
 import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
-import { StudentType } from "../../interfaces/StudentTypes"
+import { ClassUserType } from "../../interfaces/ClassUserTypes"
 
 
 const baseUrl = "/api/Enrollment"
@@ -118,7 +118,7 @@ export function EnrollmentDialog({ isEdit }: {
     })
 
     const [studentData, setStudentData] = useState<{
-        data: StudentType[],
+        data: ClassUserType[],
         display: ComboboxData[]
     }>({
         data: [],
@@ -215,7 +215,7 @@ export function EnrollmentDialog({ isEdit }: {
             const resp = await authorizedFetch(`${studentUrl}/`)
             const data = await resp.json()
 
-            const result = data.map((datum: StudentType) => {
+            const result = data.map((datum: ClassUserType) => {
                 const value = `${datum.id} | ${datum.firstName} ${datum.lastName}`
 
                 return ({

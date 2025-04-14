@@ -1,14 +1,14 @@
 ﻿import { proxy, ref } from 'valtio'
 import { EnrollmentModifyType } from '../interfaces/EnrollmentTypes'
 import { ImageBasicInfomation, ImageFaceType } from '../interfaces/ImageFaceType'
-import { StudentType } from '../interfaces/StudentTypes'
+import { ClassUserType } from '../interfaces/ClassUserTypes'
 import { AttendeeType } from '../interfaces/AttendeeTypes'
 import { HubConnection } from '@microsoft/signalr'
 import { useHub } from '../hooks/useHub'
 
 
 export type RollcallStoreType = {
-    userData: StudentType[],
+    userData: ClassUserType[],
     attentee: AttendeeType[],
     data: {
         path: string,

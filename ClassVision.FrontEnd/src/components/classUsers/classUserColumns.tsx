@@ -4,16 +4,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { EGender, StudentType } from "../../interfaces/StudentTypes";
-import { studentModifyStore, studentDeleteStore } from "../../stores/studentStores";
+import { ClassUserType } from "../../interfaces/ClassUserTypes";
+import { classUserModifyStore, classUserDeleteStore } from "../../stores/classUserStores";
 
-const store = studentModifyStore
-const deleteStore = studentDeleteStore
+const store = classUserModifyStore
+const deleteStore = classUserDeleteStore
 const handleDeleteClick = (id: string) => {
     deleteStore.id = id
     deleteStore.opened = true
 }
-export const studentColumns: ColumnDef<StudentType>[] = [
+export const studentColumns: ColumnDef<ClassUserType>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -54,39 +54,12 @@ export const studentColumns: ColumnDef<StudentType>[] = [
         header: ({ column }) => columnSortable(column, "Last Name")
     },
     {
+        accessorKey: "user",
+        header: ({ column }) => columnSortable(column, "User")
+    },
+    {
         accessorKey: "enrollments",
         header: ({ column }) => columnSortable(column, "Enrollments"),
-    },
-    {
-        accessorKey: "gender",
-        header: ({ column }) => columnSortable(column, "Gender"),
-        cell: ({ row }) => {
-            const current = row.getValue("gender") as EGender
-            switch (current) {
-                case EGender.OTHER:
-                    return "Other"
-                case EGender.FEMALE:
-                    return "Female"
-                case EGender.MALE:
-                    return "Male"
-
-            }
-        }
-    },
-    {
-        accessorKey: "phoneNumber",
-        header: ({ column }) => columnSortable(column, "Phone"),
-        
-    },
-    {
-        accessorKey: "birthday",
-        header: ({ column }) => columnSortable(column, "Birthday"),
-        cell: ({ row }) => rowToLocalizedTime(row, "birthday")
-    },
-    {
-        accessorKey: "enrollAt",
-        header: ({ column }) => columnSortable(column, "Enroll At"),
-        cell: ({ row }) => rowToLocalizedTime(row, "enrollAt")
     },
     {
         accessorKey: "lastUpdated",
@@ -144,17 +117,11 @@ export const studentColumns: ColumnDef<StudentType>[] = [
                         <DropdownMenuItem onClick={() => {
                             store.opened = true
                             store.isEdit = true
-                            console.log(data.gender)
                             store.data = {
                                 id: data.id,
-                                address: data.address,
-                                birthday: data.birthday,
-                                enrollAt: data.enrollAt,
                                 firstName: data.firstName,
-                                gender: data.gender,
                                 lastName: data.lastName,
                                 media: data.media,
-                                phoneNumber: data.phoneNumber
                             }
                         }}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>

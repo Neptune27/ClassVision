@@ -10,7 +10,7 @@ import { CourseModifyType } from "../../interfaces/CourseTypes"
 import { courseDeleteStore, courseBatchDeleteStore, courseModifyStore, courseStore } from "../../stores/courseStores"
 import { Combobox, ComboboxData } from "../ui/combobox"
 import { TeacherType } from "../../interfaces/TeacherTypes"
-import { StudentType } from "../../interfaces/StudentTypes"
+import { ClassUserType } from "../../interfaces/ClassUserTypes"
 import { CourseInfoType } from "../../interfaces/CourseInfoType"
 import { ClassroomType } from "../../interfaces/ClassroomType"
 import { CourseStudentPopover } from "./CourseStudentPopover"
@@ -32,7 +32,14 @@ const studentUrl = "/api/Student"
 const scheduleUrl = "/api/Schedule"
 const enrollmentUrl = "/api/Enrollment"
 
-export function CourseDeleteDialog() {
+export function CourseDeleteDialog({
+    forced,
+    title
+}:
+    {
+        title?: string
+        forced?: boolean
+    }) {
     const store = courseDeleteStore;
     const snap = useSnapshot(store)
 
@@ -40,8 +47,7 @@ export function CourseDeleteDialog() {
         store.opened = open
     }
 
-
-    const handleSubmit = async () => {
+    const handleDelete = async () => {
         console.log(store)
         const url = `${baseUrl}/${store.id}`
         const resp = await authorizedFetch(url, {
@@ -52,12 +58,20 @@ export function CourseDeleteDialog() {
         })
         const data = await resp.text()
         console.log(data)
+    }
+
+    const handleSubmit = async () => {
+        handleDelete()
+
+        if (forced) {
+            handleDelete()
+        }
         triggerFetch(courseStore)
 
     }
 
     return (
-        <DeleteDialog open={snap.opened} title={"Are you sure you want to delete this"}
+        <DeleteDialog open={snap.opened} title={title ? title : "Are you sure you want to delete this"}
             handleOnOpenChanged={handleOpen}
             handleSubmit={handleSubmit}
 
@@ -107,12 +121,19 @@ export function CourseBatchDeleteDialog() {
 
 
 
-export function CourseDialog({ isEdit }: {
-    isEdit: boolean
+export function CourseDialog({ isEdit, isAdmin }: {
+    isEdit: boolean,
+    isAdmin?: boolean
 }) {
+
+
+
+
     const store = courseModifyStore
 
     const snap = useSnapshot(store)
+
+
 
     const [title, setTitle] = useState("")
     const [teacherData, setTeacherData] = useState<{
@@ -124,7 +145,7 @@ export function CourseDialog({ isEdit }: {
     })
 
     const [studentData, setStudentData] = useState<{
-        data: StudentType[],
+        data: ClassUserType[],
         display: ComboboxData[]
     }>({
         data: [],
@@ -132,7 +153,7 @@ export function CourseDialog({ isEdit }: {
     })
 
     const [courseInfo, setCourseInfoData] = useState<{
-        data: StudentType[],
+        data: ClassUserType[],
         display: ComboboxData[]
     }>({
         data: [],
@@ -190,7 +211,7 @@ export function CourseDialog({ isEdit }: {
             const resp = await authorizedFetch(`${studentUrl}/`)
             const data = await resp.json()
 
-            const result = data.map((datum: StudentType) => {
+            const result = data.map((datum: ClassUserType) => {
                 const value = `${datum.id} | ${datum.firstName} ${datum.lastName}`
 
                 return ({
@@ -254,15 +275,16 @@ export function CourseDialog({ isEdit }: {
         fetchCourseInfos()
         fetchClassroom()
 
+
     }, [snap.opened])
 
     useEffect(() => {
         store.data.classroomId = toDisplayValue(store.data.classroomId, rooms.display)
     }, [rooms])
 
-    useEffect(() => {
-        store.data.courseInfoId = toDisplayValue(store.data.courseInfoId, courseInfo.display)
-    }, [courseInfo])
+    //useEffect(() => {
+    //    store.data.courseInfoId = toDisplayValue(store.data.courseInfoId, courseInfo.display)
+    //}, [courseInfo])
 
     useEffect(() => {
         store.data.teacherId = toDisplayValue(store.data.teacherId, teacherData.display)
@@ -417,8 +439,16 @@ export function CourseDialog({ isEdit }: {
         })
         data.attendantId = data.attendantId.map(getDisplayId)
         data.classroomId = getDisplayId(data.classroomId)
-        data.teacherId = getDisplayId(data.teacherId)
-        data.courseInfoId = getDisplayId(data.courseInfoId)
+
+        if (isAdmin) {
+            data.teacherId = getDisplayId(data.teacherId)
+        }
+        else {
+            data.teacherId = localStorage.getItem("userId") ?? "";
+
+        }
+
+        //data.courseInfoId = getDisplayId(data.courseInfoId)
         console.log(data)
 
         //data.userId = userData.find(u => u.userName == data.userId)?.id ?? ""
@@ -469,35 +499,37 @@ export function CourseDialog({ isEdit }: {
             className={"sm:max-w-[625px]"}
             title={title} handleSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="id" className="text-right">
-                        Id
-                    </Label>
-                    <Input id="id" value={snap.data.id} disabled onChange={(e) => {
+                {/*<div className="grid grid-cols-4 items-center gap-4">*/}
+                {/*    <Label htmlFor="id" className="text-right">*/}
+                {/*        Id*/}
+                {/*    </Label>*/}
+                {/*    <Input id="id" value={snap.data.id} disabled onChange={(e) => {*/}
 
-                        store.data.id = e.target.value
+                {/*        store.data.id = e.target.value*/}
+                {/*    }*/}
+                {/*    } className="col-span-3" />*/}
+                {/*</div>*/}
+                {isAdmin &&
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="teacherId" className="text-right">
+                            Teacher
+                        </Label>
+                        <Combobox value={snap.data.teacherId} onValueChange={(value) => {
+                            store.data.teacherId = teacherData?.display.find(item => item.label == value)?.value ?? ""
+                        }}
+                            data={teacherData.display}
+                            className="col-span-3" />
+                    </div>
+                }
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="teacherId" className="text-right">
+                        Course Name
+                    </Label>
+                    <Input id="courseName" value={snap.data.courseName} onChange={(e) => {
+
+                        store.data.courseName = e.target.value
                     }
                     } className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">
-                        Teacher
-                    </Label>
-                    <Combobox value={snap.data.teacherId} onValueChange={(value) => {
-                        store.data.teacherId = teacherData?.display.find(item => item.label == value)?.value ?? ""
-                    }}
-                        data={teacherData.display}
-                        className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">
-                        Course Info
-                    </Label>
-                    <Combobox value={snap.data.courseInfoId} onValueChange={(value) => {
-                        store.data.courseInfoId = courseInfo?.display.find(item => item.label == value)?.value ?? ""
-                    }}
-                        data={courseInfo.display}
-                        className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="teacherId" className="text-right">
@@ -536,55 +568,9 @@ export function CourseDialog({ isEdit }: {
                                 ...scheduleDefault(),
                                 courseId: store.data.id
                             })
-                        }}>Add new schedule</Button>
+                        }}>Add new predetermined schedule</Button>
                     </div>
-
-
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="room" className="text-right">
-                        Room
-                    </Label>
-                    <Combobox value={snap.data.classroomId} onValueChange={(value) => {
-                        store.data.classroomId = rooms?.display.find(item => item.label == value)?.value ?? ""
-                    }}
-                        data={rooms.display}
-                        className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="teacherId" className="text-right">
-                        Students
-                    </Label>
-                    <CourseStudentPopover selectedData={snap.data.studentIds} setSelectedData={(value) => {
-                        const selectedStudentId = studentData.display.find((item => item.label == value))?.label
-                        if (!selectedStudentId) {
-                            console.log("Student id not found?")
-                            return
-                        }
-                        const displayId = getDisplayId(selectedStudentId)
-                        const index = store.data.studentIds.indexOf(displayId)
-
-                        if (index === -1) {
-                            store.data.studentIds.push(displayId)
-                        }
-                        else {
-                            store.data.studentIds.splice(index, 1)
-                        }
-                    }}
-                        data={studentData}
-                        className="col-span-3" />
-                </div>
-                {/*<div className="grid grid-cols-4 items-center gap-4">*/}
-                {/*    <Label htmlFor="media" className="text-right">*/}
-                {/*        Profile*/}
-                {/*    </Label>*/}
-                {/*    <Input id="media" value={snap.data.media} onChange={(e) => {*/}
-
-                {/*        store.data.media = e.target.value*/}
-                {/*    }}*/}
-                {/*        className="col-span-3" />*/}
-                {/*</div>*/}
-
             </div>
         </ModifyDialog>
     )

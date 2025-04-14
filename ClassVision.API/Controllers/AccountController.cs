@@ -109,6 +109,8 @@ public class AccountController(ILogger<AccountController> logger,
                 LastName = register.LastName
             });
 
+            await context.SaveChangesAsync();
+
 
             var token = await mediator.Send(new CreateTokenRequest(appUser, Request.Host));
             //var publish = await mediator.Send(new PublishAccountInternalRequest(register));

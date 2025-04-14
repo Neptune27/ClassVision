@@ -7,7 +7,7 @@ import { TeacherType } from "./TeacherTypes";
 
 export interface CourseType extends CommonType {
     id: string,
-    courseInfo: CourseInfoType,
+    courseName: string,
     teacher: TeacherType,
     classroom: ClassroomType,
     attendantId: string[],
@@ -22,7 +22,7 @@ export const CourseVisibleName: VisibleNameType<CourseType> = {
     isActive: "Is Active",
     lastUpdated: "Last updated",
     id: "Id",
-    courseInfo: "Course Info",
+    courseName: "Course Name",
     teacher: "Teacher",
     classroom: "Classroom",
     attendantId: "Attendant Ids",
@@ -35,7 +35,7 @@ export const CourseVisibleName: VisibleNameType<CourseType> = {
 
 export type CourseModifyType = {
     id: string,
-    courseInfoId: string,
+    courseName: string,
     teacherId: string,
     classroomId: string,
     attendantId: string[],

@@ -30,7 +30,6 @@ namespace ClassVision.API.Controllers
             return await _context.Courses
                 .Include(c => c.Schedules)
                 .Include(c => c.Teacher)
-                .Include(c => c.CourseInfo)
                 .Include(c => c.Enrollments)
                 .ToListAsync();
         }
@@ -87,11 +86,11 @@ namespace ClassVision.API.Controllers
         public async Task<ActionResult<Course>> PostCourse(CourseModifyDto dto)
         {
 
-            var teacher = await _context.ClassUsers.FirstAsync(it => it.Id == dto.TeacherId);
+            var teacher = await _context.ClassUsers.FirstAsync(it => it.Id == dto.TeacherId || it.User.Id == dto.TeacherId);
 
             var course = new Course
             {
-                CourseInfo = dto.CourseInfo,
+                CourseName = dto.CourseName,
                 Teacher = teacher,
                 CreatedAt = DateTimeOffset.UtcNow,
                 LastUpdated = DateTimeOffset.UtcNow,
@@ -108,11 +107,20 @@ namespace ClassVision.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(Guid id)
         {
+
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
             {
                 return NotFound();
             }
+
+            if (course.IsActive)
+            {
+                course.IsActive = false;
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
 
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();

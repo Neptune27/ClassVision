@@ -15,6 +15,10 @@ import { DataTable } from "../../ui/data-table";
 import { createColumns } from "./classDetailsColumns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { Button } from "../../ui/button";
+import { QrCode, QrCodeEcc } from "../../../lib/qrcodegen";
+import { toSvgString } from "../../../lib/qrUltis";
+import { classUserBatchCreateStore } from "../../../stores/classUserStores";
+import { ClassUserBatchAddDialog } from "../../classUsers/ClassUserBatchCreateDialog";
 
 
 const excelUrl = "/api/Attendee/byClass/toExcel"
@@ -26,6 +30,7 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
     (rows: Row<StudentClassInfoType>[]) => void
 }) {
     const store = classInfoStore;
+    const dialogStore = classUserBatchCreateStore;
     const snap = useSnapshot(store)
     const data = snap.data
     const [columns, setColumns] = useState<ColumnDef<StudentClassInfoType>[]>([])
@@ -47,6 +52,15 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
         fetchData()
     }, [])
 
+
+    const handleAddStudents = () => {
+        const qr0 = QrCode.encodeText(`https://${location.host}/clients/class/${classId}`, QrCodeEcc.MEDIUM);
+        const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");
+
+        dialogStore.qr = svg
+        dialogStore.opened = true
+    }
+
     const handleExportExcel = async () => {
         const resp = await authorizedFetch(`${excelUrl}/${classId}`)
         if (!resp.ok) {
@@ -59,6 +73,8 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
     }
 
     return (
+        <>
+        <ClassUserBatchAddDialog isEdit={false} />
         <div className="container mx-auto p-10">
             <DataTable columns={columns} data={data}
                 filter initialFilterId="global"
@@ -77,11 +93,14 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={handleAddStudents}>Add students</DropdownMenuItem>
                         <DropdownMenuItem onClick={handleExportExcel}>Export to Excel</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
                 {children}
             </DataTable>
         </div>
+
+        </>
     )
 }

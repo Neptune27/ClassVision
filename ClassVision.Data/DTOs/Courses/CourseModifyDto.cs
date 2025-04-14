@@ -17,7 +17,7 @@ public class CourseModifyDto
 
     public string Id { get; set; } = "";
 
-    public string CourseInfo { get; set; } = null!;
+    public string CourseName { get; set; } = null!;
 
     public string TeacherId { get; set; } = null!;
 

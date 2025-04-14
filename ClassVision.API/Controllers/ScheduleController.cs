@@ -31,7 +31,7 @@ namespace ClassVision.API.Controllers
         {
             IQueryable<Schedule> query = _context.Schedules
                 .Include(s => s.Course)
-                .ThenInclude(c => c.CourseInfo)
+                .ThenInclude(c => c.CourseName)
                 .Include(s => s.Course);
 
 
@@ -48,8 +48,6 @@ namespace ClassVision.API.Controllers
         public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
         {
             var schedule = await _context.Schedules.AsNoTracking()
-                .Include(s => s.Course)
-                .ThenInclude(c => c.CourseInfo)
                 .Include(s => s.Course)
                 .ThenInclude(c => c.Enrollments)
                 .ThenInclude(e => e.Student)
@@ -91,7 +89,6 @@ namespace ClassVision.API.Controllers
 
             var schedule = await _context.Schedules
                 .Include(s => s.Course)
-                .ThenInclude(c => c.CourseInfo)
                 .Where(s => s.Course.Teacher.User.Id == userId).ToListAsync();
 
             return schedule;

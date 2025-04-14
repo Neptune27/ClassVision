@@ -1,8 +1,8 @@
 import { CommonType, VisibleNameType } from "./CommonType";
-import { StudentType } from "./StudentTypes";
+import { ClassUserType } from "./ClassUserTypes";
 
 export interface EnrollmentType extends CommonType, EnrollmentModifyType {
-    student?: StudentType
+    student?: ClassUserType
 }
 
 
