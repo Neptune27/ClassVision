@@ -18,6 +18,7 @@ import { imageDataConvert } from "../../lib/imageDataConvertion"
 import { triggerFetch } from "../../lib/utils"
 import { CreateRollCallDialog } from "./AttendingClassDialogs"
 import { useSnapshot } from "valtio"
+import Link from "next/link"
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
@@ -167,6 +168,13 @@ export function RollCall({ id, isClient }: {
     return (
         <div className={"md:p-10 h-full"}>
             <CreateRollCallDialog handleSubmit={handleCreateRollCall} />
+
+            <div className="flex justify-between gap-2">
+                <Link href={schedule?.course?.id ? `/dashboard/info/class/${schedule.course.id}` : "/dashboard"}>Back</Link>
+                <h1>Rollcall</h1>
+                <div></div>
+            </div>
+
             <div className="container mx-auto ">
                 <RecognitionCard scheduleId={id} isClient={isClient} />
             </div>

@@ -37,7 +37,7 @@ export function ScheduleInfoCard({ schedule }: {
 
             </CardContent>
             <CardFooter >
-                <Link className="w-full" href={`/dashboard/attending-class/rollcall/${schedule.id}`}>
+                <Link className="w-full" href={`/dashboard/info/class/${schedule.course?.id}/${schedule.id}`}>
                     <Button className="w-full">Go</Button>
                 </Link>
             </CardFooter>

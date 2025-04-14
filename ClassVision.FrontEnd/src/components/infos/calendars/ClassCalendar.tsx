@@ -13,7 +13,7 @@ import { authorizedFetch } from "../../../utils/authorizedFetcher";
 
 
 const scheduleUrl = "/api/Schedule"
-const rollCallUrl = "/dashboard/attending-class/rollcall"
+const classUrl = "/dashboard/info/class/"
 
 export function ClassCalendar({
     filteredId,
@@ -55,7 +55,7 @@ export function ClassCalendar({
                 id: d.id,
                 start: DateTime.fromISO(`${d.date}T${d.startTime}Z`).toJSDate(),
                 end: DateTime.fromISO(`${d.date}T${d.endTime}Z`).toJSDate(),
-                url: `${rollCallUrl}/${d.id}`,
+                url: `${classUrl}/${d.course?.id}/${d.id}`,
                 title: `${d.course?.courseName}`
             }
         })
