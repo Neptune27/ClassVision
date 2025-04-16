@@ -15,6 +15,7 @@ export interface CourseType extends CommonType {
     schedules: ScheduleModifyType[],
     enrollments: EnrollmentType[],
     period: number,
+    archived: boolean
 }
 
 export const CourseVisibleName: VisibleNameType<CourseType> = {

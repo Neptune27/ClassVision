@@ -28,4 +28,6 @@ public class Course : BaseEntity
 
     public int Period { get; set; }
 
+    public bool Archived { get; set; } = false;
+
 }

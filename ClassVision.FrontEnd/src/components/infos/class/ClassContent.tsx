@@ -82,9 +82,9 @@ export function ClassContent() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem
-                                                    onClick={() => handleDelete(s.id, s.isActive)}
+                                                    onClick={() => handleDelete(s.id, s.archived)}
                                                 >
-                                                    {s.isActive ? "Set to Archive" : "Delete class" };
+                                                    {s.archived ? "Set to Archive" : "Delete class" };
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

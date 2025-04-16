@@ -1,6 +1,9 @@
-﻿using ClassVision.Data;
+﻿using ClassVision.API.Extensions;
+using ClassVision.Data;
 using ClassVision.Data.DTOs;
 using ClassVision.Data.Entities;
+using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -92,6 +95,8 @@ namespace ClassVision.API.Controllers
             };
 
             _context.Enrollments.Add(enrollment);
+            await AddNewAttendantToExistingCourse(Guid.Parse(dto.CourseId), dto.StudentId);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -111,6 +116,83 @@ namespace ClassVision.API.Controllers
             return CreatedAtAction("GetEnrollment", new { id = enrollment.CourseId }, enrollment);
         }
 
+        public record EnrollmentByUser(Guid ClassId);
+
+        [HttpPost("ByUser")]
+        [Authorize]
+        public async Task<IActionResult> PostEnrollmentByUser(EnrollmentByUser dto)
+        {
+            var claim = HttpContext.User.Claims.GetClaimByUserId();
+
+            if (claim is null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = claim.Value;
+            var student = await _context.ClassUsers.FirstAsync(c => c.User.Id == userId);
+            var enrollment = new Enrollment()
+            {
+                CourseId = dto.ClassId,
+                StudentId = student.Id,
+                CreatedAt = DateTimeOffset.UtcNow,
+                LastUpdated = DateTimeOffset.UtcNow,
+                IsActive = true,
+            };
+
+            _context.Enrollments.Add(enrollment);
+            await AddNewAttendantToExistingCourse(dto.ClassId, student.Id);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (EnrollmentExists(enrollment.CourseId))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtAction("GetEnrollment", new { id = enrollment.CourseId }, enrollment);
+
+        }
+
+        private async Task AddNewAttendantToExistingCourse(Guid courseId, string studentId)
+        {
+            var course = await _context.Courses
+                .Include(c=>c.Schedules).FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course is null)
+            {
+                return;   
+            }
+
+            var attendants = course.Schedules
+                .Select(schedule =>
+                {
+                    return new Attendant()
+                    {
+                        Id = Guid.NewGuid(),
+                        CourseId = courseId,
+                        StudentId = studentId,
+                        Status = Data.Enums.EAttendantStatus.ABSENT,
+                        ScheduleId = schedule.Id,
+                        LastUpdated = DateTimeOffset.UtcNow,
+                        CreatedAt = DateTimeOffset.UtcNow,
+                    };
+                }).ToList();
+
+
+
+            await _context.Attendants.AddRangeAsync(attendants);
+        }
+
         // DELETE: api/Enrollment/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEnrollment(Guid id)
@@ -125,6 +207,26 @@ namespace ClassVision.API.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("IsEnroll/{courseId}")]
+        [Authorize]
+        public async Task<IActionResult> IsEnroll(Guid courseId) 
+        {
+            var claim = HttpContext.User.Claims.GetClaimByUserId();
+
+            if (claim is null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = claim.Value;
+
+            var classUser = await _context.ClassUsers.FirstAsync(c => c.User.Id == userId);
+
+            var isEnroll = _context.Enrollments.Any(e => e.CourseId == courseId && e.Student == classUser);
+            var isTeacher = _context.Courses.Any(e => e.Teacher == classUser);
+            return Ok(isEnroll || isTeacher);
         }
 
         private bool EnrollmentExists(Guid id)

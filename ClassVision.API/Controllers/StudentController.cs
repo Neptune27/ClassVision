@@ -93,6 +93,8 @@ namespace ClassVision.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ClassUser>> PostStudent(ClassUser student)
         {
+            student.Id = Guid.CreateVersion7().ToString();
+
             _context.ClassUsers.Add(student);
             try
             {

@@ -18,6 +18,8 @@ public class StatisticController(AppDBContext context) : ControllerBase
     public async Task<IActionResult> GetStatistic()
     {
         var now = DateTimeOffset.UtcNow;
+        var lastMonth = now.AddDays(-30);
+        var lastMonthDateOnly = DateOnly.FromDateTime(lastMonth.DateTime);
         var totalClasses = await context.Courses.CountAsync();
         var totalStudents = await context.ClassUsers.CountAsync();
         var totalTeachers = await context.Teachers.CountAsync();
@@ -28,7 +30,30 @@ public class StatisticController(AppDBContext context) : ControllerBase
         var totalSchedule = await context.Schedules.CountAsync();
         var totalUser = await context.Users.CountAsync();
         var currentlyAvailable = await context.Schedules.Where(s => s.Date.ToDateTime(s.StartTime) >= now.Date).CountAsync();
+        
+        var dailyRecognizeTotal = await context
+            .RollcallFaces
+            .Where(f => f.Image.Schedule.Date > lastMonthDateOnly)
+            .Where(f => f.Status != Data.Enums.EFaceStatus.NOT_SELECTED)
+            .GroupBy(t => new { t.Image.Schedule.Date })
+            .Select(g => new
+            {
+                Time = g.Key.Date,
+                Manual = g.Count(fi => fi.Status == Data.Enums.EFaceStatus.SELECTED),
+                Automatic = g.Count(fi => fi.Status == Data.Enums.EFaceStatus.AUTOMATED),
+            })
+            .OrderBy(x => x.Time)
+            .ToListAsync();
 
+        var dailyLoginTotals = await context.ClassUsers
+            .SelectMany(c => c.LoginTime)
+            .Where(lt => lt > lastMonth)
+            .GroupBy(lt => new { lt.Date })
+            .Select(t => new {
+                Date = t.Key.Date.ToString(),
+                Users = t.Count()
+            })
+            .ToListAsync();
         return Ok(new
         {
             TotalClasses = totalClasses,
@@ -41,6 +66,8 @@ public class StatisticController(AppDBContext context) : ControllerBase
             TotalSchedule = totalSchedule,
             TotalUser = totalUser,
             CurrentlyAvailable = currentlyAvailable,
+            MonthlyTotals = dailyRecognizeTotal,
+            DailyLoginTotals = dailyLoginTotals
         });
     }
 }

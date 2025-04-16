@@ -14,7 +14,7 @@ public class ClassUser : BaseEntity
 {
     [Key]
     public string Id { get; set; } = null!;
-    public AppUser User { get; set; } = null!;
+    public AppUser? User { get; set; }
 
     public string FirstName { get; set; } = null!;
 

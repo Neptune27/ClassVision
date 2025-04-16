@@ -114,15 +114,16 @@ namespace ClassVision.API.Controllers
                 return NotFound();
             }
 
-            if (course.IsActive)
+            if (!course.Archived)
             {
-                course.IsActive = false;
+                course.Archived = true;
                 await _context.SaveChangesAsync();
                 return Ok();
             }
 
 
-            _context.Courses.Remove(course);
+            course.IsActive = false;
+
             await _context.SaveChangesAsync();
 
             return NoContent();

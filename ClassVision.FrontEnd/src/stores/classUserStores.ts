@@ -25,9 +25,10 @@ export const classUserDeleteStore = proxy<{ opened: boolean, id: string }>({
     opened: false
 })
 
-export const classUserBatchCreateStore = proxy<{ opened: boolean, qr: string }>({
+export const classUserBatchCreateStore = proxy<{ opened: boolean, qr: string, manualUsers: ClassUserModifyType[] }>({
     opened: false,
-    qr: ""
+    qr: "",
+    manualUsers: []
 })
 
 

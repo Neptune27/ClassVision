@@ -74,7 +74,7 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
 
     return (
         <>
-        <ClassUserBatchAddDialog isEdit={false} />
+            <ClassUserBatchAddDialog isEdit={false} classId={classId} />
         <div className="container mx-auto p-10">
             <DataTable columns={columns} data={data}
                 filter initialFilterId="global"

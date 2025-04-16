@@ -27,10 +27,13 @@ const boundingBoxClassHandler = (status: EFaceStatus) => {
     }
 }
 
-export function RollcallImage({ imageUrl, faces, position }: {
+export function RollcallImage({ imageUrl, faces, position, idNameDict }: {
     imageUrl: string,
     faces: ImageFaceType[],
-    position: number
+    position: number,
+    idNameDict: {
+        [id: string]: string
+    }
 }) {
     const [dimension, setDimension] = useState<{
         w: number,
@@ -39,6 +42,14 @@ export function RollcallImage({ imageUrl, faces, position }: {
         w: 0,
         h: 0
     })
+
+    const getNameByDict = (id: string) => {
+        if (idNameDict === undefined) {
+            return id
+        }
+
+        return idNameDict[id] ?? id
+    }
 
 
     useEffect(() => {
@@ -61,7 +72,7 @@ export function RollcallImage({ imageUrl, faces, position }: {
                                 <a>
                                     {e.user_id && <text style={{
                                         fontSize: dimension.w * 0.025
-                                    }} x={e.data.x} y={e.data.y - 10} fill="green">{e.user_id}</text>}
+                                    }} x={e.data.x} y={e.data.y - 10} fill="green">{getNameByDict(e.user_id)}</text>}
                                     <rect className={boundingBoxClassHandler(e.status)} x={e.data.x} y={e.data.y} width={(e.data.w - e.data.x)} height={e.data.h - e.data.y}></rect>
                                 </a>
                             </PopoverTrigger>

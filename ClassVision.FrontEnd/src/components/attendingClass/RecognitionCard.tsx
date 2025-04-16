@@ -3,7 +3,7 @@ import { ChevronDown} from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Button } from "../ui/button"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { EFaceStatus, ImageFaceExampleData, ImageFaceType } from "../../interfaces/ImageFaceType"
 import { FaceStudentPopoverContent } from "./FaceStudentPopoverContent"
 import { rollCallQRStore, rollCallStore } from "../../stores/rollcallStores"
@@ -61,7 +61,9 @@ export function QrDialog() {
 }
 
 
-
+type UserNameDictType = {
+    [id: string]: string
+}
 export function RecognitionCard(props: {
     scheduleId: string,
     isClient: boolean
@@ -69,9 +71,20 @@ export function RecognitionCard(props: {
     const { scheduleId, isClient } = props
     const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
+    const [userNameDict, setUserNameDict] = useState<UserNameDictType>({})
+
+
 
     const store = rollCallStore;
     const snap = useSnapshot(store)
+    useEffect(() => {
+        const newUserNameDict: UserNameDictType = {}
+        snap.attentee.forEach(a => {
+            newUserNameDict[a.studentId] = `${a.enrollment?.student?.firstName} ${a.enrollment?.student?.lastName}`
+        })
+
+        setUserNameDict(newUserNameDict)
+    }, [snap])
 
     return (
         <>
@@ -93,7 +106,7 @@ export function RecognitionCard(props: {
                             <CarouselContent>
                                 {snap.data.map((d, index) =>
                                     <CarouselItem key={index}>
-                                        <RollcallImage imageUrl={d.path} faces={d.faces} position={index} />
+                                        <RollcallImage imageUrl={d.path} faces={d.faces} position={index} idNameDict={userNameDict} />
                                     </CarouselItem>
                                     )
                                 }
