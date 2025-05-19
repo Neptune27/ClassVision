@@ -19,11 +19,13 @@ import { QrCode, QrCodeEcc } from "../../../lib/qrcodegen";
 import { toSvgString } from "../../../lib/qrUltis";
 import { classUserBatchCreateStore } from "../../../stores/classUserStores";
 import { ClassUserBatchAddDialog } from "../../classUsers/ClassUserBatchCreateDialog";
+import { toast } from "../../../hooks/use-toast";
 
 
 const excelUrl = "/api/Attendee/byClass/toExcel"
 
-export function ClassDetailsTable({ children, setSelectedRows, classId }: {
+export function ClassDetailsTable
+({ children, setSelectedRows, classId }: {
     classId: string,
     children?: React.ReactNode,
     setSelectedRows?:
@@ -34,7 +36,7 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
     const snap = useSnapshot(store)
     const data = snap.data
     const [columns, setColumns] = useState<ColumnDef<StudentClassInfoType>[]>([])
-
+    const [isTeacher, setIsTeacher] = useState(false)
 
     const fetchData = async () => {
         const resp = await authorizedFetch(`/api/Attendee/byClass/${classId}`)
@@ -50,6 +52,19 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
 
     useEffect(() => {
         fetchData()
+        const fetchIsTeacher = async () => {
+            const resp = await authorizedFetch(`/api/Course/IsTeacher/${classId}`)
+            if (!resp.ok) {
+                toast({
+                    value: "Error fetching is teacher",
+                    variant: "destructive"
+                })
+            }
+
+            setIsTeacher(await resp.json())
+        }
+
+        fetchIsTeacher()
     }, [])
 
 
@@ -85,18 +100,22 @@ export function ClassDetailsTable({ children, setSelectedRows, classId }: {
                     student_lastName: "Last Name",
                     student_firstName:"First Name"
                 }}
-                setSelectedRow={setSelectedRows} >
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="default" className="ml-2">
-                            Actions
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={handleAddStudents}>Add students</DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleExportExcel}>Export to Excel</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    setSelectedRow={setSelectedRows} >
+                    {
+                        isTeacher &&
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="default" className="ml-2">
+                                    Actions
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={handleAddStudents}>Add students</DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportExcel}>Export to Excel</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                    }
                 {children}
             </DataTable>
         </div>

@@ -16,22 +16,15 @@ namespace ClassVision.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ScheduleController : ControllerBase
+    public class ScheduleController(AppDBContext context) : ControllerBase
     {
-        private readonly AppDBContext _context;
-
-        public ScheduleController(AppDBContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDBContext _context = context;
 
         // GET: api/Schedule
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules([FromQuery] string? courseId)
         {
             IQueryable<Schedule> query = _context.Schedules
-                .Include(s => s.Course)
-                .ThenInclude(c => c.CourseName)
                 .Include(s => s.Course);
 
 

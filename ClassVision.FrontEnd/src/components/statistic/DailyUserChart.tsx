@@ -12,7 +12,6 @@ import { useSnapshot } from "valtio"
 
 
 export default function DailyUserChart() {
-    const [isStacked, setIsStacked] = useState(true)
     const store = activeUsersChartStore;
     const snap = useSnapshot(store)
 
@@ -35,7 +34,7 @@ export default function DailyUserChart() {
                 <ChartContainer
                     config={{
                         users: {
-                            label: "Active Users",
+                            label: "Daily Login",
                             color: "hsl(var(--chart-1))"
                         }
                     }}

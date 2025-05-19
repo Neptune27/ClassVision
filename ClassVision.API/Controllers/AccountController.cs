@@ -3,12 +3,15 @@ using ClassVision.Data;
 using ClassVision.Data.DTOs.Accounts;
 using ClassVision.Data.DTOs.Classrooms;
 using ClassVision.Data.Entities;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Humanizer;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,6 +22,7 @@ namespace ClassVision.API.Controllers;
 public class AccountController(ILogger<AccountController> logger,
     SignInManager<AppUser> signInManager,
     UserManager<AppUser> userManager,
+    RoleManager<IdentityRole> roleManager,
     IMediator mediator,
     AppDBContext context
     ) : ControllerBase
@@ -26,6 +30,7 @@ public class AccountController(ILogger<AccountController> logger,
     private readonly ILogger<AccountController> logger = logger;
     private readonly SignInManager<AppUser> signInManager = signInManager;
     private readonly UserManager<AppUser> userManager = userManager;
+    private readonly RoleManager<IdentityRole> roleManager = roleManager;
     private readonly IMediator mediator = mediator;
     private readonly AppDBContext context = context;
 
@@ -53,8 +58,12 @@ public class AccountController(ILogger<AccountController> logger,
             await context.SaveChangesAsync();
 
             var dto = await mediator.Send(new CreateTokenRequest(user, Request.Host));
-
-            return Ok(dto);
+            var roles = await userManager.GetRolesAsync(user);
+            return Ok(new
+            {
+                Data = dto,
+                Roles = roles
+            });
 
         }
         catch (ValidationException ex)
@@ -114,8 +123,12 @@ public class AccountController(ILogger<AccountController> logger,
 
             var token = await mediator.Send(new CreateTokenRequest(appUser, Request.Host));
             //var publish = await mediator.Send(new PublishAccountInternalRequest(register));
-            return Ok(token);
-
+            var roles = await userManager.GetRolesAsync(createdUser);
+            return Ok(new
+            {
+                Data = token,
+                Roles = roles
+            });
         }
         catch (Exception e)
         {
@@ -137,5 +150,66 @@ public class AccountController(ILogger<AccountController> logger,
             .ToListAsync();
 
         return Ok(data);
+    }
+
+    [HttpGet("AllRoles")]
+    [Authorize]
+    public async Task<IActionResult> GetAllRoles()
+    {
+        var roles = await roleManager.Roles.ToListAsync();
+        return Ok(roles);
+    }
+
+    public record UserRoles(string Id, string UserName, IList<string> Roles);
+
+    [HttpGet("Roles")]
+    [Authorize]
+    public async Task<IActionResult> UserWithRoles()
+    {
+        var users = await userManager.Users.ToListAsync();
+
+
+        List<UserRoles> userRoles = [];
+        foreach (var user in users)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+            userRoles.Add(new(user.Id, user.UserName, roles));
+        }
+        return Ok(userRoles);
+    }
+
+    public record UpdateRoleDto(string UserId, List<string> Roles);
+
+    [HttpPost("Roles")]
+    [Authorize]
+    public async Task<IActionResult> UpdateRoles(UpdateRoleDto dto)
+    {
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == dto.UserId);
+        if (user is null)
+        {
+            return NotFound("Cannot find user");
+        }
+        if (dto.Roles.Count == 0)
+        {
+
+            return BadRequest();
+        }
+
+        var userCurrentRoles = await userManager.GetRolesAsync(user);
+        var result = await userManager.RemoveFromRolesAsync(user, userCurrentRoles);
+        if (!result.Succeeded)
+        {
+            // Handle errors
+            foreach (var error in result.Errors)
+            {
+                Debug.WriteLine($"Error: {error.Description}");
+            }
+
+            return BadRequest();
+        }
+
+        var addResult = await userManager.AddToRolesAsync(user, dto.Roles);
+
+        return Ok(addResult);
     }
 }

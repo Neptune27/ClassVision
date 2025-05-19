@@ -202,7 +202,7 @@ export function AttendeeDialog({ isEdit }: {
             const data = await resp.json()
 
             const result: ComboboxData[] = data.map((datum: CourseType) => {
-                const value = `${datum.id} | ${datum.teacher.id} ${datum.classroom.roomId}`
+                const value = `${datum.id} | ${datum.teacher.id} ${datum.courseName}`
 
                 return ({
                     value: value,
@@ -240,7 +240,7 @@ export function AttendeeDialog({ isEdit }: {
                     return
                 }
 
-                const value = `${datum.id} | ${datum.course.courseName.name} ${datum.course.classroom.roomId}`
+                const value = `${datum.id} | ${datum.course.courseName} ${datum.date} ${datum.startTime}`
 
                 return ({
                     value: value,
@@ -271,7 +271,7 @@ export function AttendeeDialog({ isEdit }: {
             const data = await resp.json()
 
             const result = data.map((datum: EnrollmentType) => {
-                const value = `${datum.studentId}`
+                const value = `${datum.studentId} | ${datum.student?.firstName} ${datum.student?.lastName}`
 
                 return ({
                     value: value,

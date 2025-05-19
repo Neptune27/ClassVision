@@ -9,7 +9,6 @@ export interface CourseType extends CommonType {
     id: string,
     courseName: string,
     teacher: TeacherType,
-    classroom: ClassroomType,
     attendantId: string[],
     attendants: any[],
     schedules: ScheduleModifyType[],

@@ -10,6 +10,10 @@ import { useState, useEffect } from "react";
 import { EventSourceInput } from "@fullcalendar/core/index.js";
 import { DateTime } from "luxon"
 import { authorizedFetch } from "../../../utils/authorizedFetcher";
+import { toast } from "../../../hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 
 
 const scheduleUrl = "/api/Schedule"
@@ -28,7 +32,8 @@ export function ClassCalendar({
     const snap = useSnapshot(store)
 
     const [events, setEvents] = useState<EventSourceInput>([])
-
+    const [isTeacher, setIsTeacher] = useState(false)
+    const [isLoading, setLoading] = useState<boolean>(true)
 
     const filterString = filteredId ?? ""
     const fetchSchedule = async () => {
@@ -43,6 +48,21 @@ export function ClassCalendar({
         if (store.data.length == 0) {
             fetchSchedule()
         }
+
+        const fetchIsTeacher = async () => {
+            const resp = await authorizedFetch(`/api/Course/IsTeacher/${filteredId}`)
+            if (!resp.ok) {
+                toast({
+                    value: "Error fetching is teacher",
+                    variant: "destructive"
+                })
+            }
+
+            setIsTeacher(await resp.json())
+            setLoading(false)
+        }
+
+        fetchIsTeacher()
     }, [])
 
     useEffect(() => {
@@ -65,32 +85,73 @@ export function ClassCalendar({
     }, [snap.data])
 
 
+
+
+    if (isLoading) {
+        return (
+                <Card className="w-full mx-auto max-w-md flex items-center justify-center p-8">
+                    <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                        <p>Loading...</p>
+                    </div>
+                </Card>
+        )
+    }
+
+    if (!isTeacher) {
+        return (
+            <Card className="w-full mx-auto max-w-md justify-center">
+                <CardHeader>
+                    <CardTitle className="text-xl">Calendar</CardTitle>
+                    <CardDescription>Calendar for class</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col items-center gap-2">
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Not Available</AlertTitle>
+                            <AlertDescription>You're not authorized to see this content.</AlertDescription>
+                        </Alert>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
-        <div className={className}>
-            <FullCalendar
-                plugins={[dayGridPlugin, timeGridDay]}
-                initialView={initialView ?? "timeGridWeek"}
-                timeZone="GMT+7"
-                slotLabelFormat={{
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: false
-                }}
-                eventTimeFormat={{
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: false
-                }}
-                headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                }}
-                height={512}
+        <Card className={className}>
+            <CardHeader>
+                <CardTitle className="text-xl">Calendar</CardTitle>
+                <CardDescription>Calendar for class</CardDescription>
+            </CardHeader>
 
-                events={events}
-            />
+            <CardContent>
+                <FullCalendar
+                    plugins={[dayGridPlugin, timeGridDay]}
+                    initialView={initialView ?? "timeGridWeek"}
+                    timeZone="GMT+7"
+                    slotLabelFormat={{
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: false
+                    }}
+                    eventTimeFormat={{
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: false
+                    }}
+                    headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    }}
+                    height={512}
 
-        </div>
+                    events={events}
+                />
+            </CardContent>
+
+
+        </Card>
             )
 }

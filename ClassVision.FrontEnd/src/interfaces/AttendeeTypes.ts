@@ -14,7 +14,7 @@ export const enum EAttendantStatus {
 export const EAttendantStatusToString = (value: EAttendantStatus) => {
     switch (value) {
         case EAttendantStatus.PRESENT:
-            return "Present (M)";
+            return "Present";
         case EAttendantStatus.ABSENT:
             return "Absent"
         case EAttendantStatus.LATE:
@@ -24,15 +24,15 @@ export const EAttendantStatusToString = (value: EAttendantStatus) => {
         case EAttendantStatus.OTHER:
             return "Other"
         case EAttendantStatus.AUTOMATED:
-            return "Present (A)"
+            return "Automated"
     }
 }
 
 export const StringToEAttendantStatus = (value: string) => {
     switch (value) {
-        case "Present (M)":
+        case "Present":
             return EAttendantStatus.PRESENT;
-        case "Present (A)":
+        case "Automated":
             return EAttendantStatus.AUTOMATED;
         case "Absent":
             return EAttendantStatus.ABSENT

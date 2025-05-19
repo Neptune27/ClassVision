@@ -39,7 +39,7 @@ export default async function Page({ params }: {
                     <ClassCalendar filteredId={id} initialView={"dayGridMonth"} className="mx-auto w-[812px]" />
                 </TabsContent>
                 <TabsContent value="schedule">
-                    <RollCall id={rollCallId} />
+                    <RollCall id={rollCallId} classId={id} />
 
                 </TabsContent>
             </Tabs>

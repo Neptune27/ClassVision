@@ -37,13 +37,13 @@ export function ClassContent() {
 
     const handleDelete = (id: string, isArchive: boolean) => {
         deleteStore.id = id
-        setDeleteTitle(isArchive ? "Set this Course to Archive" : "Delete this Course")
+        setDeleteTitle(isArchive ? "Set this class to Archive" : "Do you want to delete this class")
         deleteStore.opened = true
 
     }
 
     const fetchData = async () => {
-        const resp = await authorizedFetch("/api/Course")
+        const resp = await authorizedFetch("/api/Course/ByUser")
         store.data = await resp.json()
     }
 
@@ -84,7 +84,7 @@ export function ClassContent() {
                                                 <DropdownMenuItem
                                                     onClick={() => handleDelete(s.id, s.archived)}
                                                 >
-                                                    {s.archived ? "Set to Archive" : "Delete class" };
+                                                    {s.archived ? "Set to Archive" : "Delete class" }
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

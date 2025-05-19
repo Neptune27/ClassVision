@@ -196,7 +196,7 @@ export function EnrollmentDialog({ isEdit }: {
             const data = await resp.json()
 
             const result = data.map((datum: CourseType) => {
-                const value = `${datum.id} | ${datum.teacher.id} ${datum.classroom.roomId}`
+                const value = `${datum.id} | ${datum.teacher.firstName} ${datum.teacher.lastName} - ${datum.courseName}`
 
                 return ({
                     value: value,
@@ -246,10 +246,10 @@ export function EnrollmentDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Student
                     </Label>
-                    <Combobox value={snap.data.studentId} onValueChange={(value) => {
-                        store.data.studentId = courses?.display.find(item => item.label == value)?.value ?? ""
+                    <Combobox modal value={snap.data.studentId} onValueChange={(value) => {
+                        store.data.studentId = studentData?.display.find(item => item.label == value)?.value ?? ""
                     }}
-                        data={courses.display}
+                        data={studentData.display}
                         className="col-span-3" />
                 </div>
 
@@ -257,7 +257,7 @@ export function EnrollmentDialog({ isEdit }: {
                     <Label htmlFor="teacherId" className="text-right">
                         Course
                     </Label>
-                    <Combobox value={snap.data.courseId} onValueChange={(value) => {
+                    <Combobox modal value={snap.data.courseId} onValueChange={(value) => {
                         store.data.courseId = courses?.display.find(item => item.label == value)?.value ?? ""
                     }}
                         data={courses.display}

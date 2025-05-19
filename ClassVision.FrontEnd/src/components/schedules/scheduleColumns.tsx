@@ -42,12 +42,12 @@ export const scheduleColumns: ColumnDef<ScheduleType>[] = [
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "course",
+        accessorKey: "course.id",
         header: ({ column }) => columnSortable(column, "Course Id"),
-        cell: ({ row }) => {
-            const course = row.getValue("course") as CourseInfoType
-            return course?.id ?? ""
-        }
+    },
+    {
+        accessorKey: "course.courseName",
+        header: ({ column }) => columnSortable(column, "Course Name"),
     },
     {
         accessorKey: "date",

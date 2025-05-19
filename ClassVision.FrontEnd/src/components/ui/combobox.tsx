@@ -34,9 +34,10 @@ export function Combobox(props: {
     onOpenChange?: (open: boolean) => void,
     className: string,
     modal?: boolean,
-    disable?: boolean
+    disable?: boolean,
+    placeholder?: string
 }) {
-    const { value, onValueChange, data, className, modal, disable } = props
+    const { value, onValueChange, data, className, modal, disable, placeholder } = props
     const [open, setOpen] = React.useState(false)
 
     return (
@@ -50,7 +51,7 @@ export function Combobox(props: {
                 >
                     {value
                         ? data.find((datum) => datum.value === value)?.label
-                        : "Select value..."}
+                        : placeholder ?? "Select value..."}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>

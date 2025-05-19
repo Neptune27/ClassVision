@@ -54,7 +54,7 @@ export default function Page() {
 
             </ScheduleTable>
 
-            <ScheduleDialog isEdit={modifySnap.isEdit} />
+            <ScheduleDialog isEdit={modifySnap.isEdit} isAdmin />
             <ScheduleDeleteDialog />
             <ScheduleBatchDeleteDialog />
         </>

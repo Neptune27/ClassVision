@@ -4,16 +4,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { ClassUserType } from "../../interfaces/ClassUserTypes";
-import { classUserModifyStore, classUserDeleteStore } from "../../stores/classUserStores";
+import { userModifyStore, userDeleteStore } from "../../stores/userStores";
+import { CourseInfoType } from "../../interfaces/CourseInfoType";
+import { RoleType } from "../../interfaces/RoleType";
+import { Badge } from "../ui/badge";
+import { roleModifyStore } from "../../stores/roleStores";
 
-const store = classUserModifyStore
-const deleteStore = classUserDeleteStore
-const handleDeleteClick = (id: string) => {
-    deleteStore.id = id
-    deleteStore.opened = true
-}
-export const studentColumns: ColumnDef<ClassUserType>[] = [
+const store = roleModifyStore;
+
+export const roleColumns: ColumnDef<RoleType>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -41,39 +40,27 @@ export const studentColumns: ColumnDef<ClassUserType>[] = [
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "media",
-        header: ({ column }) => columnSortable(column, "Profile")
+        accessorKey: "userName",
+        header: ({ column }) => columnSortable(column, "Username"),
     },
     {
-        accessorKey: "firstName",
-        header: ({ column }) => columnSortable(column, "First Name")
+        accessorKey: "role",
+        header: ({ column }) => columnSortable(column, "Role"),
+        cell: ({ row }) => {
+            const data = row.original
+            return (
+                <div className="flex gap-2 flex-wrap">
+                    {data.roles.map(role =>
+                        <Badge key={role}>
+                            {role}
+                        </Badge>
+                    )}
 
+                </div>
+            )
+        }
     },
-    {
-        accessorKey: "lastName",
-        header: ({ column }) => columnSortable(column, "Last Name")
-    },
-    {
-        accessorKey: "user.userName",
-        header: ({ column }) => columnSortable(column, "Username")
-    },
-    {
-        accessorKey: "lastUpdated",
-        //header: "Last Updated",
-        header: ({ column }) => columnSortable(column, "Last Updated"),
-        cell: ({ row }) => rowToRelativeTime(row, "lastUpdated")
 
-    },
-    {
-        accessorKey: "createdAt",
-        header: ({ column }) => columnSortable(column, "Created At"),
-        cell: ({ row }) => rowToRelativeTime(row, "createdAt")
-    },
-    {
-        accessorKey: "isActive",
-        header: ({ column }) => columnSortable(column, "Active?"),
-
-    },
     {
         id: "action",
         cell: ({ row }) => {
@@ -94,33 +81,15 @@ export const studentColumns: ColumnDef<ClassUserType>[] = [
                         >
                             Copy ID
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.firstName)}
-                        >
-                            Copy first name
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.lastName)}
-                        >
-                            Copy last name
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(`${data.firstName} ${data.lastName}`)}
-                        >
-                            Copy name
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             store.opened = true
                             store.isEdit = true
                             store.data = {
-                                id: data.id,
-                                firstName: data.firstName,
-                                lastName: data.lastName,
-                                media: data.media,
+                                ...data,
+                                roles: [...data.roles]
                             }
                         }}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteClick(data.id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

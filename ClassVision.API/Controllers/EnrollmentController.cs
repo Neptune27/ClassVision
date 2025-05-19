@@ -31,7 +31,7 @@ namespace ClassVision.API.Controllers
             {
                 query = query.Where(s => s.Course.Id.ToString() == courseId);
             }
-            var data = await query.ToListAsync();
+            var data = await query.Include(d => d.Student).Include(d => d.Course).ToListAsync();
             return data;
         }
 

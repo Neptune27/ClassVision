@@ -41,10 +41,21 @@ export const enrollmentColumns: ColumnDef<EnrollmentType>[] = [
         header: ({ column }) => columnSortable(column, "Student Id")
     },
     {
+        accessorKey: "student.firstName",
+        header: ({ column }) => columnSortable(column, "First Name")
+    },
+    {
+        accessorKey: "student.lastName",
+        header: ({ column }) => columnSortable(column, "Last Name")
+    },
+    {
         accessorKey: "courseId",
         header: ({ column }) => columnSortable(column, "Course Id")
     },
- 
+    {
+        accessorKey: "course.courseName",
+        header: ({ column }) => columnSortable(column, "Course Name")
+    },
     {
         accessorKey: "lastUpdated",
         //header: "Last Updated",
@@ -64,6 +75,7 @@ export const enrollmentColumns: ColumnDef<EnrollmentType>[] = [
     },
     {
         id: "action",
+        enableHiding: false,
         cell: ({ row }) => {
             const data = row.original
 

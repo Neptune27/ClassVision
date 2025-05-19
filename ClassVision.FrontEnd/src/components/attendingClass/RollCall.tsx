@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { ScheduleType } from "../../interfaces/ScheduleTypes"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { RecognitionCard } from "./RecognitionCard"
-import { rollCallCreateStore, rollCallHubStore, rollCallStore } from "../../stores/rollcallStores"
+import { rollCallCreateStore, rollCallHubStore, rollCallQRStore, rollCallStore } from "../../stores/rollcallStores"
 import { EFaceStatus } from "../../interfaces/ImageFaceType"
 import { Separator } from "../ui/separator"
 import { RollCallStudentTable } from "./RollCallStudentTable"
@@ -19,6 +19,8 @@ import { triggerFetch } from "../../lib/utils"
 import { CreateRollCallDialog } from "./AttendingClassDialogs"
 import { useSnapshot } from "valtio"
 import Link from "next/link"
+import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
+import { toSvgString } from "../../lib/qrUltis"
 
 const scheduleUrl = "/api/Schedule"
 const attendeeUrl = "/api/Attendee"
@@ -27,9 +29,10 @@ const store = rollCallStore;
 const hubStore = rollCallHubStore;
 const createStore = rollCallCreateStore;
 
-export function RollCall({ id, isClient }: {
+export function RollCall({ id, isClient, classId }: {
     id: string,
-    isClient?: boolean
+    isClient?: boolean,
+    classId?: string
 }) {
     const router = useRouter()
 
@@ -39,6 +42,7 @@ export function RollCall({ id, isClient }: {
 
     const [schedule, setSchedule] = useState<ScheduleType>()
     const snap = useSnapshot(store)
+    const qrStore = rollCallQRStore;
 
     const fetchSchedule = async () => {
         const resp = await authorizedFetch(`${scheduleUrl}/${id}`);
@@ -49,9 +53,7 @@ export function RollCall({ id, isClient }: {
     }
 
 
-
-
-    const logInfo = (resp: {
+    const handleMessageReceived = (resp: {
         path: string,
         imageFaces: {
             [id: string]: {
@@ -102,7 +104,7 @@ export function RollCall({ id, isClient }: {
         fetchSchedule()
         const joinSocket = async () => {
             await hubStore.startConnection()
-            hubStore.hub?.on("ReceiveMessage", logInfo)
+            hubStore.hub?.on("ReceiveMessage", handleMessageReceived)
             await hubStore.hub?.invoke("JoinPath", id)
         }
 
@@ -159,6 +161,18 @@ export function RollCall({ id, isClient }: {
         triggerFetch(store)
     }
 
+    const handleCreateClassInfoQR = () => {
+        if (classId == undefined) {
+            return
+        }
+
+        const qr0 = QrCode.encodeText(`https://${location.host}/dashboard/info/class/${classId}`, QrCodeEcc.MEDIUM);
+        const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");
+
+        qrStore.data = svg
+        qrStore.opened = true
+    }
+
     const handleCreateDialog = (isFirst: boolean) => {
         createStore.opened = true
         createStore.message = isFirst ? "This schedule have not been instancized, press Continue to create a new instance"
@@ -190,9 +204,8 @@ export function RollCall({ id, isClient }: {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {/*<DropdownMenuItem onClick={handleCreate}>Create</DropdownMenuItem>*/}
-                            {/*<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>*/}
                             <DropdownMenuItem onClick={()=>handleCreateDialog(false)}>Create rollcall</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleCreateClassInfoQR}>Show class</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </RollCallStudentTable>

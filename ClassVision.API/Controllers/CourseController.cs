@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClassVision.API.Extensions;
+using ClassVision.Data;
+using ClassVision.Data.DTOs.Courses;
+using ClassVision.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClassVision.Data;
-using ClassVision.Data.Entities;
-using ClassVision.Data.DTOs.Courses;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace ClassVision.API.Controllers
@@ -31,6 +33,65 @@ namespace ClassVision.API.Controllers
                 .Include(c => c.Schedules)
                 .Include(c => c.Teacher)
                 .Include(c => c.Enrollments)
+                .ToListAsync();
+        }
+
+
+        [HttpGet("IsTeacher/{id}")]
+        public async Task<ActionResult<bool>> GetIsTeacher(Guid id)
+        {
+            var claim = HttpContext.User.Claims.GetClaimByUserId();
+
+            if (claim is null)
+            {
+                return Ok(false);
+            }
+
+            var course = await _context.Courses.Include(c => c.Teacher).ThenInclude(t => t.User).FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course is null)
+            {
+                return BadRequest();
+            }
+            var userId = claim.Value;
+
+            var teacher = course.Teacher;
+
+            if (teacher.User is null)
+            {
+                return Ok(false);
+            }
+
+            return teacher.User.Id == claim.Value;
+
+        }
+
+        [HttpGet("ByUser")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCoursesByUser()
+        {
+
+            var claim = HttpContext.User.Claims.GetClaimByUserId();
+
+            if (claim is null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = claim.Value;
+
+            var classUser = await _context.ClassUsers.FirstOrDefaultAsync(c => c.User != null &&  c.User.Id == userId);
+
+            if (classUser == null)
+            {
+                return Unauthorized();
+            }
+
+            return await _context.Courses
+                .Include(c => c.Schedules)
+                .Include(c => c.Teacher)
+                .Include(c => c.Enrollments)
+                .Where(c => c.Teacher == classUser || c.Enrollments.Any(e => e.Student == classUser))
                 .ToListAsync();
         }
 

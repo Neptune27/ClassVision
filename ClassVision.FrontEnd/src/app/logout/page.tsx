@@ -6,6 +6,11 @@ const Logout = () => {
     useEffect(() => {
         localStorage.removeItem("token")
         sessionStorage.removeItem("token")
+
+        localStorage.removeItem("userId");
+        localStorage.removeItem("email");
+        localStorage.removeItem("username");
+        localStorage.removeItem("roles");
         window.location.replace("/login")
     }, [])
 

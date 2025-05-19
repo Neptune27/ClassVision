@@ -43,7 +43,7 @@ export function SignUpForm({
         console.log(emailElement.value)
         console.log(passwordElement.value)
 
-        const result = await fetch(`/api/Account/register`, {
+        const resp = await fetch(`/api/Account/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -57,22 +57,26 @@ export function SignUpForm({
             }),
         });
 
-        if (!result.ok) {
-            const error = await result.text();
+        if (!resp.ok) {
+            const error = await resp.text();
             console.log(error);
             alert(error);
             return;
         }
 
-        const resultJson = await result.json();
-        console.log(resultJson);
+        const result = await resp.json();
+        const data = result["data"];
+        console.log(data);
 
-        localStorage.setItem("userId", resultJson["userId"]);
-        localStorage.setItem("email", resultJson["email"]);
-        localStorage.setItem("username", resultJson["username"]);
 
-        //if (login.rememberMe) {
-        localStorage.setItem("token", resultJson["token"]);
+
+        localStorage.setItem("userId", data["userId"]);
+        localStorage.setItem("email", data["email"]);
+        localStorage.setItem("username", data["username"]);
+
+        localStorage.setItem("token", data["token"]);
+        localStorage.setItem("roles", JSON.stringify(result["roles"]) ?? "[]");
+
 
         const params = new URLSearchParams(window.location.search);
         const returnUrl = params.get('returnUrl');

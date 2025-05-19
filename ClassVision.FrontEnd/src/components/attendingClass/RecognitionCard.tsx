@@ -26,6 +26,8 @@ import { QrCode, QrCodeEcc } from "../../lib/qrcodegen"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
 import { imageDataConvert } from "../../lib/imageDataConvertion"
 import { triggerFetch } from "../../lib/utils"
+import { Switch } from "../ui/switch"
+import { Label } from "../ui/label"
 
 const imageUrl = "/api/RollCallImage"
 
@@ -72,10 +74,12 @@ export function RecognitionCard(props: {
     const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
     const [isOpen, setIsOpen] = React.useState(true)
     const [userNameDict, setUserNameDict] = useState<UserNameDictType>({})
+    const [showName, setShowName] = useState(true)
 
 
 
     const store = rollCallStore;
+
     const snap = useSnapshot(store)
     useEffect(() => {
         const newUserNameDict: UserNameDictType = {}
@@ -88,12 +92,20 @@ export function RecognitionCard(props: {
 
     return (
         <>
-        <QrDialog/>
+            <QrDialog />
         <Card className="w-full">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <div className="relative">
                     <CardHeader className="pb-2">
-                        <CardTitle>Image</CardTitle>
+                            <CardTitle className="flex justify-between pr-8">
+                                <span>Images</span>
+                                <div className="flex items-center space-x-2">
+                                    <Switch id="show-name" checked={showName} onCheckedChange={(e) => {
+                                        setShowName(e);
+                                    }} />
+                                    <Label htmlFor="show-name">Show Name</Label>
+                                </div>
+                            </CardTitle>
                         <CardDescription></CardDescription>
                     </CardHeader>
                     <CollapsibleTrigger className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted">
@@ -106,7 +118,7 @@ export function RecognitionCard(props: {
                             <CarouselContent>
                                 {snap.data.map((d, index) =>
                                     <CarouselItem key={index}>
-                                        <RollcallImage imageUrl={d.path} faces={d.faces} position={index} idNameDict={userNameDict} />
+                                        <RollcallImage imageUrl={d.path} faces={d.faces} position={index} idNameDict={userNameDict} showName={showName} />
                                     </CarouselItem>
                                     )
                                 }

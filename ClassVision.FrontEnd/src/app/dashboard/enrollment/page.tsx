@@ -9,8 +9,6 @@ import { EnrollmentDialog, EnrollmentDeleteDialog, EnrollmentBatchDeleteDialog }
 import { EnrollmentTable } from "../../../components/enrollments/EnrollmentTable"
 import { EnrollmentType } from "../../../interfaces/EnrollmentTypes"
 import { enrollmentModifyStore, enrollmentBatchDeleteStore, enrollmentDefault } from "../../../stores/enrollmentStores"
-import { SimpleTimePicker } from "../../../components/ui/simple-time-picker"
-import { DateTimePicker } from "../../../components/ui/datetime-picker"
 
 
 export default function Page() {

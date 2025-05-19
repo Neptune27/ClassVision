@@ -68,11 +68,7 @@ export function StatisticCard() {
     return (
         <div className="container mx-auto p-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className=" md:col-span-2 lg:col-span-4">
-                    <CardContent className="p-6">
-                        <ClassCalendar className="mx-auto" />
-                    </CardContent>
-                </Card>
+                        <ClassCalendar className="md:col-span-2 lg:col-span-4" />
                 <div className=" md:col-span-2 lg:col-span-2">
                     <RecognizeChartWithToggle />
                 </div>

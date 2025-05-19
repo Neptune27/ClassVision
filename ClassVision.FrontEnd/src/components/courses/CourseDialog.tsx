@@ -25,7 +25,7 @@ import { scheduleDefault } from "../../stores/scheduleStores"
 
 
 const baseUrl = "/api/Course"
-const teacherUrl = "/api/Teacher"
+const teacherUrl = "/api/Student/authorized"
 const classroomUrl = "/api/Classroom"
 const courseInfoUrl = "/api/CourseInfo"
 const studentUrl = "/api/Student"
@@ -271,7 +271,7 @@ export function CourseDialog({ isEdit, isAdmin }: {
         }
 
         fetchTeachers()
-        fetchStudents()
+        //fetchStudents()
         fetchCourseInfos()
         fetchClassroom()
 

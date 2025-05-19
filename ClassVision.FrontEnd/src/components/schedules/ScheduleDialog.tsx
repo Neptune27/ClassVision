@@ -200,7 +200,7 @@ export function ScheduleDialog({ isEdit, isAdmin }: {
             const data = await resp.json()
 
             const result: ComboboxData[] = data.map((datum: CourseType) => {
-                const value = `${datum.id} | ${datum.teacher.id}`
+                const value = `${datum.id} | ${datum.teacher.firstName} ${datum.teacher.lastName} - ${datum.courseName}`
 
                 return ({
                     value: value,

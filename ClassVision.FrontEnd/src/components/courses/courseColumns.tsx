@@ -42,23 +42,29 @@ export const courseColumns: ColumnDef<CourseType>[] = [
         header: ({ column }) => columnSortable(column, "Id")
     },
     {
-        accessorKey: "courseInfo",
+        accessorKey: "courseName",
         header: ({ column }) => columnSortable(column, "Info"),
-        cell: ({ row }) => {
-            const data = row.getValue("courseInfo") as CourseInfoType
+        //cell: ({ row }) => {
+        //    const data = row.getValue("courseInfo") as CourseInfoType
 
-            return `${data.id} | ${data.name}`
+        //    return `${data.id} | ${data.name}`
 
-        }
+        //}
     },
     {
-        accessorKey: "teacherId",
+        accessorKey: "teacher.id",
         header: ({ column }) => columnSortable(column, "Teacher Id")
 
     },
     {
-        accessorKey: "classroomId",
-        header: ({ column }) => columnSortable(column, "Room")
+        accessorKey: "teacher.firstName",
+        header: ({ column }) => columnSortable(column, "Teacher Firstname")
+
+    },
+    {
+        accessorKey: "teacher.lastName",
+        header: ({ column }) => columnSortable(column, "Teacher Lastname")
+
     },
     {
         accessorKey: "lastUpdated",
@@ -78,6 +84,7 @@ export const courseColumns: ColumnDef<CourseType>[] = [
 
     },
     {
+        enableHiding: false,
         id: "action",
         cell: ({ row }) => {
             const data = row.original
@@ -117,7 +124,7 @@ export const courseColumns: ColumnDef<CourseType>[] = [
                                 period: 1,
                                 attendantId: [],
                                 classroomId: data.classroom.roomId,
-                                courseInfoId: data.courseName.id,
+                                //courseInfoId: data.courseName.id,
                                 schedules: data.schedules.map(s => {
                                     return ({
                                         ...s,

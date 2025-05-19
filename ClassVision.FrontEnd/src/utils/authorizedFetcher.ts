@@ -21,7 +21,7 @@ const authorizedFetch = async (input: string | URL | globalThis.Request,
         init["headers"] = {}
     }
 
-    const bearer = useToken()
+    const bearer = useToken() ?? ""
 
     // @ts-ignore
     init["headers"]["Authorization"] = "Bearer " + bearer

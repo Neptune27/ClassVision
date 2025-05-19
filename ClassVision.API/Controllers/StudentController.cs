@@ -25,7 +25,15 @@ namespace ClassVision.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClassUser>>> GetStudents()
         {
-            return await _context.ClassUsers.ToListAsync();
+            return await _context.ClassUsers.Include(cu => cu.User).ToListAsync();
+        }
+
+        // GET: api/Student
+        [HttpGet("authorized")]
+        public async Task<ActionResult<IEnumerable<ClassUser>>> GetStudentsAuthorized()
+        {
+            return await _context.ClassUsers.Include(cu => cu.User)
+                .Where(cu => cu.User != null).ToListAsync();
         }
 
         [HttpGet("byCourse/{courseId}")]

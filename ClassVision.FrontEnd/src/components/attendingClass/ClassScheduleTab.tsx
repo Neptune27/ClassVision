@@ -13,6 +13,9 @@ import { ScheduleDialog } from "../schedules/ScheduleDialog"
 import { useSnapshot } from "valtio"
 import { scheduleModifyStore, scheduleDefault, scheduleStore } from "../../stores/scheduleStores"
 import { ScheduleInfoCard } from "./ScheduleInfoCard"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { Loader2, AlertCircle } from "lucide-react"
+import { toast } from "../../hooks/use-toast"
 
 const scheduleUrl = "/api/Schedule"
 const now = new Date()
@@ -43,6 +46,9 @@ export function ClassScheduleTab({ filteredId}: {
 
     //const [schedules, setSchedules] = useState<ScheduleType[]>([])
     const [schedulesByTime, setSBT] = useState<SBTType>({ curr: [], next: [], prev: [] })
+    const [isTeacher, setIsTeacher] = useState(false)
+    const [isLoading, setLoading] = useState<boolean>(true)
+
     const filterString = filteredId ?? ""
     const fetchSchedule = async () => {
         const resp = await authorizedFetch(`${scheduleUrl}/byUser`);
@@ -56,6 +62,23 @@ export function ClassScheduleTab({ filteredId}: {
 
         if (snap.data.length == 0)
             fetchSchedule()
+
+
+
+        const fetchIsTeacher = async () => {
+            const resp = await authorizedFetch(`/api/Course/IsTeacher/${filteredId}`)
+            if (!resp.ok) {
+                toast({
+                    value: "Error fetching is teacher",
+                    variant: "destructive"
+                })
+            }
+
+            setIsTeacher(await resp.json())
+            setLoading(false)
+        }
+
+        fetchIsTeacher()
     }, [])
 
 
@@ -91,6 +114,38 @@ export function ClassScheduleTab({ filteredId}: {
         setSBT(scheduleByT)
     }, [snap.data])
 
+
+
+    if (isLoading) {
+        return (
+            <Card className="w-full mx-auto max-w-md flex items-center justify-center p-8">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                    <p>Loading...</p>
+                </div>
+            </Card>
+        )
+    }
+
+    if (!isTeacher) {
+        return (
+            <Card className="w-full mx-auto max-w-md justify-center">
+                <CardHeader>
+                    <CardTitle className="text-xl">All Rollcalls</CardTitle>
+                    <CardDescription>Rollcalls for class</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col items-center gap-2">
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Not Available</AlertTitle>
+                            <AlertDescription>You're not authorized to see this content.</AlertDescription>
+                        </Alert>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <>
