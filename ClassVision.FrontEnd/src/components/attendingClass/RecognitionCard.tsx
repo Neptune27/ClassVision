@@ -187,7 +187,7 @@ export function RecognitionCard(props: {
                             <div className="flex gap-2">
                                 <Button variant="secondary" onClick={() => {
 
-                                    const qr0 = QrCode.encodeText(`${location.host}/clients/${scheduleId}`, QrCodeEcc.MEDIUM);
+                                    const qr0 = QrCode.encodeText(`https://${location.host}/clients/${scheduleId}`, QrCodeEcc.MEDIUM);
                                     const svg = toSvgString(qr0, 4, "#FFFFFF", "#000000");  
 
                                     rollCallQRStore.data = svg

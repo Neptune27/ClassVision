@@ -13,7 +13,7 @@ class InsightFaceDetection(FaceDetectionStrategy):
         self.detector = FaceAnalysis(name='antelopev2',
                    root=self.folderModel,
                    providers=['CPUExecutionProvider'])
-        self.detector.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.6)
+        self.detector.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.45)
 
     def detect(self, image):
         try:

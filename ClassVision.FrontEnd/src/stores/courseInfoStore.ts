@@ -8,8 +8,8 @@ export const courseInfoDefault = (): CourseInfoModifyType => {
     })
 }
 
-export const courseInfoStore = proxy<{ fetchTrigger: boolean, data: CourseInfoType[] }>({
-    fetchTrigger: false,
+export const courseInfoStore = proxy<{ fetchTrigger: number, data: CourseInfoType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

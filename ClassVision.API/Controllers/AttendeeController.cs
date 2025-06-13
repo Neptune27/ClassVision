@@ -1,8 +1,10 @@
-﻿using ClassVision.API.Services;
+﻿using ClassVision.API.Extensions;
+using ClassVision.API.Services;
 using ClassVision.Data;
 using ClassVision.Data.DTOs;
 using ClassVision.Data.Entities;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ namespace ClassVision.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AttendeeController(AppDBContext context, SpreadsheetService spreadsheetService) : ControllerBase
     {
         private readonly AppDBContext _context = context;
@@ -105,10 +108,20 @@ namespace ClassVision.API.Controllers
             //    return BadRequest();
             //}
 
+            var userId = HttpContext.User.Claims.GetClaimByUserId().Value;
+
             var courseId = Guid.Parse(dto.CourseId);
             var studentId = dto.StudentId;
             var status = dto.Status;
             var scheduleId = Guid.Parse(dto.ScheduleId);
+
+            var course = await _context.Courses.Where(c => c.Id == courseId && c.Teacher.User.Id == userId)
+                .SingleOrDefaultAsync();
+
+            if (course is null)
+            {
+                return BadRequest();
+            }
 
             var attendant = await _context.Attendants.FindAsync(courseId, studentId, scheduleId);
 

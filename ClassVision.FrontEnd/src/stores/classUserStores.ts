@@ -9,8 +9,8 @@ export const classUserDefault = (): ClassUserModifyType => {
         media: "",
     })
 }
-export const classUserStore = proxy<{ fetchTrigger: boolean, data: ClassUserType[] }>({
-    fetchTrigger: false,
+export const classUserStore = proxy<{ fetchTrigger: number, data: ClassUserType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

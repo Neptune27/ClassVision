@@ -183,9 +183,16 @@ export function RollCall({ id, isClient, classId }: {
         <div className={"md:p-10 h-full"}>
             <CreateRollCallDialog handleSubmit={handleCreateRollCall} />
 
-            <div className="flex justify-between gap-2">
-                <Link href={schedule?.course?.id ? `/dashboard/info/class/${schedule.course.id}` : "/dashboard"}>Back</Link>
-                <h1>Rollcall</h1>
+            <div className="flex justify-between gap-2 pb-2">
+                {!isClient ?
+                    <Link href={schedule?.course?.id ? `/dashboard/info/class/${schedule.course.id}` : "/dashboard"}>
+                        <Button>
+                            Back
+                        </Button>
+                    </Link>
+                    : <div></div>
+                }
+                <h1 className="text-xl text-bold">Rollcall</h1>
                 <div></div>
             </div>
 

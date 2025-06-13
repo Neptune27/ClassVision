@@ -7,7 +7,7 @@ const authorizedFetch = async (input: string | URL | globalThis.Request,
             returnUrl: location.href
         })
         window.location.href = "/login?" + searchParams.toString()
-    }): Promise<Response> => {
+    }, throwOnNotOk: boolean = true): Promise<Response> => {
 
     if (init === undefined) {
         init = {
@@ -32,7 +32,8 @@ const authorizedFetch = async (input: string | URL | globalThis.Request,
         redirectOnUnathorized();
     }
 
-    if (!result.ok) {
+
+    if (throwOnNotOk && !result.ok) {
         toast("Something unexpected happend.")
     }
 

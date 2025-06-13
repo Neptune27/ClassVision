@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { classUserBatchCreateStore } from "../../stores/classUserStores"
+import { classUserBatchCreateStore, classUserStore } from "../../stores/classUserStores"
 import { ModifyDialog } from "../dialogs/ModifyDialog"
 import { useSnapshot } from "valtio"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
@@ -9,6 +9,8 @@ import { toast } from "sonner"
 import { authorizedFetch } from "../../utils/authorizedFetcher"
 import { ClassUserType } from "../../interfaces/ClassUserTypes"
 import { ManualClassUserAdd } from "./ManualClassUserAdd"
+import { triggerFetch } from "../../lib/utils"
+import { classInfoStore } from "../../stores/classInfoStore"
 
 
 export function ClassUserBatchAddDialog({
@@ -19,6 +21,7 @@ export function ClassUserBatchAddDialog({
         classId: string
 }) {
     const store = classUserBatchCreateStore
+    const classStore = classInfoStore;
     const snap = useSnapshot(store)
 
     //const [title, setTitle] = useState("")
@@ -80,6 +83,7 @@ export function ClassUserBatchAddDialog({
             }
 
             await handleJoinClass(classId, createdStudent.id)
+            triggerFetch(classStore)
 
             //setIsComplete(true)
         }
@@ -101,10 +105,9 @@ export function ClassUserBatchAddDialog({
         <ModifyDialog open={snap.opened} handleOnOpenChanged={handleOpen}
             title={"Add students"} handleSubmit={handleSubmit}>
             <Tabs defaultValue="qr" className="w-full p-4">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="manual">Manual</TabsTrigger>
                     <TabsTrigger value="qr">By QR</TabsTrigger>
-                    <TabsTrigger value="excel">By Excel</TabsTrigger>
                 </TabsList>
                 <TabsContent value="manual">
                     <ManualClassUserAdd />
@@ -112,10 +115,7 @@ export function ClassUserBatchAddDialog({
                 <TabsContent value="qr">
                     <div dangerouslySetInnerHTML={{ __html: snap.qr }} />
                 </TabsContent>
-                <TabsContent value="excel">
-                </TabsContent>
             </Tabs>
-
         </ModifyDialog>
     )
 }

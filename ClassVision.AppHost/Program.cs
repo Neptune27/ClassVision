@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 
@@ -12,7 +14,7 @@ var sql = builder.AddPostgres("ClassVision-Db", password)
     .WithPgWeb();
 
 var sqlDB = sql.AddDatabase("ClassVision", "ClassVision");
-var aiDB = sql.AddDatabase("ClassVisionAI", "ClassVisionAI");
+var aiDB = sql.AddDatabase("ClassVisionAI", databaseName: "ClassVisionAI");
 
 var migration = builder.AddProject<Projects.ClassVision_Migration>("classvision-migration")
     .WithReference(sqlDB).WaitFor(sql);
@@ -29,7 +31,9 @@ var python_app = builder.AddPythonApp("classvision-ai", "../ClassVision.AI", "ma
 
 var api = builder.AddProject<Projects.ClassVision_API>("classvision-api")
     .WithExternalHttpEndpoints()
-    .WithReference(sqlDB).WaitFor(sql).WaitForCompletion(migration)
+    .WithReference(sqlDB)
+    .WaitFor(sql)
+    .WaitForCompletion(migration)
     .WithReference(python_app);
     ;
 

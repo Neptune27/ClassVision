@@ -195,14 +195,24 @@ namespace ClassVision.API.Controllers
 
         // DELETE: api/Enrollment/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEnrollment(Guid id)
+        public async Task<IActionResult> DeleteEnrollment(string id)
         {
-            var enrollment = await _context.Enrollments.FindAsync(id);
+            var value = id.Split("|");
+
+            if (value.Length != 2)
+            {
+                return BadRequest();
+            }
+
+            var enrollment = await _context.Enrollments
+                .Include(e => e.Attendants)
+                .Where(e => e.CourseId == Guid.Parse(value[0]) && e.StudentId == value[1]).FirstAsync();
             if (enrollment == null)
             {
                 return NotFound();
             }
 
+            _context.Attendants.RemoveRange(enrollment.Attendants);
             _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();
 

@@ -22,6 +22,7 @@ import { Button } from "react-day-picker"
 import { SimpleTimePicker } from "../ui/simple-time-picker"
 import { DateTime } from "luxon"
 import { ClassUserType } from "../../interfaces/ClassUserTypes"
+import { classInfoStore } from "../../stores/classInfoStore"
 
 
 const baseUrl = "/api/Enrollment"
@@ -87,6 +88,7 @@ export function EnrollmentBatchDeleteDialog() {
 
         console.log(resps.map((resp) => resp.status))
         triggerFetch(enrollmentStore)
+        triggerFetch(classInfoStore)
 
     }
 

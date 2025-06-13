@@ -15,9 +15,6 @@ import { MoreVertical } from "lucide-react"
 
 
 
-
-
-
 export function ClassContent() {
 
     const store = courseStore;

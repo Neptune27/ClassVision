@@ -107,6 +107,7 @@ export function ScheduleDialog({ isEdit, isAdmin }: {
     isAdmin?: boolean
 }) {
     const store = scheduleModifyStore
+    const dataStore = scheduleStore
 
     const snap = useSnapshot(store)
 
@@ -145,7 +146,6 @@ export function ScheduleDialog({ isEdit, isAdmin }: {
 
         console.log(resp.status)
         store.opened = false
-        triggerFetch(scheduleStore)
     }
 
     const handleCreate = async (sentData: ScheduleModifyType) => {
@@ -165,7 +165,6 @@ export function ScheduleDialog({ isEdit, isAdmin }: {
 
         console.log(resp.status)
         store.opened = false
-        triggerFetch(scheduleStore)
 
     }
 
@@ -186,7 +185,7 @@ export function ScheduleDialog({ isEdit, isAdmin }: {
         //data.birthday = format(data.birthday, 'yyyy-MM-dd')
         //data.hireDate = format(data.hireDate, 'yyyy-MM-dd')
         isEdit ? await handleEdit(data) : await handleCreate(data);
-        triggerFetch(scheduleStore)
+        triggerFetch(dataStore)
     }
 
 

@@ -9,8 +9,8 @@ export const enrollmentDefault = (): EnrollmentModifyType => {
     })
 }
 
-export const enrollmentStore = proxy<{ fetchTrigger: boolean, data: EnrollmentType[] }>({
-    fetchTrigger: false,
+export const enrollmentStore = proxy<{ fetchTrigger: number, data: EnrollmentType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

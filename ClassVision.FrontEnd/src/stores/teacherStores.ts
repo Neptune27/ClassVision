@@ -15,8 +15,8 @@ export const teacherDefault = (): TeacherModifyType => {
         phoneNumber: ""
     })
 }
-export const teacherStore = proxy<{ fetchTrigger: boolean, data: TeacherType[] }>({
-    fetchTrigger: false,
+export const teacherStore = proxy<{ fetchTrigger: number, data: TeacherType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

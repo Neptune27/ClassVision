@@ -119,9 +119,9 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
                     {students.map((datum, i) => (
                         <CommandItem key={i}
                             key={datum.enrollment?.studentId}
-                            value={`${datum.enrollment.studentId} | ${datum.enrollment.student.firstName} ${datum.enrollment.student.firstName}`}
+                            value={`${datum.enrollment.studentId} | ${datum.enrollment.student.firstName} ${datum.enrollment.student.lastName}`}
                             onSelect={(currentValue) => {
-                                const id = getDisplayId(currentValue);
+                                const id = datum.enrollment?.studentId;
                                 const student = store.attentee.find((v) => v.enrollment?.studentId == id)
                                 if (!student) {
                                     console.log("Student not found???")
@@ -134,7 +134,7 @@ export function FaceStudentPopoverContent({ id, imagePosition }: {
                                 //setOpen(false)
                             }}
                         >
-                            {datum.enrollment.studentId} | {datum.enrollment.student.firstName} {datum.enrollment.student.lastName}
+                            {datum.enrollment.student.firstName} {datum.enrollment.student.lastName}
                             {/*<Check*/}
                             {/*    className={cn(*/}
                             {/*        "ml-auto",*/}

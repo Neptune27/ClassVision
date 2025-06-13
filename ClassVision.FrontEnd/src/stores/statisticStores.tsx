@@ -1,14 +1,14 @@
 import { proxy } from "valtio";
 
 export const recognizeChartStore = proxy<{
-    fetchTrigger: boolean, data: {
+    fetchTrigger: number, data: {
         time: string,
         automatic: number,
         manual: number,
         firstTime: number
     }[]
 }>({
-    fetchTrigger: false,
+    fetchTrigger: 0,
     data: [
         { time: "Jan", automatic: 400, manual: 300, firstTime: 200 },
         { time: "Feb", automatic: 500, manual: 400, firstTime: 250 },
@@ -19,12 +19,12 @@ export const recognizeChartStore = proxy<{
 })
 
 export const activeUsersChartStore = proxy<{
-    fetchTrigger: boolean, data: {
+    fetchTrigger: number, data: {
         date: string,
         users: number,
     }[]
 }>({
-    fetchTrigger: false,
+    fetchTrigger: 0,
     data: [
         { date: "2023-05-01", users: 1200 },
         { date: "2023-05-02", users: 1350 },

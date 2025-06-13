@@ -11,8 +11,8 @@ export const attendeeDefault = (): AttendeeModifyType => {
     })
 }
 
-export const attendeeStore = proxy<{ fetchTrigger: boolean, data: AttendeeType[] }>({
-    fetchTrigger: false,
+export const attendeeStore = proxy<{ fetchTrigger: number, data: AttendeeType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

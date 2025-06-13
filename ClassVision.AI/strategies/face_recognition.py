@@ -70,7 +70,12 @@ class FaceRecognitionByCosine(RecognitionStrategy):
 
             # Lấy ID tương ứng với index
             best_match_ids = [id_list[idx] for idx in indices[0] if idx < len(id_list)]
-            result = [{"ID": best_match_ids[0], "Distance": float(distances[0][0])}]
+            threshold = 800
+            # result = [{"ID": best_match_ids[0], "Distance": float(distances[0][0])}]
+            if distances[0][0] < threshold:
+                result = [{"ID": best_match_ids[0], "Distance": float(distances[0][0])}]
+            else:
+                result = []
             # print("ID phù hợp nhất:", best_match_ids)
             return result if result else None
 

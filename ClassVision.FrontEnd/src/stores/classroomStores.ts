@@ -8,8 +8,8 @@ export const classroomDefault = (): ClassroomModifyType => {
     })
 }
 
-export const classroomStore = proxy<{ fetchTrigger: boolean, data: ClassroomType[] }>({
-    fetchTrigger: false,
+export const classroomStore = proxy<{ fetchTrigger: number, data: ClassroomType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

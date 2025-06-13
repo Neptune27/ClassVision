@@ -9,8 +9,8 @@ export const roleDefault = (): RoleType => {
     })
 }
 
-export const roleStore = proxy<{ fetchTrigger: boolean, data: RoleType[] }>({
-    fetchTrigger: false,
+export const roleStore = proxy<{ fetchTrigger: number, data: RoleType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

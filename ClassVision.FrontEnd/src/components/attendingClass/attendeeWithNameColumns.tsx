@@ -53,10 +53,12 @@ export const handleAttendeeEdit = async (sentData: AttendeeModifyType, refresh =
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(sentData)
-    })
+    }, () => { }, false)
 
-    const data = await resp.text()
-    console.log(data)
+    if (resp.ok) {
+        const data = await resp.text()
+        console.log(data)
+    }
     if (refresh) {
         triggerFetch(rollCallStore)
     }

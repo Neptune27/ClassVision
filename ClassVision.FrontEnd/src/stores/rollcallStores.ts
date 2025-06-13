@@ -14,7 +14,7 @@ export type RollcallStoreType = {
         path: string,
         faces: ImageFaceType[]
     }[],
-    fetchTrigger: boolean,
+    fetchTrigger: number,
 
 }
 
@@ -22,7 +22,7 @@ export const rollCallStore = proxy<RollcallStoreType>({
     userData: [],
     attentee: [],
     data: [],
-    fetchTrigger: false
+    fetchTrigger: 0
 })
 
 export const rollCallQRStore = proxy<{ opened: boolean, data: string }>({

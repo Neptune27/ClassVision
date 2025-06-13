@@ -13,13 +13,17 @@ import { authorizedFetch } from "../../../utils/authorizedFetcher";
 import { useEffect, useState } from "react";
 import { DataTable } from "../../ui/data-table";
 import { createColumns } from "./classDetailsColumns";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { Button } from "../../ui/button";
 import { QrCode, QrCodeEcc } from "../../../lib/qrcodegen";
 import { toSvgString } from "../../../lib/qrUltis";
 import { classUserBatchCreateStore } from "../../../stores/classUserStores";
 import { ClassUserBatchAddDialog } from "../../classUsers/ClassUserBatchCreateDialog";
 import { toast } from "../../../hooks/use-toast";
+import { rollCallStore } from "../../../stores/rollcallStores";
+import { enrollmentBatchDeleteStore } from "../../../stores/enrollmentStores";
+import { EnrollmentType } from "../../../interfaces/EnrollmentTypes";
+import { EnrollmentBatchDeleteDialog } from "../../enrollments/EnrollmentDialog";
 
 
 const excelUrl = "/api/Attendee/byClass/toExcel"
@@ -32,8 +36,11 @@ export function ClassDetailsTable
     (rows: Row<StudentClassInfoType>[]) => void
 }) {
     const store = classInfoStore;
+    const rcStore = rollCallStore;
     const dialogStore = classUserBatchCreateStore;
+    const deleteStore = enrollmentBatchDeleteStore;
     const snap = useSnapshot(store)
+    const rcSnap = useSnapshot(rcStore)
     const data = snap.data
     const [columns, setColumns] = useState<ColumnDef<StudentClassInfoType>[]>([])
     const [isTeacher, setIsTeacher] = useState(false)
@@ -48,7 +55,7 @@ export function ClassDetailsTable
 
     useEffect(() => {
         fetchData()
-    }, [snap.fetchTrigger])
+    }, [snap.fetchTrigger, rcSnap.fetchTrigger])
 
     useEffect(() => {
         fetchData()
@@ -87,11 +94,22 @@ export function ClassDetailsTable
         window.open(url, '_blank')
     }
 
+
+    const handleDelete = () => {
+        deleteStore.opened = true
+    }
+
+
+    const handleSetSelected = (rows: Row<EnrollmentType>[]) => {
+        deleteStore.ids = rows.map(row => `${row.original.courseId}|${row.original.studentId}`)
+    }
+
     return (
         <>
+            <EnrollmentBatchDeleteDialog />
             <ClassUserBatchAddDialog isEdit={false} classId={classId} />
         <div className="container mx-auto p-10">
-            <DataTable columns={columns} data={data}
+                <DataTable columns={columns} data={data}
                 filter initialFilterId="global"
                 visible initialVisibility={{
                 }}
@@ -100,7 +118,7 @@ export function ClassDetailsTable
                     student_lastName: "Last Name",
                     student_firstName:"First Name"
                 }}
-                    setSelectedRow={setSelectedRows} >
+                    setSelectedRow={handleSetSelected} >
                     {
                         isTeacher &&
                         <DropdownMenu>
@@ -112,6 +130,8 @@ export function ClassDetailsTable
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem onClick={handleAddStudents}>Add students</DropdownMenuItem>
                                 <DropdownMenuItem onClick={handleExportExcel}>Export to Excel</DropdownMenuItem>
+                                <DropdownMenuSeparator/>
+                                <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
 

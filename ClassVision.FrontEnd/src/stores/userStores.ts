@@ -9,8 +9,8 @@ export const userDefault = (): UserModifyType => {
     })
 }
 
-export const userStore = proxy<{ fetchTrigger: boolean, data: UserType[] }>({
-    fetchTrigger: false,
+export const userStore = proxy<{ fetchTrigger: number, data: UserType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

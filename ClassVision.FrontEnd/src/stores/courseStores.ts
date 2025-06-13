@@ -14,8 +14,8 @@ export const courseDefault = (): CourseModifyType => {
     })
 }
 
-export const courseStore = proxy<{ fetchTrigger: boolean, data: CourseType[] }>({
-    fetchTrigger: false,
+export const courseStore = proxy<{ fetchTrigger: number, data: CourseType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

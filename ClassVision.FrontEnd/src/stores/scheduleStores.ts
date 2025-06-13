@@ -23,8 +23,8 @@ export const scheduleDefault = (): ScheduleModifyType => {
     return data
 }
 
-export const scheduleStore = proxy<{ fetchTrigger: boolean, data: ScheduleType[] }>({
-    fetchTrigger: false,
+export const scheduleStore = proxy<{ fetchTrigger: number, data: ScheduleType[] }>({
+    fetchTrigger: 0,
     data: []
 })
 

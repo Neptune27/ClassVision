@@ -22,9 +22,9 @@ export function getKeyByValue<TData>(object: {
 }
 
 export function triggerFetch(store: {
-    fetchTrigger: boolean
+    fetchTrigger: number
 }) {
-    store.fetchTrigger = !store.fetchTrigger
+    store.fetchTrigger += 1
 }
 
 export const getImageDimensions = (url: string): Promise<{ width: number, height: number }> => {
